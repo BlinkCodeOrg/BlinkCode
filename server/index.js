@@ -89,12 +89,20 @@ if (savedWorkspace && fs.existsSync(savedWorkspace)) {
   } catch {}
 }
 const workspaceRoots = createWorkspaceRoots(() => workspace, process.env.BLINKCODE_STORAGE_DIR || userDataDir);
+const userMarketplaceRoot = path.join(
+  process.env.BLINKCODE_STORAGE_DIR || userDataDir,
+  'extensions',
+  'marketplace',
+);
 const extensionService = createExtensionService({
   marketplaceRoots: [
     path.join(__dirname, '..', 'extensions', 'marketplace'),
-    path.join(process.env.BLINKCODE_STORAGE_DIR || userDataDir, 'extensions', 'marketplace'),
+    userMarketplaceRoot,
   ],
+  remoteRegistryUrl: process.env.BLINKCODE_EXTENSION_REGISTRY
+    || 'https://raw.githubusercontent.com/BlinkCodeOrg/blinkcode-extensions/main/marketplace/marketplace.json',
   statePath: path.join(process.env.BLINKCODE_STORAGE_DIR || userDataDir, 'extensions-state.json'),
+  userMarketplaceRoot,
 });
 
 function safePath(p) {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { resolve } from 'node:path';
 import test from 'node:test';
@@ -7,7 +7,7 @@ import { activateExtension } from '../../server/extensions/activateExtension.js'
 import { createExtensionService } from '../../server/extensions/createExtensionService.js';
 import { validateExtensionManifest } from '../../server/extensions/validateExtensionManifest.js';
 
-test('bundled extensions activate declared features and persist lifecycle changes', () => {
+test('bundled extensions activate declared features and persist lifecycle changes', async () => {
   const directory = mkdtempSync(resolve(tmpdir(), 'blinkcode-extensions-'));
   try {
     const statePath = resolve(directory, 'state.json');
@@ -15,20 +15,87 @@ test('bundled extensions activate declared features and persist lifecycle change
       marketplaceRoots: [resolve('extensions/marketplace')],
       statePath,
     });
-    const initial = service.list();
+    const initial = await service.list();
     assert.deepEqual(initial.activeFeatures, ['markdown-preview', 'spell-checker', 'theme-import']);
     assert.equal(initial.extensions.every(extension => extension.installed && extension.enabled), true);
 
-    const disabled = service.disable('blinkcode.spell-checker');
+    const disabled = await service.disable('blinkcode.spell-checker');
     assert.equal(disabled.activeFeatures.includes('spell-checker'), false);
     assert.equal(disabled.extensions.find(extension => extension.id === 'blinkcode.spell-checker')?.enabled, false);
 
-    const enabled = service.enable('blinkcode.spell-checker');
+    const enabled = await service.enable('blinkcode.spell-checker');
     assert.equal(enabled.activeFeatures.includes('spell-checker'), true);
-    service.uninstall('blinkcode.spell-checker');
-    assert.equal(service.list().extensions.find(extension => extension.id === 'blinkcode.spell-checker')?.installed, false);
-    service.install('blinkcode.spell-checker');
-    assert.equal(service.list().extensions.find(extension => extension.id === 'blinkcode.spell-checker')?.enabled, true);
+    await service.uninstall('blinkcode.spell-checker');
+    assert.equal((await service.list()).extensions.find(extension => extension.id === 'blinkcode.spell-checker')?.installed, false);
+    await service.install('blinkcode.spell-checker');
+    assert.equal((await service.list()).extensions.find(extension => extension.id === 'blinkcode.spell-checker')?.enabled, true);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('remote marketplace extensions download, validate and remain available offline', async () => {
+  const directory = mkdtempSync(resolve(tmpdir(), 'blinkcode-remote-extension-'));
+  const marketplaceRoot = resolve(directory, 'marketplace');
+  const registryUrl = 'https://raw.githubusercontent.com/BlinkCodeOrg/blinkcode-extensions/main/marketplace/marketplace.json';
+  const manifest = {
+    schemaVersion: 1,
+    id: 'demo.remote-extension',
+    name: 'remote-extension',
+    displayName: 'Remote Extension',
+    publisher: 'demo',
+    version: '1.0.0',
+    description: 'Remote fixture',
+    main: 'extension.js',
+    readme: 'README.md',
+    icon: 'icon.svg',
+    permissions: ['commands'],
+    contributes: { commands: [{ command: 'demo.remote-extension.hello', title: 'Hello' }] },
+  };
+  const files = new Map([
+    [registryUrl, JSON.stringify({
+      schemaVersion: 1,
+      extensions: [{ id: manifest.id, directory: 'demo-remote-extension', featured: true }],
+    })],
+    [new URL('demo-remote-extension/bcode.json', registryUrl).toString(), JSON.stringify(manifest)],
+    [new URL('demo-remote-extension/extension.js', registryUrl).toString(), "blinkcode.registerCommand('demo.remote-extension.hello', { type: 'showMessage', message: 'Hello' });"],
+    [new URL('demo-remote-extension/README.md', registryUrl).toString(), '# Remote Extension'],
+    [new URL('demo-remote-extension/icon.svg', registryUrl).toString(), '<svg xmlns="http://www.w3.org/2000/svg"><rect width="16" height="16"/></svg>'],
+  ]);
+  const fetchImpl = async (input: URL | RequestInfo) => {
+    const url = input.toString();
+    const body = files.get(url);
+    return new Response(body || 'Not found', {
+      status: body ? 200 : 404,
+      headers: { 'content-length': String(Buffer.byteLength(body || 'Not found')) },
+    });
+  };
+
+  try {
+    const service = createExtensionService({
+      fetchImpl,
+      marketplaceRoots: [marketplaceRoot],
+      remoteRegistryUrl: registryUrl,
+      statePath: resolve(directory, 'state.json'),
+      userMarketplaceRoot: marketplaceRoot,
+    });
+    const available = await service.list();
+    assert.equal(available.extensions[0].id, manifest.id);
+    assert.equal(available.extensions[0].installed, false);
+
+    const installed = await service.install(manifest.id);
+    assert.equal(installed.extensions[0].installed, true);
+    assert.equal(installed.commands[0].command, 'demo.remote-extension.hello');
+    assert.equal(existsSync(resolve(marketplaceRoot, 'demo-remote-extension', 'extension.js')), true);
+    const registry = JSON.parse(readFileSync(resolve(marketplaceRoot, 'marketplace.json'), 'utf8'));
+    assert.equal(registry.extensions[0].id, manifest.id);
+
+    const offlineService = createExtensionService({
+      marketplaceRoots: [marketplaceRoot],
+      statePath: resolve(directory, 'state.json'),
+      userMarketplaceRoot: marketplaceRoot,
+    });
+    assert.equal((await offlineService.list()).extensions[0].enabled, true);
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

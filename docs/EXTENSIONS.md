@@ -1,6 +1,9 @@
 # BlinkCode Extensions
 
-BlinkCode ships a local extension marketplace. It does not require a marketplace website or a user account. The catalog is bundled with the application and can be opened from the Extensions icon in the Activity Bar.
+BlinkCode combines a bundled offline catalog with a public GitHub-backed
+marketplace. It does not require a marketplace website, BlinkCode account or
+custom marketplace server. The IDE reads the official registry from
+`BlinkCodeOrg/blinkcode-extensions` through `raw.githubusercontent.com`.
 
 The first bundled extensions are:
 
@@ -56,21 +59,39 @@ Validate it:
 bcode validate
 ```
 
-Publish it into the repository-backed local marketplace:
+Install it into the current user's local marketplace while developing:
 
 ```bash
-bcode publish
+bcode install
 ```
 
-Publishing validates and activates the package in the sandbox, then copies it into the current user's BlinkCode marketplace. The IDE combines this catalog with its bundled extensions, so publishing works even when the command is launched outside BlinkCode.
+Installation validates and activates the package in the sandbox, then copies
+it into the current user's BlinkCode marketplace. The IDE combines this local
+catalog with bundled and remote extensions.
 
 Use a private catalog:
 
 ```bash
-bcode publish --marketplace D:\team\blinkcode-marketplace
+bcode install --marketplace D:\team\blinkcode-marketplace
 ```
 
 The `BCODE_MARKETPLACE` environment variable provides the same override.
+
+To publish for every BlinkCode user, fork and clone the official catalog, then
+prepare a reviewed submission:
+
+```bash
+git clone https://github.com/YOUR_NAME/blinkcode-extensions.git
+bcode publish . --catalog ../blinkcode-extensions
+```
+
+Commit the generated `marketplace/` changes, push the branch and open a pull
+request to `BlinkCodeOrg/blinkcode-extensions`. After CI and review pass, the
+merged package becomes visible in the IDE. Installing it downloads the four
+declared package files over HTTPS, validates file sizes, manifest paths, icon
+safety, permissions and sandbox activation, then atomically stores the package
+under the user's BlinkCode data directory. Installed packages remain available
+offline.
 
 ## Manifest
 
@@ -150,15 +171,18 @@ Every contribution requires a matching permission in the manifest. Activation is
 3. Run `bcode validate`.
 4. Add unit tests for parsing or non-trivial behavior.
 5. Run `npm run quality:full`.
-6. Publish with `bcode publish`.
-7. Review the generated marketplace diff and submit it to the BlinkCode repository.
+6. Clone your fork of `BlinkCodeOrg/blinkcode-extensions`.
+7. Run `bcode publish . --catalog <catalog checkout>`.
+8. Review the generated marketplace diff and open a pull request.
 
-Future remote catalogs will use signed archives, but the repository-backed catalog remains supported for private and offline installations.
+The IDE reads the merged official catalog from GitHub Raw. Packages are
+downloaded over HTTPS, validated and cached locally for offline use.
 
 ## Architecture
 
 - `server/extensions` validates, activates and manages packages.
 - `extensions/marketplace` is the built-in offline registry.
+- `BlinkCodeOrg/blinkcode-extensions` is the public remote registry and package source.
 - `extensions-state.json` stores install and enable state outside the workspace.
 - `src/features/extensions` owns client state and feature availability.
 - `src/components/ExtensionsPanel` renders the marketplace UI.

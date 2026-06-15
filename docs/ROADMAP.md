@@ -433,8 +433,8 @@ These features expand BlinkCode from a local Windows-focused app into a broader 
 - **Why it matters:** A plugin ecosystem can grow BlinkCode beyond built-in features.
 - **Expected behavior:** Plugins should be sandboxed and have explicit permissions.
 - **Implementation direction:** Start with command and menu contributions before exposing deeper APIs.
-- **Current state:** BlinkCode has an offline Extensions marketplace in the Activity Bar, compact package cards, full README detail tabs in the editor, custom extension icons, versioned manifests, explicit permissions, install/enable/disable/uninstall state and a restricted `node:vm` runtime without Node, filesystem, network or Electron globals.
-- **Completed:** Spell Checker, Markdown Preview and Theme Import are separate bundled packages with icons and README files. The standalone `@lovlydev/blinkcode-cli` provides global `bcode create`, `bcode validate` and `bcode publish` commands from any directory; user and bundled catalogs are merged by the IDE.
+- **Current state:** BlinkCode combines an offline bundled catalog with the public `BlinkCodeOrg/blinkcode-extensions` GitHub marketplace. The Activity Bar provides compact package cards, full README detail tabs, install/enable/disable/uninstall state and a restricted `node:vm` runtime without Node, filesystem, network or Electron globals.
+- **Completed:** The IDE downloads the remote index, manifests, README files and icons over HTTPS, safely installs reviewed packages into the user marketplace and keeps installed copies available offline. The `@lovlydev/blinkcode-cli` provides `bcode create`, `bcode validate`, local `bcode install` and PR-ready `bcode publish --catalog` workflows.
 
 ### 6.2 Remote development
 

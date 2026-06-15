@@ -46,7 +46,7 @@ export default function ExtensionsPanel() {
       <header className="extensions-header ui-sidebar-panel-header">
         <span><Blocks size={15} />{tt('extensions.title')}</span>
         <div>
-          <button onClick={() => void refresh()} title={tt('common.refresh')}><RefreshCw size={14} /></button>
+          <button onClick={() => void refresh(true)} title={tt('common.refresh')}><RefreshCw size={14} /></button>
           <button onClick={toggleExtensions} title={tt('common.close')}><X size={14} /></button>
         </div>
       </header>

@@ -7,7 +7,7 @@ interface ExtensionContextValue extends ExtensionSnapshot {
   busyId: string | null;
   error: string | null;
   hasFeature: (feature: string) => boolean;
-  refresh: () => Promise<void>;
+  refresh: (force?: boolean) => Promise<void>;
   runCommand: (command: ExtensionCommand) => void;
   update: (id: string, operation: ExtensionOperation) => Promise<void>;
 }
@@ -20,10 +20,10 @@ export function ExtensionProvider({ children }: { children: ReactNode }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (force = false) => {
     try {
       setError(null);
-      setSnapshot(await fetchExtensions());
+      setSnapshot(await fetchExtensions(force));
     } catch (nextError) {
       setError(nextError instanceof Error ? nextError.message : 'Could not load extensions');
     }

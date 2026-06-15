@@ -5,10 +5,22 @@ import { readExtensionState } from './readExtensionState.js';
 import { writeExtensionState } from './writeExtensionState.js';
 import { readExtensionPresentation } from './readExtensionPresentation.js';
 import { readExtensionManifest } from './readExtensionManifest.js';
+import { installRemoteExtension } from './installRemoteExtension.js';
+import { loadRemoteExtensionCatalog } from './loadRemoteExtensionCatalog.js';
 
-export function createExtensionService({ marketplaceRoots, statePath }) {
+export function createExtensionService({
+  marketplaceRoots,
+  remoteRegistryUrl,
+  statePath,
+  userMarketplaceRoot = marketplaceRoots.at(-1),
+  fetchImpl,
+}) {
+  let remoteCatalog = [];
+  let remoteCatalogLoadedAt = 0;
+
   function readCatalog() {
     const byId = new Map();
+    for (const item of remoteCatalog) byId.set(item.manifest.id, item);
     for (const marketplaceRoot of marketplaceRoots) {
       const registryPath = path.join(marketplaceRoot, 'marketplace.json');
       if (!fs.existsSync(registryPath)) continue;
@@ -30,6 +42,17 @@ export function createExtensionService({ marketplaceRoots, statePath }) {
     return [...byId.values()];
   }
 
+  async function refreshRemoteCatalog(force = false) {
+    if (!remoteRegistryUrl) return;
+    if (!force && Date.now() - remoteCatalogLoadedAt < 5 * 60 * 1000) return;
+    try {
+      remoteCatalog = await loadRemoteExtensionCatalog(remoteRegistryUrl, { fetchImpl });
+      remoteCatalogLoadedAt = Date.now();
+    } catch (error) {
+      if (!remoteCatalogLoadedAt) console.warn('Remote extension marketplace unavailable:', error?.message || error);
+    }
+  }
+
   function defaultState(catalog) {
     return {
       schemaVersion: 1,
@@ -45,7 +68,8 @@ export function createExtensionService({ marketplaceRoots, statePath }) {
     };
   }
 
-  function snapshot() {
+  async function snapshot(forceRemoteRefresh = false) {
+    await refreshRemoteCatalog(forceRemoteRefresh);
     const catalog = readCatalog();
     const state = readExtensionState(statePath, defaultState(catalog));
     const activeFeatures = new Set();
@@ -67,7 +91,7 @@ export function createExtensionService({ marketplaceRoots, statePath }) {
       }
       return {
         ...item.manifest,
-        ...readExtensionPresentation(item.directory, item.manifest),
+        ...(item.presentation || readExtensionPresentation(item.directory, item.manifest)),
         featured: Boolean(item.entry.featured),
         installed: Boolean(installed),
         installedAt: installed?.installedAt || null,
@@ -78,13 +102,17 @@ export function createExtensionService({ marketplaceRoots, statePath }) {
     return { activeFeatures: [...activeFeatures].sort(), commands, extensions };
   }
 
-  function update(id, operation) {
+  async function update(id, operation) {
+    await refreshRemoteCatalog();
     const catalog = readCatalog();
     const item = catalog.find(extension => extension.manifest.id === id);
     if (!item) throw new Error('Extension not found');
     const state = readExtensionState(statePath, defaultState(catalog));
     state.installed ||= {};
     if (operation === 'install') {
+      if (item.remote && !item.directory) {
+        await installRemoteExtension(item, userMarketplaceRoot, { fetchImpl });
+      }
       state.installed[id] = { enabled: true, installedAt: new Date().toISOString(), version: item.manifest.version };
     } else if (operation === 'uninstall') {
       delete state.installed[id];
@@ -100,7 +128,7 @@ export function createExtensionService({ marketplaceRoots, statePath }) {
     disable: id => update(id, 'disable'),
     enable: id => update(id, 'enable'),
     install: id => update(id, 'install'),
-    list: snapshot,
+    list: force => snapshot(force),
     uninstall: id => update(id, 'uninstall'),
   };
 }
