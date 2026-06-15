@@ -14,14 +14,18 @@ interface ExtensionCardProps {
 export function ExtensionCard({ busy, extension, onOpen, onUpdate, tt }: ExtensionCardProps) {
   const operation: ExtensionOperation = !extension.installed
     ? 'install'
-    : extension.enabled
-      ? 'disable'
-      : 'enable';
+    : extension.updateAvailable
+      ? 'update'
+      : extension.enabled
+        ? 'disable'
+        : 'enable';
   const operationLabel = !extension.installed
     ? tt('extensions.install')
-    : extension.enabled
-      ? tt('extensions.disable')
-      : tt('extensions.enable');
+    : extension.updateAvailable
+      ? tt('extensions.update')
+      : extension.enabled
+        ? tt('extensions.disable')
+        : tt('extensions.enable');
 
   return (
     <article className={`extension-card compact${extension.enabled ? ' enabled' : ''}`} data-extension-id={extension.id}>

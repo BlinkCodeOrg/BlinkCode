@@ -21,6 +21,9 @@ export interface MarketplaceExtension {
   featured: boolean;
   installed: boolean;
   enabled: boolean;
+  installedVersion: string | null;
+  latestVersion: string;
+  updateAvailable: boolean;
   activationError: string | null;
   iconDataUrl: string;
   readme: string;

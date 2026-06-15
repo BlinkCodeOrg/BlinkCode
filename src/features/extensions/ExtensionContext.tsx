@@ -31,6 +31,20 @@ export function ExtensionProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => { void refresh(); }, [refresh]);
 
+  useEffect(() => {
+    const refreshVisibleCatalog = () => {
+      if (document.visibilityState === 'visible') void refresh();
+    };
+    const timer = window.setInterval(refreshVisibleCatalog, 5 * 60 * 1000);
+    window.addEventListener('focus', refreshVisibleCatalog);
+    document.addEventListener('visibilitychange', refreshVisibleCatalog);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', refreshVisibleCatalog);
+      document.removeEventListener('visibilitychange', refreshVisibleCatalog);
+    };
+  }, [refresh]);
+
   const update = useCallback(async (id: string, operation: ExtensionOperation) => {
     setBusyId(id);
     try {

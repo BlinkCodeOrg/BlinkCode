@@ -11,6 +11,7 @@ import { createExtensionDetailNode } from '../../features/extensions/createExten
 import './ExtensionsPanel.css';
 import { EmptyState } from '../ui/EmptyState';
 import { ErrorState } from '../ui/ErrorState';
+import type { ExtensionOperation } from '../../features/apiClient/updateExtension';
 
 type Filter = 'marketplace' | 'installed';
 
@@ -32,7 +33,7 @@ export default function ExtensionsPanel() {
     });
   }, [extensions, filter, query]);
 
-  const changeExtension = async (id: string, operation: 'install' | 'uninstall' | 'enable' | 'disable') => {
+  const changeExtension = async (id: string, operation: ExtensionOperation) => {
     try {
       await update(id, operation);
       addToast(tt(`extensions.${operation}Success`), 'success');

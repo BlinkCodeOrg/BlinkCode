@@ -6,6 +6,7 @@ import { writeExtensionState } from './writeExtensionState.js';
 import { readExtensionPresentation } from './readExtensionPresentation.js';
 import { readExtensionManifest } from './readExtensionManifest.js';
 import { installRemoteExtension } from './installRemoteExtension.js';
+import { isNewerExtensionVersion } from './isNewerExtensionVersion.js';
 import { loadRemoteExtensionCatalog } from './loadRemoteExtensionCatalog.js';
 
 export function createExtensionService({
@@ -18,9 +19,8 @@ export function createExtensionService({
   let remoteCatalog = [];
   let remoteCatalogLoadedAt = 0;
 
-  function readCatalog() {
+  function readLocalCatalog() {
     const byId = new Map();
-    for (const item of remoteCatalog) byId.set(item.manifest.id, item);
     for (const marketplaceRoot of marketplaceRoots) {
       const registryPath = path.join(marketplaceRoot, 'marketplace.json');
       if (!fs.existsSync(registryPath)) continue;
@@ -38,6 +38,17 @@ export function createExtensionService({
         if (manifest.id !== entry.id) throw new Error(`Registry id mismatch for ${entry.id}`);
         byId.set(manifest.id, { directory, entry, manifest });
       }
+    }
+    return [...byId.values()];
+  }
+
+  function readCatalog() {
+    const byId = new Map(remoteCatalog.map(item => [item.manifest.id, item]));
+    for (const item of readLocalCatalog()) {
+      byId.set(item.manifest.id, {
+        ...item,
+        remoteCandidate: remoteCatalog.find(remote => remote.manifest.id === item.manifest.id) || null,
+      });
     }
     return [...byId.values()];
   }
@@ -76,6 +87,9 @@ export function createExtensionService({
     const commands = [];
     const extensions = catalog.map(item => {
       const installed = state.installed?.[item.manifest.id];
+      const installedVersion = installed?.version || (installed ? item.manifest.version : null);
+      const remoteItem = item.remoteCandidate || (item.remote ? item : null);
+      const latestVersion = remoteItem?.manifest.version || item.manifest.version;
       let error = null;
       if (installed?.enabled) {
         try {
@@ -96,6 +110,13 @@ export function createExtensionService({
         installed: Boolean(installed),
         installedAt: installed?.installedAt || null,
         enabled: Boolean(installed?.enabled),
+        installedVersion,
+        latestVersion,
+        updateAvailable: Boolean(
+          installed &&
+          remoteItem &&
+          isNewerExtensionVersion(latestVersion, installedVersion),
+        ),
         activationError: error,
       };
     });
@@ -103,7 +124,7 @@ export function createExtensionService({
   }
 
   async function update(id, operation) {
-    await refreshRemoteCatalog();
+    await refreshRemoteCatalog(operation === 'update');
     const catalog = readCatalog();
     const item = catalog.find(extension => extension.manifest.id === id);
     if (!item) throw new Error('Extension not found');
@@ -114,6 +135,21 @@ export function createExtensionService({
         await installRemoteExtension(item, userMarketplaceRoot, { fetchImpl });
       }
       state.installed[id] = { enabled: true, installedAt: new Date().toISOString(), version: item.manifest.version };
+    } else if (operation === 'update') {
+      const installed = state.installed[id];
+      if (!installed) throw new Error('Extension is not installed');
+      const remoteItem = item.remoteCandidate || (item.remote ? item : null);
+      if (!remoteItem) throw new Error('Extension has no remote update source');
+      const currentVersion = installed.version || item.manifest.version;
+      if (!isNewerExtensionVersion(remoteItem.manifest.version, currentVersion)) {
+        throw new Error('Extension is already up to date');
+      }
+      await installRemoteExtension(remoteItem, userMarketplaceRoot, { fetchImpl });
+      state.installed[id] = {
+        ...installed,
+        enabled: installed.enabled !== false,
+        version: remoteItem.manifest.version,
+      };
     } else if (operation === 'uninstall') {
       delete state.installed[id];
     } else {
@@ -129,6 +165,7 @@ export function createExtensionService({
     enable: id => update(id, 'enable'),
     install: id => update(id, 'install'),
     list: force => snapshot(force),
+    update: id => update(id, 'update'),
     uninstall: id => update(id, 'uninstall'),
   };
 }

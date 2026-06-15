@@ -22,7 +22,10 @@ export function ExtensionDetailSidebar({ extension }: { extension: MarketplaceEx
 
   const rows = [
     [tt('extensions.identifier'), extension.id],
-    [tt('extensions.version'), extension.version],
+    [tt('extensions.version'), extension.installedVersion || extension.version],
+    ...(extension.updateAvailable
+      ? [[tt('extensions.latestVersion'), extension.latestVersion]]
+      : []),
     [tt('extensions.lastUpdated'), formatExtensionDate(extension.lastUpdatedAt, locale)],
     [tt('extensions.size'), formatExtensionBytes(extension.packageSizeBytes)],
     [tt('extensions.cache'), formatExtensionBytes(extension.cacheSizeBytes)],

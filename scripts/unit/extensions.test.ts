@@ -85,17 +85,45 @@ test('remote marketplace extensions download, validate and remain available offl
 
     const installed = await service.install(manifest.id);
     assert.equal(installed.extensions[0].installed, true);
+    assert.equal(installed.extensions[0].installedVersion, '1.0.0');
+    assert.equal(installed.extensions[0].updateAvailable, false);
     assert.equal(installed.commands[0].command, 'demo.remote-extension.hello');
     assert.equal(existsSync(resolve(marketplaceRoot, 'demo-remote-extension', 'extension.js')), true);
     const registry = JSON.parse(readFileSync(resolve(marketplaceRoot, 'marketplace.json'), 'utf8'));
     assert.equal(registry.extensions[0].id, manifest.id);
+
+    const updatedManifest = { ...manifest, version: '1.1.0', description: 'Updated remote fixture' };
+    files.set(
+      new URL('demo-remote-extension/bcode.json', registryUrl).toString(),
+      JSON.stringify(updatedManifest),
+    );
+    files.set(
+      new URL('demo-remote-extension/extension.js', registryUrl).toString(),
+      "blinkcode.registerCommand('demo.remote-extension.hello', { type: 'showMessage', message: 'Updated' });",
+    );
+    const updateAvailable = await service.list(true);
+    assert.equal(updateAvailable.extensions[0].latestVersion, '1.1.0');
+    assert.equal(updateAvailable.extensions[0].installedVersion, '1.0.0');
+    assert.equal(updateAvailable.extensions[0].updateAvailable, true);
+
+    const updated = await service.update(manifest.id);
+    assert.equal(updated.extensions[0].version, '1.1.0');
+    assert.equal(updated.extensions[0].installedVersion, '1.1.0');
+    assert.equal(updated.extensions[0].updateAvailable, false);
+    assert.match(
+      readFileSync(resolve(marketplaceRoot, 'demo-remote-extension', 'extension.js'), 'utf8'),
+      /Updated/,
+    );
 
     const offlineService = createExtensionService({
       marketplaceRoots: [marketplaceRoot],
       statePath: resolve(directory, 'state.json'),
       userMarketplaceRoot: marketplaceRoot,
     });
-    assert.equal((await offlineService.list()).extensions[0].enabled, true);
+    const offline = await offlineService.list();
+    assert.equal(offline.extensions[0].enabled, true);
+    assert.equal(offline.extensions[0].version, '1.1.0');
+    assert.equal(offline.extensions[0].installedVersion, '1.1.0');
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }

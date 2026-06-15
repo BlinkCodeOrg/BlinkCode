@@ -7,7 +7,7 @@ export function registerExtensionRoutes(app, service) {
     }
   });
 
-  for (const operation of ['install', 'uninstall', 'enable', 'disable']) {
+  for (const operation of ['install', 'update', 'uninstall', 'enable', 'disable']) {
     app.post(`/api/extensions/:id/${operation}`, async (req, res) => {
       try {
         res.json(await service[operation](req.params.id));

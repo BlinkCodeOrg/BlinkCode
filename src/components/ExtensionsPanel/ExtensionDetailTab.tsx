@@ -17,7 +17,7 @@ export function ExtensionDetailTab({ file }: { file: FileNode }) {
   const installed = extension?.installed ?? false;
   const enabled = extension?.enabled ?? false;
 
-  const change = async (operation: 'install' | 'uninstall' | 'enable' | 'disable') => {
+  const change = async (operation: 'install' | 'update' | 'uninstall' | 'enable' | 'disable') => {
     try {
       await update(detail.id, operation);
       addToast(tt(`extensions.${operation}Success`), 'success');
@@ -29,27 +29,28 @@ export function ExtensionDetailTab({ file }: { file: FileNode }) {
   return (
     <div className="extension-detail">
       <header className="extension-detail-hero">
-        <img src={detail.iconDataUrl} alt="" />
+        <img src={extension.iconDataUrl} alt="" />
         <div className="extension-detail-summary">
           <div className="extension-detail-title">
-            <h1>{detail.displayName}</h1>
-            <span>v{detail.version}</span>
+            <h1>{extension.displayName}</h1>
+            <span>v{extension.version}</span>
           </div>
-          <p>{detail.description}</p>
+          <p>{extension.description}</p>
           <div className="extension-detail-publisher">
             <BadgeCheck size={14} />
-            {tt('extensions.publishedBy')} <strong>{detail.publisher}</strong>
+            {tt('extensions.publishedBy')} <strong>{extension.publisher}</strong>
           </div>
           <div className="extension-detail-actions">
             {!installed && <Button disabled={busyId === detail.id} onClick={() => void change('install')}>{tt('extensions.install')}</Button>}
+            {installed && extension.updateAvailable && <Button disabled={busyId === detail.id} onClick={() => void change('update')}>{tt('extensions.update')}</Button>}
             {installed && <Button disabled={busyId === detail.id} onClick={() => void change(enabled ? 'disable' : 'enable')}>{tt(enabled ? 'extensions.disable' : 'extensions.enable')}</Button>}
             {installed && <Button variant="ghost" disabled={busyId === detail.id} onClick={() => void change('uninstall')}>{tt('extensions.uninstall')}</Button>}
           </div>
         </div>
       </header>
       <div className="extension-detail-meta">
-        <span><Box size={13} />{detail.categories.join(', ')}</span>
-        <span><ShieldCheck size={13} />{tt('extensions.permissions', { count: detail.permissions.length })}</span>
+        <span><Box size={13} />{extension.categories.join(', ')}</span>
+        <span><ShieldCheck size={13} />{tt('extensions.permissions', { count: extension.permissions.length })}</span>
       </div>
       <div className="extension-detail-body">
         <div className="extension-detail-main" data-testid="extension-readme-scroll">
