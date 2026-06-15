@@ -1,3 +1,5 @@
+import { resolveAutoUpdater } from './resolveAutoUpdater.mjs';
+
 export async function registerUpdaterIpc({ app, ipcMain, send }) {
   ipcMain.removeHandler?.('update:check');
   ipcMain.removeHandler?.('update:install');
@@ -7,7 +9,7 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
     return;
   }
 
-  const { autoUpdater } = await import('electron-updater');
+  const autoUpdater = resolveAutoUpdater(await import('electron-updater'));
   autoUpdater.autoDownload = false;
   autoUpdater.autoInstallOnAppQuit = true;
   autoUpdater.on('checking-for-update', () => send('update:status', { status: 'checking' }));

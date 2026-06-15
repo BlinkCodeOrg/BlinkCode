@@ -240,16 +240,25 @@ async function createWindow() {
   });
 }
 
-app.whenReady().then(async () => {
-  Menu.setApplicationMenu(null);
-  registerIpc();
-  await registerUpdaterIpc({
-    app,
-    ipcMain,
-    send: (channel, payload) => mainWindow?.webContents.send(channel, payload),
+app.whenReady()
+  .then(async () => {
+    Menu.setApplicationMenu(null);
+    registerIpc();
+    await registerUpdaterIpc({
+      app,
+      ipcMain,
+      send: (channel, payload) => mainWindow?.webContents.send(channel, payload),
+    });
+    await createWindow();
+  })
+  .catch(error => {
+    console.error('BlinkCode failed to start', error);
+    dialog.showErrorBox(
+      'BlinkCode could not start',
+      error instanceof Error ? error.message : String(error),
+    );
+    app.quit();
   });
-  await createWindow();
-});
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
