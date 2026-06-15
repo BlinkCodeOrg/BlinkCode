@@ -1,0 +1,102 @@
+.bottom-panel-shell {
+  display: flex;
+  flex-direction: column;
+  flex: 0 0 auto;
+  min-height: 110px;
+  overflow: hidden;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-panel);
+  box-shadow: 0 -8px 30px rgba(0,0,0,.08);
+  position: relative;
+}
+
+.bottom-panel-resizer {
+  position: absolute;
+  z-index: 20;
+}
+
+.bottom-panel-resizer-bottom {
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 7px;
+  cursor: row-resize;
+}
+
+.bottom-panel-resizer-right {
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 7px;
+  cursor: col-resize;
+}
+
+.bottom-panel-resizer:hover {
+  background: color-mix(in srgb, var(--accent) 60%, transparent);
+}
+
+.bottom-panel-header {
+  height: var(--panel-header-height, 32px);
+  min-height: var(--panel-header-height, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: color-mix(in srgb, var(--bg-sidebar) 92%, var(--surface-base));
+  user-select: none;
+}
+
+.bottom-panel-header nav,
+.bottom-panel-actions { display: flex; align-items: center; gap: 3px; }
+.bottom-panel-header button { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; }
+.bottom-panel-header nav button { height: 27px; display: flex; align-items: center; gap: 6px; padding: 0 9px; border-radius: 5px; font: 600 10px 'Segoe UI', sans-serif; text-transform: uppercase; letter-spacing: .45px; position: relative; }
+.bottom-panel-header nav button:hover, .bottom-panel-header nav button.active { color: var(--text-primary); background: var(--surface-base-hover); }
+.bottom-panel-header nav button.active::after { content: ''; position: absolute; left: 8px; right: 8px; bottom: -3px; height: 2px; border-radius: 2px; background: var(--accent); }
+.bottom-panel-header nav button span { min-width: 15px; height: 15px; display: grid; place-items: center; padding: 0 4px; border-radius: 999px; color: white; background: var(--danger); font-size: 9px; }
+.bottom-panel-actions button { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 5px; }
+.bottom-panel-actions button:hover { color: var(--text-primary); background: var(--surface-base-hover); }
+
+.bottom-panel-content { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+.bottom-panel-view {
+  position: absolute;
+  inset: 0;
+  min-width: 0;
+  min-height: 0;
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+.bottom-panel-view.active {
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+}
+.bottom-panel-view > .terminal-panel,
+.bottom-panel-view > .problems-panel { height: 100% !important; border: 0; animation: none; }
+.bottom-panel-content .problems-header,
+.bottom-panel-content .terminal-resizer,
+.bottom-panel-content .problems-resizer { display: none; }
+
+.bottom-panel-right {
+  position: absolute;
+  z-index: 12;
+  top: 0;
+  right: 0;
+  bottom: 22px;
+  height: auto !important;
+  border-top: 0;
+  border-left: 1px solid var(--border-light);
+  box-shadow: -12px 0 36px rgba(0, 0, 0, .16);
+}
+
+.bottom-output { height: 100%; position: relative; padding: 10px 12px; overflow: auto; font: 11px/1.65 'JetBrains Mono', monospace; }
+.bottom-output-actions { position: sticky; top: 0; float: right; display: flex; gap: 3px; }
+.bottom-output-actions button { width: 26px; height: 26px; border: 0; border-radius: 5px; display: grid; place-items: center; color: var(--text-muted); background: var(--bg-panel); cursor: pointer; }
+.bottom-output-actions button:hover { color: var(--text-primary); background: var(--surface-base-hover); }
+.bottom-output pre { white-space: pre-wrap; color: var(--text-secondary); }
+.output-error { color: var(--danger); }
+
+.workbench-empty-state { height: 100%; min-height: 100px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: var(--text-muted); text-align: center; padding: 24px; }
+.workbench-empty-state strong { color: var(--text-secondary); }
+.workbench-empty-state button { padding: 6px 11px; border: 1px solid var(--border-light); border-radius: 6px; color: var(--text-primary); background: var(--surface-raised-base); cursor: pointer; }

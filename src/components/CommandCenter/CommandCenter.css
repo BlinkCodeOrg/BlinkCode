@@ -1,0 +1,27 @@
+.command-center {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-app-region: no-drag;
+}
+
+.command-center-main {
+  width: min(460px, 40vw);
+  height: 30px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface-raised-base) 75%, transparent);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+  cursor: pointer;
+}
+
+.command-center-main:hover { color: var(--text-secondary); border-color: var(--border-medium); background: var(--surface-raised-base-hover); }
+.command-project { color: var(--text-primary); font: 600 12px 'Segoe UI', sans-serif; overflow: hidden; text-overflow: ellipsis; }
+.command-action { font: 11px 'Segoe UI', sans-serif; white-space: nowrap; }
+.command-center-main kbd { margin-left: auto; font: 9px 'JetBrains Mono', monospace; color: var(--text-dim); }

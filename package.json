@@ -1,0 +1,170 @@
+{
+  "name": "blinkcode",
+  "description": "Desktop code editor for web and app project workflows.",
+  "main": "electron/main.mjs",
+  "private": true,
+  "version": "1.0.0",
+  "author": "BlinkCode",
+  "homepage": "https://github.com/BlinkCodeOrg/BlinkCode",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BlinkCodeOrg/BlinkCode.git"
+  },
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n server,vite -c blue,green \"node server/index.js\" \"vite\"",
+    "server": "node server/index.js",
+    "build": "tsc -b && vite build",
+    "electron": "electron .",
+    "electron:dev": "concurrently -n server,vite,electron -c blue,green,magenta \"node server/index.js\" \"vite\" \"wait-on http://127.0.0.1:5173 && set BLINKCODE_RENDERER_URL=http://127.0.0.1:5173&& electron .\"",
+    "dev:electron": "npm run electron:dev",
+    "desktop": "npm run build && electron .",
+    "dist:win": "npm run build && npm run dist:win:setup && npm run dist:win:portable",
+    "dist:win:setup": "electron-builder --win nsis --x64 -c.artifactName=BlinkCode-Setup-${version}-${arch}.${ext}",
+    "dist:win:portable": "electron-builder --win portable --x64 -c.artifactName=BlinkCode-Portable-${version}-${arch}.${ext}",
+    "dist:mac": "npm run build && electron-builder --mac dmg zip --x64 --arm64",
+    "dist:linux": "npm run build && electron-builder --linux AppImage deb --x64 --arm64",
+    "dev:desktop": "concurrently -n server,vite -c blue,green \"set PORT=3210 && node server/index.js\" \"vite --port 5174\"",
+    "lint": "eslint .",
+    "test": "npm run test:quality && npm run test:unit",
+    "test:quality": "node --test scripts/quality/*.test.mjs",
+    "test:unit": "tsx --tsconfig tsconfig.unit.json --test scripts/unit/*.test.ts",
+    "test:debugger:unit": "tsx --tsconfig tsconfig.unit.json --test scripts/unit/debugger.test.ts",
+    "test:debugger:e2e": "node scripts/e2e/prepare.mjs && playwright test e2e/tests/debug-console.spec.ts",
+    "test:debugger": "npm run test:debugger:unit && npm run test:debugger:e2e",
+    "e2e": "node scripts/e2e/prepare.mjs && playwright test",
+    "e2e:headed": "node scripts/e2e/prepare.mjs && playwright test --headed",
+    "typecheck": "tsc -b --pretty false",
+    "quality:architecture": "node scripts/quality/architecture-check.mjs",
+    "quality": "npm run typecheck && npm run lint && npm run test && npm run quality:architecture && npm run build",
+    "quality:full": "npm run quality && npm run e2e",
+    "release:check": "npm run quality:full && node scripts/release/validate-release.mjs",
+    "preview": "vite preview"
+  },
+  "build": {
+    "appId": "com.blinkcode.desktop",
+    "productName": "BlinkCode",
+    "copyright": "Copyright © BlinkCode",
+    "icon": "build/icon.ico",
+    "executableName": "BlinkCode",
+    "npmRebuild": true,
+    "nodeGypRebuild": false,
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "extensions/**/*",
+      "server/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "build/icon.ico",
+        "to": "icon.ico"
+      }
+    ],
+    "asarUnpack": [
+      "node_modules/@homebridge/node-pty-prebuilt-multiarch/**/*",
+      "node_modules/better-sqlite3/**/*",
+      "node_modules/**/*.node",
+      "node_modules/typescript-language-server/**/*",
+      "node_modules/typescript/**/*",
+      "node_modules/vscode-langservers-extracted/**/*"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.mjs",
+      "description": "Desktop code editor for web and app project workflows.",
+      "author": "BlinkCode"
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "BlinkCodeOrg",
+      "repo": "BlinkCode"
+    },
+    "win": {
+      "icon": "build/icon.ico",
+      "legalTrademarks": "BlinkCode",
+      "requestedExecutionLevel": "asInvoker",
+      "signAndEditExecutable": false,
+      "target": [
+        "nsis",
+        "portable"
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "installerIcon": "build/icon.ico",
+      "uninstallerIcon": "build/icon.ico",
+      "installerHeaderIcon": "build/icon.ico"
+    },
+    "mac": {
+      "icon": "build/icon.png",
+      "category": "public.app-category.developer-tools",
+      "target": ["dmg", "zip"],
+      "artifactName": "BlinkCode-${version}-${arch}.${ext}",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false
+    },
+    "linux": {
+      "icon": "build/icon.png",
+      "category": "Development",
+      "target": ["AppImage", "deb"],
+      "artifactName": "BlinkCode-${version}-${arch}.${ext}"
+    }
+  },
+  "dependencies": {
+    "@lydell/node-pty": "1.2.0-beta.10",
+    "@monaco-editor/react": "^4.7.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "better-sqlite3": "^12.9.0",
+    "chokidar": "^5.0.0",
+    "concurrently": "^9.2.1",
+    "electron-updater": "^6.6.2",
+    "express": "^5.2.1",
+    "lucide-react": "^1.8.0",
+    "monaco-editor": "^0.52.2",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
+    "react-icons": "^5.6.0",
+    "react-router-dom": "^7.14.1",
+    "typescript-language-server": "^5.1.3",
+    "uuid": "^13.0.0",
+    "vscode-langservers-extracted": "^4.10.0",
+    "ws": "^8.20.0",
+    "xterm": "^5.3.0"
+  },
+  "optionalDependencies": {
+    "@lydell/node-pty-darwin-arm64": "1.2.0-beta.10",
+    "@lydell/node-pty-darwin-x64": "1.2.0-beta.10",
+    "@lydell/node-pty-linux-arm64": "1.2.0-beta.10",
+    "@lydell/node-pty-linux-x64": "1.2.0-beta.10",
+    "@lydell/node-pty-win32-arm64": "1.2.0-beta.10",
+    "@lydell/node-pty-win32-x64": "1.2.0-beta.10"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^24.12.2",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "@types/uuid": "^10.0.0",
+    "@types/wicg-file-system-access": "^2023.10.7",
+    "@vitejs/plugin-react": "^6.0.1",
+    "electron": "^37.2.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.39.4",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.4.0",
+    "tsx": "^4.20.6",
+    "typescript": "~6.0.2",
+    "typescript-eslint": "^8.58.0",
+    "vite": "^8.0.4",
+    "wait-on": "^8.0.3"
+  }
+}

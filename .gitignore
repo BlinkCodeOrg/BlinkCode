@@ -1,0 +1,62 @@
+# Logs and diagnostics
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies and generated output
+node_modules/
+dist/
+dist-ssr/
+/release/
+coverage/
+playwright-report/
+test-results/
+.tmp/
+.cache/
+.vite/
+*.tsbuildinfo
+*.blockmap
+latest.yml
+latest-mac.yml
+latest-linux.yml
+builder-debug.yml
+builder-effective-config.yaml
+
+# Independent repositories kept beside the desktop source during migration
+BlinkCode-website/
+packages/bcode-cli/
+bin/
+
+# Local environment and application state
+*.local
+_research/
+.blinkcode/
+.env
+.env.*
+!.env.example
+!e2e/fixtures/**/.env
+
+server/blinkcode.db
+server/blinkcode.db-wal
+server/blinkcode.db-shm
+server/blinkcode-state.json
+/workspace/
+
+# Editor and operating system files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+Thumbs.db
+Desktop.ini
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+e2e/.storage/
+e2e/fixtures/

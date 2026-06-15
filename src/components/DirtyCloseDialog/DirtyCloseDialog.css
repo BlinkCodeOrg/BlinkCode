@@ -1,0 +1,39 @@
+.dirty-close-dialog {
+  width: min(520px, calc(100vw - 48px));
+  padding: 18px;
+}
+
+.dirty-close-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--warning, #e5b95c);
+}
+
+.dirty-close-dialog p {
+  margin: 12px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.dirty-close-files {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 140px;
+  overflow: auto;
+  padding: 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font: 10px/1.45 'JetBrains Mono', monospace;
+}
+
+.dirty-close-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}

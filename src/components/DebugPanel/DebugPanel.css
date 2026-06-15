@@ -1,0 +1,463 @@
+.debug-panel {
+  width: var(--debug-width);
+  min-width: var(--debug-width);
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--border-subtle);
+  background: var(--bg-sidebar);
+}
+
+.debug-panel-head {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 9px 7px 13px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.debug-panel-head > span,
+.debug-panel-head > button,
+.debug-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.debug-panel-head > span {
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.debug-panel-head > button,
+.debug-toolbar button {
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.debug-panel-head > button {
+  width: 27px;
+  height: 27px;
+  justify-content: center;
+  padding: 0;
+}
+
+.debug-config-row {
+  display: flex;
+  gap: 5px;
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.debug-start-button {
+  width: 29px;
+  min-width: 29px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 4px;
+  background: #16825d;
+  color: white;
+  cursor: pointer;
+}
+
+.debug-start-button:disabled {
+  cursor: default;
+  opacity: 0.4;
+}
+
+.debug-config-select {
+  min-width: 0;
+  flex: 1;
+}
+
+.debug-config-select .ui-select-trigger {
+  width: 100%;
+  height: 29px;
+  overflow: hidden;
+  border-radius: 4px;
+  font-size: 10px;
+}
+
+.debug-config-select .ui-select-trigger span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.debug-config-select .ui-select-menu {
+  right: auto;
+  left: 0;
+  width: 100%;
+}
+
+.debug-toolbar {
+  justify-content: center;
+  padding: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.debug-toolbar button {
+  width: 27px;
+  height: 26px;
+  justify-content: center;
+}
+
+.debug-toolbar button:disabled,
+.debug-attach button:disabled {
+  cursor: default;
+  opacity: 0.35;
+}
+
+.debug-status {
+  padding: 5px 9px;
+  color: var(--text-muted);
+  font-size: 9px;
+  text-transform: uppercase;
+}
+
+.debug-status-paused { color: #f59e0b; }
+.debug-status-running { color: #22c55e; }
+.debug-status-failed { color: #ef4444; }
+
+.debug-error,
+.debug-help {
+  padding: 6px 9px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-muted);
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+.debug-error { color: #f87171; }
+.debug-help code { color: var(--text-secondary); }
+
+.debug-sections-scroll {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.debug-section {
+  border-top: 1px solid var(--border-subtle);
+}
+
+.debug-section-head {
+  min-height: 27px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: color-mix(in srgb, var(--bg-sidebar) 88%, var(--border-subtle));
+}
+
+.debug-section-pinned > .debug-section-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg-sidebar);
+}
+
+.debug-section-actions button.active {
+  color: var(--accent);
+  background: var(--accent-faint);
+}
+
+.debug-section-head > button {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 8px;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-align: left;
+  text-transform: uppercase;
+}
+
+.debug-section-actions {
+  display: flex;
+  align-items: center;
+  padding-right: 6px;
+}
+
+.debug-pin-toggle {
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  color: var(--text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.debug-pin-toggle:hover {
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+  background: var(--surface-base-hover);
+}
+
+.debug-pin-toggle.active {
+  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-faint);
+}
+
+.debug-pin-icon {
+  width: 12px;
+  height: 13px;
+  position: relative;
+  display: block;
+  transform: rotate(-35deg);
+  transition: transform 130ms ease;
+}
+
+.debug-pin-toggle.active .debug-pin-icon { transform: rotate(0deg); }
+.debug-pin-head {
+  position: absolute;
+  top: 1px;
+  left: 2px;
+  width: 8px;
+  height: 6px;
+  border: 1.5px solid currentColor;
+  border-radius: 3px 3px 2px 2px;
+}
+.debug-pin-head::after {
+  content: '';
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: -4px;
+  height: 3px;
+  border-top: 1.5px solid currentColor;
+}
+.debug-pin-stem {
+  position: absolute;
+  left: 5px;
+  top: 7px;
+  width: 1.5px;
+  height: 6px;
+  border-radius: 2px;
+  background: currentColor;
+}
+
+.debug-frame {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  padding: 6px 11px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: left;
+}
+
+.debug-frame:hover { background: var(--hover-bg); }
+.debug-frame.active { background: var(--accent-light); }
+.debug-frame strong { font-size: 10px; }
+.debug-frame span { color: var(--text-muted); font-size: 9px; }
+
+.debug-scope > button {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: 10px;
+}
+
+.debug-variables { padding: 0 8px 5px 20px; }
+.debug-variable { display: grid; grid-template-columns: 13px minmax(0, auto) minmax(0, 1fr); gap: 3px; align-items: center; padding: 2px 0; }
+.debug-variable > button { width: 13px; height: 15px; display: flex; align-items: center; justify-content: center; padding: 0; border: 0; background: none; color: var(--text-muted); }
+.debug-variable > button span { width: 11px; }
+.debug-variable strong { color: #9cdcfe; font-size: 10px; }
+.debug-variable span { min-width: 0; overflow: hidden; color: #ce9178; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.debug-variable small { display: none; }
+.debug-variable-children { margin-left: 13px; padding-left: 6px; border-left: 1px solid var(--border-subtle); }
+
+.debug-empty,
+.debug-empty-inline {
+  display: block;
+  padding: 8px 10px;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.debug-breakpoint {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 22px;
+  align-items: center;
+  padding: 3px 6px;
+}
+
+.debug-breakpoint-condition {
+  grid-column: 2 / 4;
+  min-width: 0;
+  margin: 1px 3px 3px;
+  padding: 3px 5px;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  outline: 0;
+  background: transparent;
+  color: var(--text-muted);
+  font: 8px 'JetBrains Mono', monospace;
+}
+
+.debug-breakpoint-condition:focus {
+  border-color: var(--border-medium);
+  background: var(--bg-input);
+  color: var(--text-primary);
+}
+
+.debug-breakpoint:hover,
+.debug-watch-row:hover { background: var(--hover-bg); }
+.debug-breakpoint-unverified { opacity: 0.45; }
+.debug-breakpoint-location { min-width: 0; display: grid; gap: 1px; padding: 2px 3px; border: 0; background: none; color: var(--text-secondary); text-align: left; cursor: pointer; }
+.debug-breakpoint-location strong { overflow: hidden; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+.debug-breakpoint-location span { overflow: hidden; color: var(--text-muted); font-size: 8px; text-overflow: ellipsis; white-space: nowrap; }
+
+.debug-console form button,
+.debug-watch button,
+.debug-row-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.debug-row-action,
+.debug-watch-row > button { opacity: 0; }
+.debug-breakpoint:hover .debug-row-action,
+.debug-watch-row:hover > button { opacity: 1; }
+
+.debug-watch-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  padding: 5px 8px 5px 12px;
+}
+
+.debug-watch-row > div { min-width: 0; display: grid; gap: 2px; }
+.debug-watch-row strong { color: #9cdcfe; font-size: 10px; }
+.debug-watch-row span { overflow: hidden; color: #ce9178; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
+
+.debug-watch-add,
+.debug-console form {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 8px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.debug-console form > span { color: var(--accent); font: 11px 'JetBrains Mono', monospace; }
+
+.debug-console input,
+.debug-watch input {
+  min-width: 0;
+  flex: 1;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: 10px 'JetBrains Mono', monospace;
+}
+
+.debug-console form button:disabled,
+.debug-watch button:disabled { opacity: 0.35; }
+
+.debug-console pre {
+  min-height: 58px;
+  max-height: 180px;
+  overflow: auto;
+  margin: 0;
+  padding: 7px 10px;
+  color: var(--text-secondary);
+  font: 9px/1.5 'JetBrains Mono', monospace;
+  white-space: pre-wrap;
+}
+
+.debug-console-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.debug-console-actions button {
+  width: 22px;
+  height: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.debug-console-actions button:disabled {
+  cursor: default;
+  opacity: 0.3;
+}
+
+.debug-console pre span { display: contents; }
+.debug-output-stderr { color: #f87171; }
+.debug-output-console { color: #9cdcfe; }
+.debug-console-error { padding: 4px 9px; color: #f87171; font-size: 9px; }
+
+.debug-attach {
+  display: flex;
+  gap: 6px;
+  padding: 8px 9px;
+}
+
+.debug-attach input {
+  min-width: 0;
+  flex: 1;
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  outline: 0;
+  background: var(--bg-input);
+  color: var(--text-primary);
+  padding: 5px 7px;
+  font: 9px 'JetBrains Mono', monospace;
+}
+
+.debug-attach button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  padding: 5px 7px;
+  cursor: pointer;
+  font-size: 9px;
+}
