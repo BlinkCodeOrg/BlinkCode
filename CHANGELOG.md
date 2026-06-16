@@ -4,6 +4,14 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-06-16
+
+### Changed
+
+- Paused the Extensions marketplace in the IDE to keep BlinkCode lighter and avoid requiring GitHub or server-backed extension distribution.
+- Kept Markdown Preview, Spell Checker and Theme Import available as first-party IDE features.
+- Removed the paused extension catalog from packaged desktop builds.
+
 ## [1.0.0] - 2026-06-15
 
 ### Added
