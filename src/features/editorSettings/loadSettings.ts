@@ -7,11 +7,20 @@ export function loadSettings(): EditorSettings {
     const raw = localStorage.getItem('blinkcode-settings');
     if (raw) {
       const saved = JSON.parse(raw);
+      const activityBarIds = new Set(defaultSettings.activityBarOrder);
+      const savedActivityBarOrder = Array.isArray(saved.activityBarOrder)
+        ? saved.activityBarOrder.filter((id: string) => activityBarIds.has(id as EditorSettings['activityBarOrder'][number]))
+        : [];
       const settings = {
         ...defaultSettings,
         ...saved,
-        activityBarOrder: Array.isArray(saved.activityBarOrder) ? saved.activityBarOrder : defaultSettings.activityBarOrder,
-        hiddenActivityBarItems: Array.isArray(saved.hiddenActivityBarItems) ? saved.hiddenActivityBarItems : [],
+        activityBarOrder: [
+          ...savedActivityBarOrder,
+          ...defaultSettings.activityBarOrder.filter(id => !savedActivityBarOrder.includes(id)),
+        ],
+        hiddenActivityBarItems: Array.isArray(saved.hiddenActivityBarItems)
+          ? saved.hiddenActivityBarItems.filter((id: string) => activityBarIds.has(id as EditorSettings['hiddenActivityBarItems'][number]))
+          : [],
         panelWidths: { ...defaultSettings.panelWidths, ...(saved.panelWidths || {}) },
       };
       if (saved.keybindings) {

@@ -24,7 +24,6 @@ const SearchPanel = lazy(() => import('./components/SearchPanel/SearchPanel'));
 const SettingsPanel = lazy(() => import('./components/SettingsPanel/SettingsPanel'));
 const Sidebar = lazy(() => import('./components/Sidebar/Sidebar'));
 const SourceControl = lazy(() => import('./components/SourceControl/SourceControl'));
-const ExtensionsPanel = lazy(() => import('./components/ExtensionsPanel/ExtensionsPanel'));
 const DirtyCloseDialog = lazy(() => import('./components/DirtyCloseDialog/DirtyCloseDialog'));
 const BottomPanel = lazy(() => import('./components/BottomPanel/BottomPanel'));
 
@@ -79,10 +78,9 @@ function EditorLayout() {
       <div className="main-area">
         {!state.zenMode && <ActivityBar />}
         <LazyBoundary>
-          {!state.zenMode && state.sidebarVisible && !state.showSearchPanel && !state.showSourceControl && !state.showExtensions && !state.showNpmScripts && !state.showDebugPanel && <Sidebar />}
+          {!state.zenMode && state.sidebarVisible && !state.showSearchPanel && !state.showSourceControl && !state.showNpmScripts && !state.showDebugPanel && <Sidebar />}
           {!state.zenMode && state.showSearchPanel && <SearchPanel />}
           {!state.zenMode && state.showSourceControl && <SourceControl />}
-          {!state.zenMode && state.showExtensions && <ExtensionsPanel />}
           {!state.zenMode && state.showNpmScripts && <NpmScriptsPanel />}
           {!state.zenMode && state.showDebugPanel && <DebugPanel />}
         </LazyBoundary>

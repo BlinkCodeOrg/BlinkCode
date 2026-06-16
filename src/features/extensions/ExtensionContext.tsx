@@ -1,6 +1,5 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { fetchExtensions } from '../apiClient/fetchExtensions';
-import { updateExtension, type ExtensionOperation } from '../apiClient/updateExtension';
+import { createContext, useCallback, useContext, useEffect, useMemo, type ReactNode } from 'react';
+import type { ExtensionOperation } from '../apiClient/updateExtension';
 import type { ExtensionCommand, ExtensionSnapshot } from './extensionTypes';
 
 interface ExtensionContextValue extends ExtensionSnapshot {
@@ -12,53 +11,21 @@ interface ExtensionContextValue extends ExtensionSnapshot {
   update: (id: string, operation: ExtensionOperation) => Promise<void>;
 }
 
-const emptySnapshot: ExtensionSnapshot = { activeFeatures: [], commands: [], extensions: [] };
+const bundledFeatures = ['markdown-preview', 'spell-checker', 'theme-import'];
+const emptySnapshot: ExtensionSnapshot = { activeFeatures: bundledFeatures, commands: [], extensions: [] };
 const ExtensionContext = createContext<ExtensionContextValue | null>(null);
 
 export function ExtensionProvider({ children }: { children: ReactNode }) {
-  const [snapshot, setSnapshot] = useState<ExtensionSnapshot>(emptySnapshot);
-  const [busyId, setBusyId] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
   const refresh = useCallback(async (force = false) => {
-    try {
-      setError(null);
-      setSnapshot(await fetchExtensions(force));
-    } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : 'Could not load extensions');
-    }
+    void force;
   }, []);
-
-  useEffect(() => { void refresh(); }, [refresh]);
-
-  useEffect(() => {
-    const refreshVisibleCatalog = () => {
-      if (document.visibilityState === 'visible') void refresh();
-    };
-    const timer = window.setInterval(refreshVisibleCatalog, 5 * 60 * 1000);
-    window.addEventListener('focus', refreshVisibleCatalog);
-    document.addEventListener('visibilitychange', refreshVisibleCatalog);
-    return () => {
-      window.clearInterval(timer);
-      window.removeEventListener('focus', refreshVisibleCatalog);
-      document.removeEventListener('visibilitychange', refreshVisibleCatalog);
-    };
-  }, [refresh]);
 
   const update = useCallback(async (id: string, operation: ExtensionOperation) => {
-    setBusyId(id);
-    try {
-      setError(null);
-      setSnapshot(await updateExtension(id, operation));
-    } catch (nextError) {
-      setError(nextError instanceof Error ? nextError.message : 'Extension operation failed');
-      throw nextError;
-    } finally {
-      setBusyId(null);
-    }
+    void id;
+    void operation;
   }, []);
 
-  const activeFeatureSet = useMemo(() => new Set(snapshot.activeFeatures), [snapshot.activeFeatures]);
+  const activeFeatureSet = useMemo(() => new Set(emptySnapshot.activeFeatures), []);
   useEffect(() => {
     (window as any).__blinkcodeExtensionFeatures = activeFeatureSet;
     window.dispatchEvent(new Event('blinkcode:extensionsChanged'));
@@ -74,7 +41,7 @@ export function ExtensionProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ExtensionContext.Provider value={{ ...snapshot, busyId, error, hasFeature, refresh, runCommand, update }}>
+    <ExtensionContext.Provider value={{ ...emptySnapshot, busyId: null, error: null, hasFeature, refresh, runCommand, update }}>
       {children}
     </ExtensionContext.Provider>
   );

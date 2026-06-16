@@ -37,7 +37,7 @@ test('bundled extensions activate declared features and persist lifecycle change
 test('remote marketplace extensions download, validate and remain available offline', async () => {
   const directory = mkdtempSync(resolve(tmpdir(), 'blinkcode-remote-extension-'));
   const marketplaceRoot = resolve(directory, 'marketplace');
-  const registryUrl = 'https://raw.githubusercontent.com/BlinkCodeOrg/blinkcode-extensions/main/marketplace/marketplace.json';
+  const registryUrl = 'https://extensions.example.invalid/marketplace.json';
   const manifest = {
     schemaVersion: 1,
     id: 'demo.remote-extension',

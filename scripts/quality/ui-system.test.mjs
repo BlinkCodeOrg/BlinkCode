@@ -8,7 +8,6 @@ const sidebarSources = [
   'src/components/SourceControl/SourceControl.tsx',
   'src/components/NpmScriptsPanel/NpmScriptsPanel.tsx',
   'src/components/DebugPanel/DebugPanel.tsx',
-  'src/components/ExtensionsPanel/ExtensionsPanel.tsx',
 ];
 
 test('left sidebar panels use the shared panel shell', async () => {
@@ -23,7 +22,6 @@ test('left sidebar panels use the shared panel shell', async () => {
     'src/components/SourceControl/SourceControlHeader.tsx',
     'src/components/NpmScriptsPanel/NpmScriptsPanel.tsx',
     'src/components/DebugPanel/DebugPanel.tsx',
-    'src/components/ExtensionsPanel/ExtensionsPanel.tsx',
   ]) {
     assert.match(await readFile(path, 'utf8'), /ui-sidebar-panel-header/, `${path} must use the shared header`);
   }

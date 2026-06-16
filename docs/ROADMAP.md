@@ -433,8 +433,8 @@ These features expand BlinkCode from a local Windows-focused app into a broader 
 - **Why it matters:** A plugin ecosystem can grow BlinkCode beyond built-in features.
 - **Expected behavior:** Plugins should be sandboxed and have explicit permissions.
 - **Implementation direction:** Start with command and menu contributions before exposing deeper APIs.
-- **Current state:** BlinkCode combines an offline bundled catalog with the public `BlinkCodeOrg/blinkcode-extensions` GitHub marketplace. The Activity Bar provides compact package cards, full README detail tabs, install/update/enable/disable/uninstall state and a restricted `node:vm` runtime without Node, filesystem, network or Electron globals.
-- **Completed:** The IDE downloads the remote index, manifests, README files and icons over HTTPS, safely installs reviewed packages into the user marketplace and keeps installed copies available offline. The catalog refreshes while BlinkCode is running, detects newer versions and updates installed packages without requiring an IDE release or restart. The `@lovlydev/blinkcode-cli` provides `bcode create`, `bcode validate`, local `bcode install` and PR-ready `bcode publish --catalog` workflows.
+- **Current state:** The public extension marketplace is paused in the IDE. BlinkCode no longer shows the Extensions activity panel or connects to the GitHub extension catalog, while built-in feature flags keep Markdown Preview, Spell Checker and Theme Import available as first-party IDE features.
+- **Completed:** Extension authoring and CLI work remain in the repository for later use, but the desktop IDE no longer depends on a remote extension registry or user-installed extension lifecycle.
 
 ### 6.2 Remote development
 
@@ -769,7 +769,7 @@ This table is the quick checklist for tracking what is already implemented and w
 | 5.8 | Bracket colorization and indent guides | P2 | [x] Done | Monaco options are wired through settings. |
 | 5.9 | Spell checker | P2 | [x] Done | Optional diagnostics, quick fixes, Monaco recreation safety and live settings behavior are tested. |
 | 5.10 | Trash / soft delete | P2 | [x] Done | OS trash and recoverable browser fallback use safe paths with confirmation and E2E coverage. |
-| 6.1 | Plugin system | P3 | [x] Done | Live GitHub marketplace, in-app package updates, offline cache, detail tabs, sandboxed lifecycle and the global `bcode` CLI are implemented. |
+| 6.1 | Plugin system | P3 | [ ] Paused | Public marketplace UI and GitHub catalog are hidden from the IDE; CLI/source work is kept for a later server-backed design. |
 | 6.2 | Remote development | P3 | [ ] Future | Needs WSL, SSH or container filesystem abstraction. |
 | 6.3 | Live Share | P3 | [ ] Future | Requires collaboration, identity and security design. |
 | 6.4 | One-click deploy | P3 | [ ] Future | Needs framework detection and provider integrations. |

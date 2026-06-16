@@ -99,8 +99,6 @@ const extensionService = createExtensionService({
     path.join(__dirname, '..', 'extensions', 'marketplace'),
     userMarketplaceRoot,
   ],
-  remoteRegistryUrl: process.env.BLINKCODE_EXTENSION_REGISTRY
-    || 'https://raw.githubusercontent.com/BlinkCodeOrg/blinkcode-extensions/main/marketplace/marketplace.json',
   statePath: path.join(process.env.BLINKCODE_STORAGE_DIR || userDataDir, 'extensions-state.json'),
   userMarketplaceRoot,
 });

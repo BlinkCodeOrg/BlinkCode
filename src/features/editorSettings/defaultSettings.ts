@@ -35,7 +35,7 @@ export const defaultSettings: EditorSettings = {
   uiDensity: 'default',
   uiScale: 100,
   explorerRowHeight: 24,
-  activityBarOrder: ['explorer', 'search', 'sourceControl', 'debug', 'extensions', 'npmScripts'],
+  activityBarOrder: ['explorer', 'search', 'sourceControl', 'debug', 'npmScripts'],
   hiddenActivityBarItems: [],
   panelWidths: {
     explorer: 250,

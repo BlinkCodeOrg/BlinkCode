@@ -6,8 +6,8 @@ export async function fetchRemoteFile(url, {
   responseType = 'buffer',
 } = {}) {
   const parsed = new URL(url);
-  if (parsed.protocol !== 'https:' || parsed.hostname !== 'raw.githubusercontent.com') {
-    throw new Error('Extension downloads must use raw.githubusercontent.com over HTTPS');
+  if (parsed.protocol !== 'https:') {
+    throw new Error('Extension downloads must use HTTPS');
   }
 
   const response = await fetchImpl(parsed, {

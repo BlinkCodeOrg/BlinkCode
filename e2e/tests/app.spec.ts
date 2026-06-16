@@ -38,9 +38,9 @@ test('keeps activity bar tools in the expected order', async ({ page }) => {
     'activity-search',
     'activity-source-control',
     'activity-debug',
-    'activity-extensions',
     'activity-npm-scripts',
   ]);
+  await expect(page.getByTestId('activity-extensions')).toHaveCount(0);
   await expect(page.getByTestId('activity-git-hosting')).toHaveCount(0);
 });
 
@@ -50,9 +50,9 @@ test('customizes activity tools and pins editor tabs', async ({ page }) => {
   await expect(page.getByLabel('System date and time')).toBeVisible();
   const commandCenter = await page.locator('.command-center-main').boundingBox();
   expect(Math.abs((commandCenter!.x + commandCenter!.width / 2) - page.viewportSize()!.width / 2)).toBeLessThan(2);
-  await page.getByTestId('activity-extensions').click({ button: 'right' });
-  await page.getByRole('menuitemcheckbox', { name: 'Extensions' }).click();
-  await expect(page.getByTestId('activity-extensions')).toHaveCount(0);
+  await page.getByTestId('activity-npm-scripts').click({ button: 'right' });
+  await page.getByRole('menuitemcheckbox', { name: 'NPM Scripts' }).click();
+  await expect(page.getByTestId('activity-npm-scripts')).toHaveCount(0);
 
   await openIndexFile(page);
   const tab = page.locator('.tab', { hasText: 'index.js' });
@@ -62,8 +62,8 @@ test('customizes activity tools and pins editor tabs', async ({ page }) => {
   await expect(tab.locator('.tab-name')).toBeHidden();
 
   await page.getByTestId('activity-explorer').click({ button: 'right' });
-  await page.getByRole('menuitemcheckbox', { name: 'Extensions' }).click();
-  await expect(page.getByTestId('activity-extensions')).toBeVisible();
+  await page.getByRole('menuitemcheckbox', { name: 'NPM Scripts' }).click();
+  await expect(page.getByTestId('activity-npm-scripts')).toBeVisible();
 });
 
 test('detects root and nested package scripts, filters and runs them', async ({ page }) => {
@@ -690,50 +690,12 @@ test('shows Git changes in Source Control when Git is available', async ({ page 
   await expect(page.locator('.source-control-panel')).toContainText('src/index.js');
 });
 
-test('manages bundled extensions through the local marketplace', async ({ page }) => {
-  await openIndexFile(page);
-  await page.locator('[data-testid="explorer-tree-row"][data-node-name="package.json"]').click();
-  await page.evaluate(() => {
-    window.dispatchEvent(new KeyboardEvent('keydown', {
-      bubbles: true,
-      code: 'Backslash',
-      ctrlKey: true,
-      key: '\\',
-    }));
-  });
-  await expect(page.locator('.editor-split-divider')).toBeVisible();
-  await page.getByTestId('activity-extensions').click();
-  const panel = page.getByTestId('extensions-panel');
-  await expect(panel).toContainText('BlinkCode Spell Checker');
-  await expect(panel).toContainText('BlinkCode Markdown Preview');
-  await expect(panel).toContainText('BlinkCode Theme Import');
+test('keeps first-party feature flags active without the Extensions marketplace UI', async ({ page }) => {
+  await expect(page.getByTestId('activity-extensions')).toHaveCount(0);
+  await expect(page.getByTestId('extensions-panel')).toHaveCount(0);
 
-  const spellChecker = panel.locator('[data-extension-id="blinkcode.spell-checker"]');
-  await spellChecker.locator('.extension-card-main').click();
-  await expect(page.locator('.extension-detail')).toContainText('BlinkCode Spell Checker');
-  await expect(page.locator('.extension-detail')).toContainText('Published by BlinkCode');
-  await expect(page.locator('.extension-detail-readme')).toContainText('All checks run locally');
-  await expect(page.locator('.breadcrumb')).toHaveCount(0);
-  await expect(page.locator('.tab-active .tab-extension-icon')).toBeVisible();
-  await expect(page.locator('.extension-detail-sidebar')).toContainText('Installation');
-  await expect(page.locator('.extension-detail-sidebar')).toContainText('blinkcode.spell-checker');
-  await expect(page.locator('.extension-detail-sidebar')).toContainText('Resources');
-  await page.getByTestId('activity-explorer').click();
-  await expect(page.locator('[data-testid="explorer-tree-row"][data-node-name^="BlinkCode "]')).toHaveCount(0);
-  await page.getByTestId('activity-extensions').click();
-  await expect(page.locator('.extension-detail-links')).not.toContainText('Marketplace', { useInnerText: true });
-  await expect(page.locator('.editor-split-divider')).toHaveCount(0);
-  await expect(page.locator('.extension-detail')).toHaveCSS('overflow-y', 'hidden');
-  await expect(page.locator('.extension-detail-sidebar')).toHaveCSS('overflow-y', 'hidden');
-  await expect(page.getByTestId('extension-readme-scroll')).toHaveCSS('overflow-y', 'auto');
-  await page.locator('.tab-active').click({ button: 'right' });
-  await expect(page.locator('.save-prompt-floating')).toHaveCount(0);
-  await spellChecker.getByRole('button', { name: 'Disable' }).click();
-  await expect(spellChecker.getByRole('button', { name: 'Enable' })).toBeVisible();
-  await expect.poll(async () => {
-    const snapshot = await page.request.get('/api/extensions').then(response => response.json());
-    return snapshot.activeFeatures.includes('spell-checker');
-  }).toBe(false);
-  await spellChecker.getByRole('button', { name: 'Enable' }).click();
-  await expect(spellChecker.getByRole('button', { name: 'Disable' })).toBeVisible();
+  await expect.poll(async () => page.evaluate(() => {
+    const features = Array.from((window as any).__blinkcodeExtensionFeatures || []);
+    return ['markdown-preview', 'spell-checker', 'theme-import'].every(feature => features.includes(feature));
+  })).toBe(true);
 });

@@ -40,3 +40,9 @@ test('desktop packaging force-rebuilds and verifies Electron native modules', ()
   assert.match(verifier, /ELECTRON_RUN_AS_NODE/);
   assert.match(verifier, /require\('better-sqlite3'\)/);
 });
+
+test('packaged IDE does not ship the paused extension marketplace', () => {
+  const buildConfig = JSON.parse(read('package.json')).build;
+
+  assert.equal(buildConfig.files.includes('extensions/**/*'), false);
+});

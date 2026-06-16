@@ -57,7 +57,6 @@
     "files": [
       "dist/**/*",
       "electron/**/*",
-      "extensions/**/*",
       "server/**/*",
       "package.json"
     ],
