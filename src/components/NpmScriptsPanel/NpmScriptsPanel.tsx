@@ -48,6 +48,28 @@ function writeStoredPreviewUrl(workspaceDir: string, url: string) {
   } catch {}
 }
 
+function uniqueLocalUrls(urls: Array<string | null | undefined>) {
+  const seen = new Set<string>();
+  return urls.filter((url): url is string => {
+    if (!url || seen.has(url)) return false;
+    seen.add(url);
+    return true;
+  });
+}
+
+function choosePrimaryPackage(packages: NpmScriptPackage[], workflow: WebWorkflowAnalysis | null) {
+  const workflowPackages = workflow?.packages || [];
+  return (
+    packages.find(item => item.directory === '.')
+    || workflowPackages.find(item => item.directory === '.')
+    || packages.find(item => item.packageManager === 'npm')
+    || workflowPackages.find(item => item.packageManager === 'npm')
+    || packages[0]
+    || workflowPackages[0]
+    || null
+  );
+}
+
 export default function NpmScriptsPanel() {
   const { state, addTerminalInstance, addToast, loadFromServer, openBrowserPreview, openDiffPreview, openFile, setActiveTerminal, toggleProblemsPanel, toggleSourceControl, toggleTerminal, updateSettings } = useEditor();
   const tt = useT();
@@ -124,11 +146,9 @@ export default function NpmScriptsPanel() {
   }, [refreshProblems]);
 
   useEffect(() => {
-    const links = [
-      ...terminalLocalUrls,
-      ...state.terminalInstances.flatMap(terminal => `${terminal.title || ''} ${terminal.name || ''}`.match(LOCAL_URL_PATTERN) || []),
-    ];
-    setSuggestedUrl(state.browserUrl || links[0] || lastPreviewUrl || null);
+    const terminalTitleUrls = state.terminalInstances.flatMap(terminal => `${terminal.title || ''} ${terminal.name || ''}`.match(LOCAL_URL_PATTERN) || []);
+    const links = uniqueLocalUrls([state.browserUrl, ...terminalLocalUrls, ...terminalTitleUrls, lastPreviewUrl]);
+    setSuggestedUrl(links[0] || null);
   }, [lastPreviewUrl, state.browserUrl, state.terminalInstances, terminalLocalUrls]);
 
   useEffect(() => {
@@ -182,8 +202,19 @@ export default function NpmScriptsPanel() {
 
   const stopScript = (terminalId: string) => window.dispatchEvent(new CustomEvent('blinkcode:stopTerminal', { detail: { terminalId } }));
   const openDevServer = (url: string | null = suggestedUrl) => {
-    if (!url) return addToast(tt('webCenter.noLocalUrl'), 'info');
+    if (!url) {
+      const mainPackage = choosePrimaryPackage(packages, workflow);
+      const devScript = workflow?.devServerScripts.find(script => script.packageDirectory === mainPackage?.directory) || workflow?.devServerScripts[0];
+      const scriptPackage = packages.find(item => item.directory === devScript?.packageDirectory) || mainPackage;
+      if (scriptPackage && devScript && !state.terminalInstances.some(item => item.scriptKey === `${devScript.packageDirectory}:${devScript.scriptName}` && (item.status === 'starting' || item.status === 'running'))) {
+        runScript(scriptPackage, devScript.scriptName);
+        return;
+      }
+      return addToast(tt('webCenter.noLocalUrl'), 'info');
+    }
     openBrowserPreview(url);
+    writeStoredPreviewUrl(state.workspaceDir, url);
+    setLastPreviewUrl(url);
   };
 
   const createHttpFile = async () => {
@@ -255,7 +286,7 @@ export default function NpmScriptsPanel() {
           <button type="button" className={activeTab === 'templates' ? 'active' : ''} onClick={() => setActiveTab('templates')}><LayoutTemplate size={14} /> {tt('common.create')}</button>
           <button type="button" data-testid="dependencies-tab" className={activeTab === 'dependencies' ? 'active' : ''} onClick={() => setActiveTab('dependencies')}><PackageSearch size={14} /> {tt('webCenter.deps')}</button>
         </div>
-        {activeTab === 'overview' && <OverviewSection tt={tt} workflow={workflow} packages={packages} problems={problems} totalGitChanges={totalGitChanges} gitStatus={gitStatus} restHistory={restHistory} previewBehavior={state.settings.webWorkflowPreviewBehavior} compact={!guidedMode} guided={guidedMode && !firstRun.completed} checklist={firstRun.checklist} terminalInstances={state.terminalInstances} suggestedUrl={suggestedUrl} onOpenPreview={() => openDevServer()} onRunScript={runScript} onStopScript={stopScript} onOpenProblems={toggleProblemsPanel} onOpenSourceControl={toggleSourceControl} onOpenProblem={goToProblem} onOpenDiff={openGitDiff} onOpenRest={openRestClient} />}
+        {activeTab === 'overview' && <OverviewSection tt={tt} workflow={workflow} packages={packages} primaryPackage={choosePrimaryPackage(packages, workflow)} problems={problems} totalGitChanges={totalGitChanges} gitStatus={gitStatus} restHistory={restHistory} previewBehavior={state.settings.webWorkflowPreviewBehavior} compact={!guidedMode} guided={guidedMode && !firstRun.completed} checklist={firstRun.checklist} terminalInstances={state.terminalInstances} suggestedUrl={suggestedUrl} onOpenPreview={() => openDevServer()} onRunScript={runScript} onStopScript={stopScript} onOpenProblems={toggleProblemsPanel} onOpenSourceControl={toggleSourceControl} onOpenProblem={goToProblem} onOpenDiff={openGitDiff} onOpenRest={openRestClient} />}
         {activeTab === 'scripts' && <ScriptsTab tt={tt} query={query} loading={loading} error={error} packages={filteredPackages} terminals={state.terminalInstances} collapsed={collapsed} onQuery={setQuery} onRetry={refresh} onFocus={focusTerminal} onRun={runScript} onStop={stopScript} onToggle={directory => setCollapsed(current => {
           const next = new Set(current);
           if (next.has(directory)) next.delete(directory);

@@ -20,6 +20,7 @@ export function OverviewSection({
   tt,
   workflow,
   packages,
+  primaryPackage,
   problems,
   totalGitChanges,
   gitStatus,
@@ -42,6 +43,7 @@ export function OverviewSection({
   tt: TFn;
   workflow: WebWorkflowAnalysis | null;
   packages: NpmScriptPackage[];
+  primaryPackage: NpmScriptPackage | WebWorkflowAnalysis['packages'][number] | null;
   problems: { counts: { errors: number; warnings: number; infos: number }; items: DiagnosticItem[] };
   totalGitChanges: number;
   gitStatus: GitStatusResponse | null;
@@ -61,7 +63,7 @@ export function OverviewSection({
   onOpenDiff: (item: GitFileEntry, staged: boolean) => void;
   onOpenRest: () => void;
 }) {
-  const mainPackage = workflow?.packages[0] || packages[0] || null;
+  const mainPackage = primaryPackage;
   const projectMeta = [
     mainPackage?.packageManager,
     workflow?.devServerScripts.length ? `${workflow.devServerScripts.length} ${tt('webCenter.devServers')}` : null,
@@ -73,7 +75,7 @@ export function OverviewSection({
       <section className="web-center-hero">
         <div>
           <h3>{workflow?.workspaceName || tt('npmScripts.workspace')}</h3>
-          {!compact && <p>{projectMeta || tt('webCenter.detectHint')}</p>}
+          {!compact && <p title={projectMeta || tt('webCenter.detectHint')}>{projectMeta || tt('webCenter.detectHint')}</p>}
         </div>
         <button className="web-center-primary" onClick={onOpenPreview}>
           <MonitorPlay size={14} /> {tt('webCenter.preview')}
@@ -126,17 +128,18 @@ function DevServerSummary({ tt, workflow, packages, terminals, onOpenPreview, on
   onStop: (terminalId: string) => void;
 }) {
   return (
-    <SummaryBlock title={tt('webCenter.devServers')} action={tt('common.open')} onAction={onOpenPreview}>
+      <SummaryBlock title={tt('webCenter.devServers')} action={tt('common.open')} onAction={onOpenPreview}>
       {workflow?.devServerScripts.slice(0, 4).map(script => {
         const npmPackage = packages.find(item => item.directory === script.packageDirectory);
         const terminal = findTerminal(terminals, script.packageDirectory, script.scriptName);
+        const running = isRunning(terminal);
         return (
-          <div className={`web-center-action-row ${isRunning(terminal) ? 'is-running' : ''}`} key={`${script.packageDirectory}:${script.scriptName}`}>
+          <div className={`web-center-action-row web-center-script-row ${running ? 'is-running' : ''}`} key={`${script.packageDirectory}:${script.scriptName}`}>
             <div>
-              <strong>{script.scriptName}</strong>
-              <span>{script.packageName} / {script.command}</span>
+              <strong><span className={`web-center-script-dot ${running ? 'running' : ''}`} />{script.scriptName}</strong>
+              <span>{script.packageName} / {script.packageManager} / {script.command}</span>
             </div>
-            {isRunning(terminal)
+            {running
               ? <button onClick={() => terminal && onStop(terminal.id)}><Square size={13} /></button>
               : <button onClick={() => npmPackage && onRun(npmPackage, script.scriptName)}><Play size={13} /></button>}
           </div>
@@ -202,7 +205,14 @@ function Metric({ icon: Icon, label, value, tone }: { icon: typeof Bot; label: s
 
 function ProblemSummary({ tt, problems, onOpen }: { tt: TFn; problems: { counts: { errors: number; warnings: number; infos: number }; items: DiagnosticItem[] }; onOpen: (item: DiagnosticItem) => void }) {
   const total = problems.counts.errors + problems.counts.warnings;
-  if (problems.items.length === 0) return <p className="web-center-muted">{tt('webCenter.noProblems')}</p>;
+  if (problems.items.length === 0) {
+    return (
+      <div className="web-center-empty-good">
+        <CheckCircle2 size={14} />
+        <span>{tt('webCenter.noProblems')}</span>
+      </div>
+    );
+  }
   return (
     <div className="web-center-list">
       <div className="web-center-branch"><AlertTriangle size={13} /> {problems.counts.errors} / {problems.counts.warnings}</div>

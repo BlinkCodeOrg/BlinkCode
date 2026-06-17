@@ -11,8 +11,8 @@
 .browser-preview-toolbar {
   display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 7px 10px;
+  gap: 8px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--border-subtle);
   background: color-mix(in srgb, var(--bg-toolbar) 90%, transparent);
 }
@@ -20,14 +20,14 @@
 .browser-preview-toolbar-group {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
 }
 
 .browser-preview-button {
-  width: 28px;
-  min-width: 28px;
-  height: 28px;
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
   box-sizing: border-box;
   display: inline-flex;
   align-items: center;
@@ -63,7 +63,7 @@
   align-items: center;
   gap: 7px;
   padding: 0 9px;
-  height: 30px;
+  height: 32px;
   border: 1px solid var(--border-subtle);
   border-radius: 5px;
   background: var(--bg-input);
@@ -166,14 +166,20 @@
 .browser-preview-devices {
   display: flex;
   align-items: center;
-  gap: 5px;
-  padding-right: 9px;
-  margin-right: 1px;
+  gap: 4px;
+  padding: 3px;
+  margin-right: 2px;
   border-right: 1px solid var(--border-subtle);
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--bg-input) 62%, transparent);
 }
 
 .browser-preview-devices .browser-preview-button {
-  border-color: var(--border-medium);
+  width: 28px;
+  min-width: 28px;
+  height: 26px;
+  border-color: transparent;
   background: transparent;
 }
 

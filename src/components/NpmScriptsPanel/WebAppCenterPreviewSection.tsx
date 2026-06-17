@@ -19,13 +19,16 @@ export function PreviewSection({ tt, workflow, packages, suggestedUrl, browserUr
 }) {
   const previewUrl = suggestedUrl || browserUrl;
   const hasDevScripts = Boolean(workflow?.devServerScripts.length);
+  const previewState = previewUrl
+    ? (browserOpen ? tt('webCenter.previewOpen') : tt('webCenter.previewClosed'))
+    : hasDevScripts ? tt('webCenter.noLocalUrl') : tt('webCenter.noDevScripts');
   return (
     <div className="web-center-scroll">
       <SummaryBlock title={tt('webCenter.previewControl')} action={tt('webCenter.openPreview')} onAction={onOpenPreview} icon={<MonitorPlay size={13} />}>
-        <div className="web-center-preview-card">
+        <div className={`web-center-preview-card ${previewUrl ? 'has-url' : 'missing-url'}`}>
           <MonitorPlay size={24} />
-          <strong>{previewUrl || tt('webCenter.noUrl')}</strong>
-          <span>{previewUrl ? (browserOpen ? tt('webCenter.previewOpen') : tt('webCenter.previewClosed')) : hasDevScripts ? tt('webCenter.noUrl') : tt('webCenter.noDevScripts')} / {browserLoading ? tt('webCenter.loading') : tt('webCenter.idle')}</span>
+          <strong title={previewUrl || previewState}>{previewUrl || tt('webCenter.noUrl')}</strong>
+          <span>{previewState} / {browserLoading ? tt('webCenter.loading') : tt('webCenter.idle')}</span>
           {browserError && <p>{browserError}</p>}
         </div>
       </SummaryBlock>

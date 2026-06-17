@@ -68,12 +68,14 @@ export default function TerminalPanel() {
       .flat()
       .filter(link => /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?/i.test(link));
     (window as any).__blinkcodeTerminalLocalUrls = urls;
-    window.dispatchEvent(new CustomEvent('blinkcode:terminalLocalUrls', { detail: { urls } }));
+    (window as any).__blinkcodeTerminalLocalUrlState = { urls, workspaceDir: state.workspaceDir, updatedAt: Date.now() };
+    window.dispatchEvent(new CustomEvent('blinkcode:terminalLocalUrls', { detail: { urls, workspaceDir: state.workspaceDir } }));
     return () => {
       (window as any).__blinkcodeTerminalLocalUrls = [];
-      window.dispatchEvent(new CustomEvent('blinkcode:terminalLocalUrls', { detail: { urls: [] } }));
+      (window as any).__blinkcodeTerminalLocalUrlState = { urls: [], workspaceDir: state.workspaceDir, updatedAt: Date.now() };
+      window.dispatchEvent(new CustomEvent('blinkcode:terminalLocalUrls', { detail: { urls: [], workspaceDir: state.workspaceDir } }));
     };
-  }, [terminalXterm.detectedLinks]);
+  }, [state.workspaceDir, terminalXterm.detectedLinks]);
 
   useEffect(() => {
     if (state.browserOpen) return;

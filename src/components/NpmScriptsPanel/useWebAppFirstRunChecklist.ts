@@ -69,7 +69,7 @@ export function useWebAppFirstRunChecklist({
     detectPackage: Boolean(workflow?.packages.length),
     findDevScript: Boolean(workflow?.devServerScripts.length),
     openPreview: Boolean(suggestedUrl || browserOpen),
-    checkErrors: !loading && Boolean(workflow),
+    checkErrors: !loading && Boolean(workflow?.packages.length),
   }), [browserOpen, loading, suggestedUrl, workflow]);
 
   const progress = useMemo<WebAppFirstRunChecklistState>(() => ({
