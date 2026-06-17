@@ -50,10 +50,7 @@ export interface Tab {
 }
 export type ActivityBarItemId = 'explorer' | 'search' | 'sourceControl' | 'debug' | 'extensions' | 'npmScripts';
 export type WorkbenchPanelId = ActivityBarItemId;
-export interface ToastItem { id: string;
-  message: string;
-  type: 'success' | 'error' | 'info';
-}
+export interface ToastItem { id: string; message: string; type: 'success' | 'error' | 'info'; }
 export interface TerminalLine {
   id: string;
   text: string;
@@ -111,6 +108,7 @@ export interface EditorSettings {
   smoothScrolling: boolean;
   tailwindTooling: boolean;
   tailwindClassSorting: boolean;
+  webWorkflowPreviewBehavior: 'auto-open' | 'ask' | 'never'; webWorkflowMode: 'guided' | 'compact';
   aiInlineCompletions: boolean;
   gitInlineBlame: boolean;
   envMaskSecrets: boolean;

@@ -27,7 +27,13 @@ export default function ProjectTemplatesModal() {
   const template = useMemo(() => PROJECT_TEMPLATES.find(item => item.id === templateId)!, [templateId]);
 
   useEffect(() => {
-    const show = () => setOpen(true);
+    const show = (event: Event) => {
+      const nextTemplateId = (event as CustomEvent<{ templateId?: string }>).detail?.templateId;
+      if (nextTemplateId && PROJECT_TEMPLATES.some(item => item.id === nextTemplateId)) {
+        setTemplateId(nextTemplateId);
+      }
+      setOpen(true);
+    };
     window.addEventListener('blinkcode:openProjectTemplates', show);
     return () => window.removeEventListener('blinkcode:openProjectTemplates', show);
   }, []);

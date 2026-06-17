@@ -1,8 +1,12 @@
 # BlinkCode Roadmap
 
-BlinkCode is a desktop-first code editor focused on fast local development, modern web workflows, real language tooling, and AI-assisted productivity. This roadmap describes what is implemented, what is planned, and why each feature matters.
+BlinkCode is a desktop JavaScript/Web IDE focused on local React, Vite, TypeScript, Tailwind and Node-based development. The product centers the everyday web app loop: edit code, run package scripts, preview local servers, fix diagnostics, test REST requests, review Git changes and use AI assistance with explicit control. This roadmap describes what is implemented, what is planned, and why each feature matters.
 
 The goal of this document is to be readable on GitHub. Detailed implementation notes should live in issues, pull requests, or dedicated technical documents.
+
+## Product focus
+
+BlinkCode should not position itself as a generic replacement for every editor. The sharpest product promise is a focused local IDE for modern JavaScript/Web projects, especially React, Vite, TypeScript and Tailwind workflows.
 
 ## Status legend
 
@@ -163,14 +167,14 @@ Git integration should make BlinkCode useful as a daily development environment 
 
 BlinkCode is focused on web and app projects, so common frontend tooling should feel native.
 
-### 3.1 NPM scripts panel
+### 3.1 Web App Center
 
 - **Priority:** P1
 - [x] **Status:** Done
-- **Description:** Detect `package.json` scripts and run them from a dedicated panel.
-- **Why it matters:** Developers frequently run `dev`, `build`, `test`, `lint` and formatting scripts.
-- **Current state:** The dedicated activity-bar panel discovers scripts in root and nested packages, detects npm, pnpm, Yarn and Bun lockfiles, supports search and package grouping, and launches every script in its own integrated terminal.
-- **Completed in this cycle:** Added refresh, loading/error/empty states, run, stop, focus and rerun actions, real running/exited/failed/stopped status tracking, exit codes, safe PTY lifecycle handling and regression/E2E coverage.
+- **Description:** Provide one focused control center for local JavaScript/Web app work.
+- **Why it matters:** React, Vite and Tailwind developers need scripts, dev-server preview, problems, Git, REST helpers, dependencies and templates in one daily workflow.
+- **Current state:** The activity-bar panel is now Web App Center. It detects React/Vite/Tailwind/TypeScript/Router/Next/Vue/Svelte, npm/pnpm/Yarn/Bun, test tools, env files, REST files and backend dependencies. It keeps script run/stop/rerun/status flows, adds guided/compact behavior, shows dev-server candidates, preview state, top problems, Git summary with changed files, REST shortcuts/recent requests, template entry points and dependency management.
+- **Completed in this cycle:** Added `/api/web-workflow`, Web Workflow settings, app-stack detection, first-run checklist, preview controls, REST/env helpers, Git/problem summaries and unit coverage for web workflow analysis.
 
 ### 3.2 Dependency manager
 
@@ -186,7 +190,7 @@ BlinkCode is focused on web and app projects, so common frontend tooling should 
 - **Priority:** P1
 - [x] **Status:** Done
 - **Description:** Improve the embedded browser preview for local web apps.
-- **Current state:** Back/Forward, reload, external open, responsive/tablet/mobile sizes, local dev-server detection and automatic attachment are implemented.
+- **Current state:** Back/Forward, reload, external open, responsive/tablet/mobile sizes, local dev-server detection and automatic attachment are implemented. Web App Center surfaces detected dev scripts, preview state and the configured preview behavior (`auto-open`, `ask`, `never`).
 - **Why it matters:** Web developers need to run and preview applications without leaving the IDE.
 
 ### 3.4 JavaScript and Node debugger
@@ -261,7 +265,7 @@ BlinkCode is focused on web and app projects, so common frontend tooling should 
 - **Why it matters:** A good first-run experience helps users start quickly.
 - **Expected behavior:** Choose a template, target folder and package manager, then scaffold the project.
 - **Implementation direction:** Start with local templates and later support framework CLIs with confirmation.
-- **Current state:** A custom modal scaffolds Vanilla Web, Node CLI and TypeScript Library projects, requires an explicit external save location, supports npm/pnpm/yarn metadata and rolls back partially created projects after errors. Package names are derived from the user-entered project folder instead of template-specific BlinkCode names.
+- **Current state:** A custom modal scaffolds React + Vite + TypeScript, React + Tailwind, React + Router, Landing Page, API Client, React + Express API and Component Playground projects. It requires an explicit external save location, supports npm/pnpm/yarn metadata and rolls back partially created projects after errors. Package names are derived from the user-entered project folder instead of template-specific BlinkCode names.
 - **Completed:** Desktop creation is restricted to a folder selected through the native picker; browser creation uses a writable directory handle. Unit and Chromium E2E coverage verify external placement, safe paths, package naming and package-manager metadata.
 
 ---
@@ -745,7 +749,7 @@ This table is the quick checklist for tracking what is already implemented and w
 | 2.2 | Inline diff and gutter indicators | P0 | [x] Done | Monaco gutter/line decorations, inline diff hunks, extracted diff preview component with synced panes and syntax coloring. |
 | 2.3 | Git blame inline | P1 | [x] Done | Blame-line endpoint, cached lookups, inline blame with relative time + hover metadata, and Settings toggle implemented. |
 | 2.4 | GitHub and GitLab integration | P2 | [ ] Cancelled | Removed from the product for now; local Git and Source Control remain available. |
-| 3.1 | NPM scripts panel | P1 | [x] Done | Root/nested discovery, package-manager detection, search, grouped UI and tracked terminal run/stop/rerun flows are implemented. |
+| 3.1 | Web App Center | P1 | [x] Done | Stack detection, scripts, preview control, problems, Git, REST, templates and dependency management are unified for local web apps. |
 | 3.2 | Dependency manager | P1 | [x] Done | Root/nested dependency discovery, installed/outdated versions and confirmed install/update/remove terminal actions are implemented. |
 | 3.3 | Smart Browser Preview | P1 | [x] Done | Navigation, device sizes and terminal dev-server auto-attach are implemented. |
 | 3.4 | JavaScript and Node debugger | P1 | [x] Done | BlinkCode launch configurations, launch/attach/restart, conditional breakpoints, watch, stacks, recursive variables and Debug Console are verified. |
@@ -754,7 +758,7 @@ This table is the quick checklist for tracking what is already implemented and w
 | 3.7 | Markdown preview | P2 | [x] Done | Safe GFM preview and bidirectional synchronized scrolling are implemented. |
 | 3.8 | Schema-aware JSON and YAML | P2 | [x] Done | Common JSON/YAML schemas, completion, hover and diagnostics are implemented. |
 | 3.9 | `.env` editor | P2 | [x] Done | Dedicated language tooling, diagnostics and Settings-controlled masking are covered by unit and Chromium E2E tests. |
-| 3.10 | Project templates | P2 | [x] Done | Explicit external save location, generated package names, rollback and package-manager selection are implemented and tested. |
+| 3.10 | Project templates | P2 | [x] Done | React/Vite/Tailwind/API/full-stack/playground templates with explicit external save location and generated package names are implemented. |
 | 4.1 | AI inline completions | P1 | [x] Done | Debounced cancellable Monaco ghost text is wired to a checked OpenAI-compatible provider. |
 | 4.2 | Context-aware AI chat | P1 | [x] Done | Selected code, active/open files, tree and workspace search context are implemented and verified. |
 | 4.3 | AI agent with tools | P1 | [x] Done | Visible tool plans and confirmed file/command operations are implemented and verified. |
@@ -821,23 +825,24 @@ This table is the quick checklist for tracking what is already implemented and w
 
 ### Sprint 3 — web workflow
 
-- [x] NPM scripts panel.
-- [ ] Browser Preview auto-detection.
-- [ ] Tailwind and CSS tooling.
-- [ ] REST Client basics.
+- [x] Web App Center.
+- [x] Browser Preview auto-detection.
+- [x] Tailwind and CSS tooling.
+- [x] REST Client basics.
+- [x] React/Vite local development workflow positioning.
 
 ### Sprint 4 — AI workflow
 
-- [ ] Selected-code context in AI chat.
-- [ ] Inline completions.
-- [ ] Quick actions.
-- [ ] Tool-using AI agent with confirmations.
+- [x] Selected-code context in AI chat.
+- [x] Inline completions.
+- [x] Quick actions.
+- [x] Tool-using AI agent with confirmations.
 
 ### Sprint 5 — distribution and reliability
 
 - [x] CI pipeline.
-- [ ] Auto-update.
-- [ ] macOS and Linux build validation.
+- [x] Auto-update.
+- [x] macOS and Linux build validation.
 - [x] Recovery storage.
 
 ---

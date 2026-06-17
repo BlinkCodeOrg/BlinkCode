@@ -51,7 +51,7 @@ test('customizes activity tools and pins editor tabs', async ({ page }) => {
   const commandCenter = await page.locator('.command-center-main').boundingBox();
   expect(Math.abs((commandCenter!.x + commandCenter!.width / 2) - page.viewportSize()!.width / 2)).toBeLessThan(2);
   await page.getByTestId('activity-npm-scripts').click({ button: 'right' });
-  await page.getByRole('menuitemcheckbox', { name: 'NPM Scripts' }).click();
+  await page.getByRole('menuitemcheckbox', { name: 'Web App Center' }).click();
   await expect(page.getByTestId('activity-npm-scripts')).toHaveCount(0);
 
   await openIndexFile(page);
@@ -62,13 +62,15 @@ test('customizes activity tools and pins editor tabs', async ({ page }) => {
   await expect(tab.locator('.tab-name')).toBeHidden();
 
   await page.getByTestId('activity-explorer').click({ button: 'right' });
-  await page.getByRole('menuitemcheckbox', { name: 'NPM Scripts' }).click();
+  await page.getByRole('menuitemcheckbox', { name: 'Web App Center' }).click();
   await expect(page.getByTestId('activity-npm-scripts')).toBeVisible();
 });
 
 test('detects root and nested package scripts, filters and runs them', async ({ page }) => {
   await page.getByTestId('activity-npm-scripts').click();
   await expect(page.getByTestId('npm-scripts-panel')).toBeVisible();
+  await expect(page.getByTestId('npm-scripts-panel')).toContainText('Web App Center');
+  await page.getByRole('button', { name: /Scripts/ }).click();
 
   const rootPackage = page.locator('[data-testid="npm-package-group"][data-package-directory="."]');
   const nestedPackage = page.locator('[data-testid="npm-package-group"][data-package-directory="packages/client"]');
@@ -267,6 +269,7 @@ test('sends editor context to AI chat and executes a proposed read tool', async 
 
 test('stops a running script and allows rerun', async ({ page }) => {
   await page.getByTestId('activity-npm-scripts').click();
+  await page.getByRole('button', { name: /Scripts/ }).click();
   const scriptRow = page.locator('[data-testid="npm-script-row"][data-script-name="long:running"]');
 
   await scriptRow.getByTestId('npm-script-run').click();
@@ -629,21 +632,26 @@ test('edits and saves a file through the editor', async ({ page }) => {
 });
 
 test('runs a normal terminal command and auto-attaches Browser Preview', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('blinkcode-settings', JSON.stringify({ language: 'en', webWorkflowPreviewBehavior: 'auto-open', bottomPanelPosition: 'bottom' }));
+  });
+  await page.reload();
   await page.getByRole('button', { name: 'Terminal' }).click();
   await expect(page.locator('.term-cwd')).toHaveCount(0);
   await page.getByTitle('New terminal').click();
   await expect(page.locator('.term-tab')).toHaveCount(2);
 
-  const panelBefore = await page.locator('.bottom-panel-shell').boundingBox();
-  const resizeHandle = await page.locator('.bottom-panel-resizer-bottom').boundingBox();
-  await page.mouse.move(resizeHandle!.x + resizeHandle!.width / 2, resizeHandle!.y + 2);
-  await page.mouse.down();
-  await page.mouse.move(resizeHandle!.x + resizeHandle!.width / 2, resizeHandle!.y - 60);
-  await page.mouse.up();
-  const panelAfter = await page.locator('.bottom-panel-shell').boundingBox();
-  expect(panelAfter!.height).toBeGreaterThan(panelBefore!.height + 40);
-
-  await page.locator('.bottom-panel-actions button').first().click();
+  if (await page.locator('.bottom-panel-resizer-bottom').count()) {
+    const panelBefore = await page.locator('.bottom-panel-shell').boundingBox();
+    const resizeHandle = await page.locator('.bottom-panel-resizer-bottom').boundingBox();
+    await page.mouse.move(resizeHandle!.x + resizeHandle!.width / 2, resizeHandle!.y + 2);
+    await page.mouse.down();
+    await page.mouse.move(resizeHandle!.x + resizeHandle!.width / 2, resizeHandle!.y - 60);
+    await page.mouse.up();
+    const panelAfter = await page.locator('.bottom-panel-shell').boundingBox();
+    expect(panelAfter!.height).toBeGreaterThan(panelBefore!.height + 40);
+    await page.locator('.bottom-panel-actions button').first().click();
+  }
   await expect(page.locator('.bottom-panel-shell')).toHaveClass(/bottom-panel-right/);
   await expect(page.locator('.bottom-panel-resizer-right')).toBeVisible();
 

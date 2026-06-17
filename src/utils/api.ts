@@ -33,6 +33,7 @@ export { fetchSettings } from '../features/apiClient/fetchSettings';
 export { fetchSettingsRaw } from '../features/apiClient/fetchSettingsRaw';
 export { fetchState } from '../features/apiClient/fetchState';
 export { fetchTree } from '../features/apiClient/fetchTree';
+export { fetchWebWorkflow } from '../features/apiClient/fetchWebWorkflow';
 export { getFileSystemWsUrl as getFsWsUrl } from '../features/apiClient/getFileSystemWsUrl';
 export { getRawFileUrl } from '../features/apiClient/getRawFileUrl';
 export { getTerminalWsUrl as getWsUrl } from '../features/apiClient/getTerminalWsUrl';
@@ -102,6 +103,12 @@ export type { AiContext, AiMessage, AiToolCall } from '../features/apiClient/aiT
 export type { AiProviderStatus } from '../features/apiClient/fetchAiProviderStatus';
 export type { NpmScriptItem, NpmScriptPackage } from '../features/apiClient/npmScriptTypes';
 export type { RestClientHistoryEntry, RestClientRequest, RestClientResponse } from '../features/apiClient/restClientTypes';
+export type {
+  WebWorkflowAnalysis,
+  WebWorkflowDevServerScript,
+  WebWorkflowFlags,
+  WebWorkflowPackage,
+} from '../features/apiClient/webWorkflowTypes';
 export type {
   WorkspaceSearchFileResult,
   WorkspaceSearchMatch,

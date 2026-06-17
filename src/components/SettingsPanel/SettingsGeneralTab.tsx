@@ -3,6 +3,7 @@ import SettingsAppearanceSection from './SettingsAppearanceSection';
 import SettingsEditorSection from './SettingsEditorSection';
 import SettingsFilesSection from './SettingsFilesSection';
 import SettingsUpdatesSection from './SettingsUpdatesSection';
+import SettingsWebWorkflowSection from './SettingsWebWorkflowSection';
 
 export default function SettingsGeneralTab({
   s,
@@ -16,6 +17,7 @@ export default function SettingsGeneralTab({
   return (
     <>
       <SettingsEditorSection s={s} updateSettings={updateSettings} tt={tt} />
+      <SettingsWebWorkflowSection s={s} updateSettings={updateSettings} />
       <SettingsFilesSection s={s} updateSettings={updateSettings} tt={tt} />
       <SettingsAppearanceSection s={s} updateSettings={updateSettings} tt={tt} />
       <SettingsUpdatesSection tt={tt} />

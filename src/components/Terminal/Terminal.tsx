@@ -14,7 +14,7 @@ export default function TerminalPanel() {
   const {
     state, toggleTerminal, setTerminalHeight,
     addTerminalInstance, removeTerminalInstance, setActiveTerminal,
-    updateTerminalCwd, setTerminalStatus, openBrowserPreview
+    updateTerminalCwd, setTerminalStatus, openBrowserPreview, addToast
   } = useEditor();
   const tt = useT();
   const resizeRef = useRef<HTMLDivElement>(null);
@@ -64,14 +64,31 @@ export default function TerminalPanel() {
   useResizable(resizeRef, handleResize, 'row');
 
   useEffect(() => {
+    const urls = Object.values(terminalXterm.detectedLinks)
+      .flat()
+      .filter(link => /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?/i.test(link));
+    (window as any).__blinkcodeTerminalLocalUrls = urls;
+    window.dispatchEvent(new CustomEvent('blinkcode:terminalLocalUrls', { detail: { urls } }));
+    return () => {
+      (window as any).__blinkcodeTerminalLocalUrls = [];
+      window.dispatchEvent(new CustomEvent('blinkcode:terminalLocalUrls', { detail: { urls: [] } }));
+    };
+  }, [terminalXterm.detectedLinks]);
+
+  useEffect(() => {
     if (state.browserOpen) return;
     const url = Object.values(terminalXterm.detectedLinks)
       .flat()
       .find(link => /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?/i.test(link));
     if (!url || autoOpenedUrls.current.has(url)) return;
     autoOpenedUrls.current.add(url);
+    if (state.settings.webWorkflowPreviewBehavior === 'never') return;
+    if (state.settings.webWorkflowPreviewBehavior === 'ask') {
+      addToast(`${tt('webCenter.detectedLocalUrl')}: ${url}`, 'info');
+      return;
+    }
     openBrowserPreview(url);
-  }, [openBrowserPreview, state.browserOpen, terminalXterm.detectedLinks]);
+  }, [addToast, openBrowserPreview, state.browserOpen, state.settings.webWorkflowPreviewBehavior, terminalXterm.detectedLinks, tt]);
 
   const closeTerminal = (id: string) => {
     terminalXterm.closeTerminalShell(id, 'stopped');

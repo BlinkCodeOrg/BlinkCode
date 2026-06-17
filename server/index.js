@@ -43,6 +43,7 @@ import { resolveWorkspacePath } from './pathSafety.js';
 import { LARGE_TEXT_FILE_LIMIT } from './fileLimits.js';
 import { securityHeaders } from './securityHeaders.js';
 import { findNpmScripts } from './npmScripts.js';
+import { analyzeWebWorkflow } from './webWorkflow.js';
 import { registerDebuggerRoutes } from './debugger/registerDebuggerRoutes.js';
 import { registerRestClientRoutes } from './restClient/registerRestClientRoutes.js';
 import { registerAiRoutes } from './ai/registerAiRoutes.js';
@@ -202,6 +203,10 @@ app.get('/api/editor-config', (req, res) => {
 
 app.get('/api/npm-scripts', (_req, res) => {
   res.json({ packages: findNpmScripts(workspace) });
+});
+
+app.get('/api/web-workflow', (_req, res) => {
+  res.json(analyzeWebWorkflow(workspace));
 });
 
 registerDebuggerRoutes(app, () => workspace);

@@ -1,23 +1,23 @@
-<p align="center">
+﻿<p align="center">
   <img src="./src/assets/BlinkCode-logo.svg" alt="BlinkCode logo" width="120" />
 </p>
 
 <h1 align="center">BlinkCode</h1>
 
 <p align="center">
-  Desktop-first code editor for web and app workflows.
+  Desktop JavaScript/Web IDE for React, Vite, TypeScript, and Tailwind development.
 </p>
 
 <p align="center">
-  Electron · React · TypeScript · Monaco · Real LSP IntelliSense · PTY terminal · Windows, macOS and Linux builds
+  Electron / React / TypeScript / Monaco / Real LSP IntelliSense / PTY terminal / Browser preview / AI assistance
 </p>
 
 <p align="center">
   <a href="./README.md"><strong>English</strong></a>
-  &nbsp;·&nbsp;
-  <a href="./README.ru.md">Русская версия</a>
-  &nbsp;·&nbsp;
-  <a href="./docs/EN/README.md">📖 Documentation</a>
+  &nbsp;/&nbsp;
+  <a href="./README.ru.md">Russian</a>
+  &nbsp;/&nbsp;
+  <a href="./docs/EN/README.md">Documentation</a>
 </p>
 
 ---
@@ -39,11 +39,16 @@
 
 ## About
 
-**BlinkCode** is a desktop-first code editor for local development, focused
-on a fast, keyboard-driven workflow inside a single project. It bridges real
-language servers (TypeScript, HTML, CSS, JSON) into Monaco so you get full
-IntelliSense — auto-import, rename, references, formatting, quick fixes —
-alongside an embedded terminal, file tree and web preview.
+**BlinkCode** is a JavaScript/Web IDE for local React, Vite, TypeScript,
+Tailwind, and Node-based projects. It keeps the everyday web app loop in one
+workspace: edit JSX/TSX, run package scripts, attach to local dev servers,
+preview responsive layouts, inspect diagnostics, test REST requests, review Git
+changes, and use AI assistance with explicit control over file changes.
+
+BlinkCode bridges real language servers into Monaco so you get full
+IntelliSense, rename, references, formatting, quick fixes, and inline
+diagnostics alongside the terminal, file tree, browser preview, Git tools, REST
+client, and project-aware AI panel.
 
 ## Screenshots
 
@@ -67,18 +72,24 @@ alongside an embedded terminal, file tree and web preview.
 
 ## Features
 
-Highlights — full list in [`docs/EN/features.md`](./docs/EN/features.md),
+Highlights вЂ” full list in [`docs/EN/features.md`](./docs/EN/features.md),
 all keybindings in [`docs/EN/shortcuts.md`](./docs/EN/shortcuts.md).
 
-- **Real IntelliSense via LSP** — TypeScript / JavaScript / TSX / JSX, HTML,
-  CSS / SCSS / LESS, JSON, with auto-import, rename, references, go to definition,
-  formatting, code actions and inline diagnostics
-- **Problems panel** — workspace diagnostics grouped by file with filters and click-to-navigate from the status bar
+- **Real IntelliSense via LSP** for TypeScript, JavaScript, TSX, JSX, HTML,
+  CSS, SCSS, LESS and JSON, with rename, references, formatting, code actions
+  and inline diagnostics
+- **Problems panel** вЂ” workspace diagnostics grouped by file with filters and click-to-navigate from the status bar
 - **Command Palette** (`Ctrl+Shift+P`) and **Quick Open** (`Ctrl+P`)
+- **React/Vite workflow** for local JavaScript and TypeScript web apps
+- **Web App Center** for stack detection, scripts, dev-server preview, top problems, Git summary, REST shortcuts, templates and dependencies
+- **Package scripts and dependencies** for npm, pnpm, Yarn and Bun projects
+- **Tailwind and CSS tooling** with completion, hover previews, diagnostics and class sorting
+- **REST client** for `.http` files with variables, response views and local history
+- **AI panel and inline completions** with selected-code/project context, quick actions and confirmed agent edits
+- **Safe web-project editing** with `.env` diagnostics/masking, schema-aware JSON/YAML and large-file guards
 - **Embedded terminal** based on `xterm` with real PTY sessions
 - **Embedded browser preview** for local dev servers and terminal links
-- **AI panel** for chat-style prompts alongside the editor
-- **Custom Electron shell** — titlebar, activity bar, status bar, toasts, onboarding
+- **Custom Electron shell** вЂ” titlebar, activity bar, status bar, toasts, onboarding
 - **Configurable themes**, bracket colorization, indent guides, dot-grid welcome
 - **Windows installer and portable** builds via `electron-builder`
 
@@ -131,15 +142,15 @@ documented in [`docs/EN/building.md`](./docs/EN/building.md).
 
 Full documentation lives in [`docs/`](./docs/README.md):
 
-| English | Русский |
+| English | Р СѓСЃСЃРєРёР№ |
 |---|---|
-| [Documentation home](./docs/README.md) | [Главная документации](./docs/README.md) |
-| [Features](./docs/EN/features.md) | [Возможности](./docs/RU/features.md) |
-| [Keyboard shortcuts](./docs/EN/shortcuts.md) | [Горячие клавиши](./docs/RU/shortcuts.md) |
-| [Architecture](./docs/EN/architecture.md) | [Архитектура](./docs/RU/architecture.md) |
-| [Language servers (LSP)](./docs/EN/lsp.md) | [Language-серверы (LSP)](./docs/RU/lsp.md) |
-| [Development](./docs/EN/development.md) | [Разработка](./docs/RU/development.md) |
-| [Building & packaging](./docs/EN/building.md) | [Сборка и упаковка](./docs/RU/building.md) |
+| [Documentation home](./docs/README.md) | [Р“Р»Р°РІРЅР°СЏ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё](./docs/README.md) |
+| [Features](./docs/EN/features.md) | [Р’РѕР·РјРѕР¶РЅРѕСЃС‚Рё](./docs/RU/features.md) |
+| [Keyboard shortcuts](./docs/EN/shortcuts.md) | [Р“РѕСЂСЏС‡РёРµ РєР»Р°РІРёС€Рё](./docs/RU/shortcuts.md) |
+| [Architecture](./docs/EN/architecture.md) | [РђСЂС…РёС‚РµРєС‚СѓСЂР°](./docs/RU/architecture.md) |
+| [Language servers (LSP)](./docs/EN/lsp.md) | [Language-СЃРµСЂРІРµСЂС‹ (LSP)](./docs/RU/lsp.md) |
+| [Development](./docs/EN/development.md) | [Р Р°Р·СЂР°Р±РѕС‚РєР°](./docs/RU/development.md) |
+| [Building & packaging](./docs/EN/building.md) | [РЎР±РѕСЂРєР° Рё СѓРїР°РєРѕРІРєР°](./docs/RU/building.md) |
 
 ## Tech stack
 
@@ -157,24 +168,24 @@ Full documentation lives in [`docs/`](./docs/README.md):
 
 ```text
 BlinkCode/
-├── electron/            # main process + preload
-├── server/              # HTTP / WebSocket backend
-│   ├── index.js
-│   ├── lsp.js           # LSP WebSocket bridge
-│   ├── pty.js
-│   └── db.js
-├── src/
-│   ├── components/      # UI (editor, sidebar, panels, …)
-│   ├── lsp/             # LSP client + Monaco adapter
-│   ├── hooks/
-│   ├── store/
-│   └── utils/
-├── docs/
-│   ├── EN/
-│   └── RU/
-├── build/
-├── release/
-└── package.json
+в”њв”Ђв”Ђ electron/            # main process + preload
+в”њв”Ђв”Ђ server/              # HTTP / WebSocket backend
+в”‚   в”њв”Ђв”Ђ index.js
+в”‚   в”њв”Ђв”Ђ lsp.js           # LSP WebSocket bridge
+в”‚   в”њв”Ђв”Ђ pty.js
+в”‚   в””в”Ђв”Ђ db.js
+в”њв”Ђв”Ђ src/
+в”‚   в”њв”Ђв”Ђ components/      # UI (editor, sidebar, panels, вЂ¦)
+в”‚   в”њв”Ђв”Ђ lsp/             # LSP client + Monaco adapter
+в”‚   в”њв”Ђв”Ђ hooks/
+в”‚   в”њв”Ђв”Ђ store/
+в”‚   в””в”Ђв”Ђ utils/
+в”њв”Ђв”Ђ docs/
+в”‚   в”њв”Ђв”Ђ EN/
+в”‚   в””в”Ђв”Ђ RU/
+в”њв”Ђв”Ђ build/
+в”њв”Ђв”Ђ release/
+в””в”Ђв”Ђ package.json
 ```
 
 Detailed breakdown: [`docs/EN/architecture.md`](./docs/EN/architecture.md).

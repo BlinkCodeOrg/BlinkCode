@@ -4,6 +4,23 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-06-17
+
+### Added
+
+- Added Web App Center as the main React/Vite workspace panel with scripts, preview, problems, Git, REST and template entry points.
+- Added guided first-run progress for web projects with per-workspace persistence.
+- Added local preview URL persistence so the preview action survives app restarts.
+- Added settings for Web App Center preview behavior and guided or compact mode.
+- Added React/Vite/Tailwind-focused project templates for MVP, landing, API and full-stack starts.
+
+### Changed
+
+- Polished Web App Center spacing, tabs, cards and buttons to match the existing sidebar style.
+- Reduced noisy framework badges and internal wording from the daily Web App Center view.
+- Improved local dev server detection from terminal output and preview handoff.
+- Preferred npm when package-lock.json or package.json packageManager indicates npm.
+
 ## [1.0.1] - 2026-06-16
 
 ### Changed

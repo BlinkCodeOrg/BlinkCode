@@ -20,6 +20,8 @@ export const defaultSettings: EditorSettings = {
   smoothScrolling: true,
   tailwindTooling: true,
   tailwindClassSorting: true,
+  webWorkflowPreviewBehavior: 'ask',
+  webWorkflowMode: 'guided',
   aiInlineCompletions: true,
   gitInlineBlame: true,
   envMaskSecrets: true,

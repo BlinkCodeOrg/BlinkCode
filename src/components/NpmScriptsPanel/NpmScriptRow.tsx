@@ -14,13 +14,14 @@ type NpmScriptRowProps = {
 export function NpmScriptRow({ script, terminal, onFocus, onRun, onStop }: NpmScriptRowProps) {
   const tt = useT();
   const running = terminal?.status === 'starting' || terminal?.status === 'running';
+  const scriptType = getScriptType(script.name);
 
   return (
-    <div className="npm-script-row" data-testid="npm-script-row" data-script-name={script.name}>
+    <div className={`npm-script-row npm-script-row-${scriptType}`} data-testid="npm-script-row" data-script-name={script.name}>
       <button type="button" className="npm-script-main" onClick={terminal ? onFocus : onRun} title={script.command}>
         <span className={`npm-script-status npm-script-status-${terminal?.status || 'idle'}`} />
         <span className="npm-script-copy">
-          <strong>{script.name}</strong>
+          <strong><span>{script.name}</span><small className={`npm-script-kind npm-script-kind-${scriptType}`}>{scriptType}</small></strong>
           <small>{script.command}</small>
         </span>
       </button>
@@ -42,4 +43,14 @@ export function NpmScriptRow({ script, terminal, onFocus, onRun, onStop }: NpmSc
       </div>
     </div>
   );
+}
+
+function getScriptType(name: string) {
+  const normalized = name.toLowerCase();
+  if (normalized === 'dev' || normalized.includes('dev') || normalized.includes('start')) return 'dev';
+  if (normalized.includes('build')) return 'build';
+  if (normalized.includes('test') || normalized.includes('spec')) return 'test';
+  if (normalized.includes('lint') || normalized.includes('format') || normalized.includes('check')) return 'lint';
+  if (normalized.includes('preview')) return 'preview';
+  return 'run';
 }

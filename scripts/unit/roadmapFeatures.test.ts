@@ -11,6 +11,7 @@ import {
 import { convertVsCodeTheme } from '../../src/features/editorTheme/convertVsCodeTheme';
 import { parseEditorConfig, resolveEditorConfig } from '../../server/editorConfig.js';
 import { trashWorkspaceEntry } from '../../server/trashWorkspaceEntry.js';
+import { analyzeWebWorkflow } from '../../server/webWorkflow.js';
 import { buildProjectTemplateFiles } from '../../src/features/projectTemplates/buildProjectTemplateFiles';
 import { PROJECT_TEMPLATES } from '../../src/features/projectTemplates/projectTemplates';
 import { buildUserSnippet } from '../../src/features/snippets/buildUserSnippet';
@@ -84,13 +85,42 @@ test('soft delete moves a workspace item outside the workspace', () => {
 });
 
 test('project templates derive the package name from the chosen folder', () => {
-  const nodeTemplate = PROJECT_TEMPLATES.find(template => template.id === 'node')!;
-  const files = buildProjectTemplateFiles(nodeTemplate, 'My BlinkCode Project', 'pnpm');
+  const reactTemplate = PROJECT_TEMPLATES.find(template => template.id === 'react-vite-ts')!;
+  const files = buildProjectTemplateFiles(reactTemplate, 'My BlinkCode Project', 'pnpm');
   const manifest = JSON.parse(files['package.json']);
 
   assert.equal(manifest.name, 'my-blinkcode-project');
   assert.equal(manifest.packageManager, 'pnpm@latest');
   assert.equal(files['package.json'].includes('blinkcode-node-app'), false);
+  assert.equal(files['src/App.tsx'].includes('React + Vite'), true);
+});
+
+test('web workflow analysis detects modern web app capabilities', () => {
+  const workspace = mkdtempSync(resolve(tmpdir(), 'blinkcode-web-workflow-'));
+  try {
+    writeFileSync(resolve(workspace, 'package.json'), JSON.stringify({
+      scripts: { dev: 'vite --host 127.0.0.1', test: 'vitest' },
+      dependencies: { react: '^19.0.0', 'react-router-dom': '^7.0.0', express: '^5.0.0' },
+      devDependencies: { vite: '^8.0.0', typescript: '^6.0.0', tailwindcss: '^3.4.0', vitest: '^4.0.0' },
+    }));
+    writeFileSync(resolve(workspace, 'vite.config.ts'), '');
+    writeFileSync(resolve(workspace, 'tailwind.config.js'), '');
+    writeFileSync(resolve(workspace, '.env.local'), 'VITE_API_URL=http://localhost:3000\n');
+    writeFileSync(resolve(workspace, 'requests.http'), 'GET http://localhost:3000/health\n');
+
+    const analysis = analyzeWebWorkflow(workspace);
+    assert.equal(analysis.frameworks.react, true);
+    assert.equal(analysis.frameworks.vite, true);
+    assert.equal(analysis.frameworks.tailwind, true);
+    assert.equal(analysis.frameworks.reactRouter, true);
+    assert.equal(analysis.testing.vitest, true);
+    assert.equal(analysis.backend.express, true);
+    assert.deepEqual(analysis.envFiles, ['.env.local']);
+    assert.deepEqual(analysis.restFiles, ['requests.http']);
+    assert.equal(analysis.devServerScripts[0].scriptName, 'dev');
+  } finally {
+    rmSync(workspace, { recursive: true, force: true });
+  }
 });
 
 test('snippets normalize languages and reject overlapping prefixes', () => {

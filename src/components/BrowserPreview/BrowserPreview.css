@@ -11,8 +11,8 @@
 .browser-preview-toolbar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: 7px;
+  padding: 7px 10px;
   border-bottom: 1px solid var(--border-subtle);
   background: color-mix(in srgb, var(--bg-toolbar) 90%, transparent);
 }
@@ -20,18 +20,22 @@
 .browser-preview-toolbar-group {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 5px;
+  min-width: 0;
 }
 
 .browser-preview-button {
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  box-sizing: border-box;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--border-light);
-  border-radius: 8px;
-  background: var(--surface-base);
+  padding: 0;
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
+  background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
   transition: background .15s ease, border-color .15s ease, color .15s ease;
@@ -57,11 +61,11 @@
   min-width: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  height: 36px;
-  border: 1px solid var(--border-light);
-  border-radius: 10px;
+  gap: 7px;
+  padding: 0 9px;
+  height: 30px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 5px;
   background: var(--bg-input);
 }
 
@@ -156,13 +160,27 @@
 .browser-preview-button.active {
   color: var(--accent);
   background: var(--hover-bg-active);
+  border-color: var(--accent-border);
 }
 
 .browser-preview-devices {
   display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-right: 9px;
+  margin-right: 1px;
   border-right: 1px solid var(--border-subtle);
-  padding-right: 5px;
-  margin-right: 2px;
+}
+
+.browser-preview-devices .browser-preview-button {
+  border-color: var(--border-medium);
+  background: transparent;
+}
+
+.browser-preview-devices .browser-preview-button.active {
+  border-color: var(--accent-border);
+  background: var(--hover-bg-active);
+  color: var(--text-primary);
 }
 
 .browser-preview-device {
