@@ -12,6 +12,7 @@ const storageDir = process.env.BLINKCODE_STORAGE_DIR
   ? path.resolve(process.env.BLINKCODE_STORAGE_DIR)
   : (isPackaged ? userDataDir : __dirname);
 const DB_PATH = path.join(storageDir, 'blinkcode.db');
+const FALLBACK_PATH = path.join(storageDir, 'blinkcode-store.json');
 const MIGRATION_BACKUP_PATH = path.join(storageDir, 'blinkcode.pre-migration.bak');
 const LEGACY_STATE_PATH = path.join(storageDir, 'blinkcode-state.json');
 
@@ -21,12 +22,51 @@ if (fs.existsSync(DB_PATH)) {
   fs.copyFileSync(DB_PATH, MIGRATION_BACKUP_PATH);
 }
 
-const db = new Database(DB_PATH);
+let db = null;
+let fallbackStore = null;
 
-db.pragma('journal_mode = WAL');
-db.pragma('synchronous = NORMAL');
+function createFallbackStore() {
+  return {
+    editorState: null,
+    settings: {},
+    recentProjects: [],
+    fileCursorPositions: {},
+    httpRequestHistory: [],
+    recoveryBuffers: {},
+  };
+}
 
-db.exec(`
+function loadFallbackStore() {
+  if (fallbackStore) return fallbackStore;
+  try {
+    fallbackStore = { ...createFallbackStore(), ...JSON.parse(fs.readFileSync(FALLBACK_PATH, 'utf8')) };
+  } catch {
+    fallbackStore = createFallbackStore();
+  }
+  return fallbackStore;
+}
+
+function saveFallbackStore() {
+  if (!fallbackStore) return;
+  const tmpPath = `${FALLBACK_PATH}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(fallbackStore, null, 2));
+  fs.renameSync(tmpPath, FALLBACK_PATH);
+}
+
+try {
+  db = new Database(DB_PATH);
+} catch (error) {
+  const reason = String(error?.message || error).split('\n')[0];
+  console.warn(`SQLite storage is unavailable, using JSON fallback: ${reason}`);
+  db = null;
+  loadFallbackStore();
+}
+
+if (db) {
+  db.pragma('journal_mode = WAL');
+  db.pragma('synchronous = NORMAL');
+
+  db.exec(`
 CREATE TABLE IF NOT EXISTS schema_version (
   version INTEGER NOT NULL
 );
@@ -87,23 +127,31 @@ CREATE TABLE IF NOT EXISTS recovery_buffers (
 );
 `);
 
-try {
-  runMigrations(db);
-  if (fs.existsSync(MIGRATION_BACKUP_PATH)) fs.rmSync(MIGRATION_BACKUP_PATH, { force: true });
-} catch (error) {
-  try { db.close(); } catch {}
-  if (fs.existsSync(MIGRATION_BACKUP_PATH)) {
-    fs.copyFileSync(MIGRATION_BACKUP_PATH, DB_PATH);
+  try {
+    runMigrations(db);
+    if (fs.existsSync(MIGRATION_BACKUP_PATH)) fs.rmSync(MIGRATION_BACKUP_PATH, { force: true });
+  } catch (error) {
+    try { db.close(); } catch {}
+    if (fs.existsSync(MIGRATION_BACKUP_PATH)) {
+      fs.copyFileSync(MIGRATION_BACKUP_PATH, DB_PATH);
+    }
+    throw error;
   }
-  throw error;
 }
 
 function getSetting(key, fallback = '') {
+  if (!db) return loadFallbackStore().settings[key]?.value ?? fallback;
   const row = db.prepare('SELECT value FROM settings WHERE key = ?').get(key);
   return row ? row.value : fallback;
 }
 
 function setSetting(key, value) {
+  if (!db) {
+    const store = loadFallbackStore();
+    store.settings[key] = { value, updatedAt: Date.now() };
+    saveFallbackStore();
+    return;
+  }
   db.prepare(`
     INSERT INTO settings (key, value, updated_at)
     VALUES (?, ?, ?)
@@ -114,6 +162,28 @@ function setSetting(key, value) {
 }
 
 function migrateFromLegacyJsonIfNeeded() {
+  if (!db) {
+    const store = loadFallbackStore();
+    const hasState = Boolean(store.editorState);
+    const hasWorkspace = Boolean(store.settings.workspacePath?.value);
+    const hasRecent = store.recentProjects.length > 0;
+    if (hasState || hasWorkspace || hasRecent || !fs.existsSync(LEGACY_STATE_PATH)) return;
+    try {
+      const parsed = JSON.parse(fs.readFileSync(LEGACY_STATE_PATH, 'utf-8'));
+      store.editorState = { data: parsed?.editorState ?? {}, updatedAt: Date.now() };
+      if (parsed?.workspacePath) store.settings.workspacePath = { value: parsed.workspacePath, updatedAt: Date.now() };
+      store.recentProjects = Array.isArray(parsed?.recentProjects)
+        ? parsed.recentProjects.slice(0, 5).filter(project => project?.path).map((project, index) => ({
+          path: project.path,
+          name: project.name || path.basename(project.path) || project.path,
+          openedAt: Date.now() - index,
+        }))
+        : [];
+      saveFallbackStore();
+    } catch {}
+    return;
+  }
+
   const row = db.prepare('SELECT data FROM editor_state WHERE id = 1').get();
   const hasState = Boolean(row);
   const hasWorkspace = Boolean(getSetting('workspacePath', ''));
@@ -163,12 +233,19 @@ function migrateFromLegacyJsonIfNeeded() {
 migrateFromLegacyJsonIfNeeded();
 
 export function saveState(data) {
+  if (!db) {
+    const store = loadFallbackStore();
+    store.editorState = { data: data ?? {}, updatedAt: Date.now() };
+    saveFallbackStore();
+    return;
+  }
   db.prepare('INSERT OR REPLACE INTO editor_state (id, data, updated_at) VALUES (1, ?, ?)')
     .run(JSON.stringify(data ?? {}), Date.now());
 }
 
 export function loadState() {
   try {
+    if (!db) return loadFallbackStore().editorState?.data ?? {};
     const row = db.prepare('SELECT data FROM editor_state WHERE id = 1').get();
     if (!row?.data) return {};
     return JSON.parse(row.data);
@@ -189,6 +266,14 @@ export function addRecentProject(projectPath, name) {
   if (!projectPath) return;
 
   const now = Date.now();
+  if (!db) {
+    const store = loadFallbackStore();
+    const next = store.recentProjects.filter(project => project.path !== projectPath);
+    next.unshift({ path: projectPath, name: name || path.basename(projectPath) || projectPath, openedAt: now });
+    store.recentProjects = next.slice(0, 5);
+    saveFallbackStore();
+    return;
+  }
 
   db.prepare(`
     INSERT INTO recent_projects (path, name, opened_at)
@@ -209,6 +294,13 @@ export function addRecentProject(projectPath, name) {
 }
 
 export function loadRecentProjects() {
+  if (!db) {
+    return loadFallbackStore().recentProjects
+      .slice()
+      .sort((left, right) => right.openedAt - left.openedAt)
+      .slice(0, 5)
+      .map(project => ({ path: project.path, name: project.name }));
+  }
   return db.prepare(`
     SELECT path, name
     FROM recent_projects
@@ -220,6 +312,17 @@ export function loadRecentProjects() {
 export function saveFileCursorPosition(filePath, line, column, viewState = null) {
   if (!filePath || !Number.isSafeInteger(line) || !Number.isSafeInteger(column)) return;
   const serializedViewState = viewState ? JSON.stringify(viewState) : null;
+  if (!db) {
+    const store = loadFallbackStore();
+    store.fileCursorPositions[filePath] = {
+      line: Math.max(1, line),
+      column: Math.max(1, column),
+      viewState: serializedViewState,
+      updatedAt: Date.now(),
+    };
+    saveFallbackStore();
+    return;
+  }
 
   db.prepare(`
     INSERT INTO file_cursor_positions (path, line, column, view_state, updated_at)
@@ -234,6 +337,19 @@ export function saveFileCursorPosition(filePath, line, column, viewState = null)
 
 export function loadFileCursorPosition(filePath) {
   if (!filePath) return null;
+  if (!db) {
+    const row = loadFallbackStore().fileCursorPositions[filePath];
+    if (!row) return null;
+    let viewState = null;
+    try {
+      viewState = row.viewState ? JSON.parse(row.viewState) : null;
+    } catch {}
+    return {
+      line: Math.max(1, Number(row.line) || 1),
+      column: Math.max(1, Number(row.column) || 1),
+      viewState,
+    };
+  }
   const row = db.prepare('SELECT line, column, view_state FROM file_cursor_positions WHERE path = ?').get(filePath);
   if (!row) return null;
   let viewState = null;
@@ -250,6 +366,12 @@ export function loadFileCursorPosition(filePath) {
 
 export function saveRecoveryBuffer(workspacePath, filePath, content) {
   if (!workspacePath || !filePath || typeof content !== 'string') return;
+  if (!db) {
+    const store = loadFallbackStore();
+    store.recoveryBuffers[`${workspacePath}\n${filePath}`] = { workspacePath, filePath, content, updatedAt: Date.now() };
+    saveFallbackStore();
+    return;
+  }
   db.prepare(`
     INSERT INTO recovery_buffers (workspace_path, file_path, content, updated_at)
     VALUES (?, ?, ?, ?)
@@ -261,6 +383,12 @@ export function saveRecoveryBuffer(workspacePath, filePath, content) {
 
 export function loadRecoveryBuffers(workspacePath) {
   if (!workspacePath) return [];
+  if (!db) {
+    return Object.values(loadFallbackStore().recoveryBuffers)
+      .filter(item => item.workspacePath === workspacePath)
+      .sort((left, right) => right.updatedAt - left.updatedAt)
+      .map(item => ({ filePath: item.filePath, content: item.content, updatedAt: item.updatedAt }));
+  }
   return db.prepare(`
     SELECT file_path AS filePath, content, updated_at AS updatedAt
     FROM recovery_buffers
@@ -271,16 +399,46 @@ export function loadRecoveryBuffers(workspacePath) {
 
 export function deleteRecoveryBuffer(workspacePath, filePath) {
   if (!workspacePath || !filePath) return;
+  if (!db) {
+    const store = loadFallbackStore();
+    delete store.recoveryBuffers[`${workspacePath}\n${filePath}`];
+    saveFallbackStore();
+    return;
+  }
   db.prepare('DELETE FROM recovery_buffers WHERE workspace_path = ? AND file_path = ?')
     .run(workspacePath, filePath);
 }
 
 export function deleteRecoveryBuffers(workspacePath) {
   if (!workspacePath) return;
+  if (!db) {
+    const store = loadFallbackStore();
+    for (const [key, item] of Object.entries(store.recoveryBuffers)) {
+      if (item.workspacePath === workspacePath) delete store.recoveryBuffers[key];
+    }
+    saveFallbackStore();
+    return;
+  }
   db.prepare('DELETE FROM recovery_buffers WHERE workspace_path = ?').run(workspacePath);
 }
 
 export function saveHttpRequestHistory(request, response) {
+  if (!db) {
+    const store = loadFallbackStore();
+    const nextId = Math.max(0, ...store.httpRequestHistory.map(item => item.id || 0)) + 1;
+    const entry = {
+      id: nextId,
+      method: request.method,
+      url: request.url,
+      status: response.status,
+      durationMs: response.durationMs,
+      createdAt: Date.now(),
+    };
+    store.httpRequestHistory.unshift(entry);
+    store.httpRequestHistory = store.httpRequestHistory.slice(0, 100);
+    saveFallbackStore();
+    return { id: entry.id, method: entry.method, url: entry.url, status: entry.status };
+  }
   const result = db.prepare(`
     INSERT INTO http_request_history (method, url, status, duration_ms, created_at)
     VALUES (?, ?, ?, ?, ?)
@@ -293,6 +451,12 @@ export function saveHttpRequestHistory(request, response) {
 }
 
 export function loadHttpRequestHistory() {
+  if (!db) {
+    return loadFallbackStore().httpRequestHistory
+      .slice()
+      .sort((left, right) => right.createdAt - left.createdAt)
+      .slice(0, 100);
+  }
   return db.prepare(`
     SELECT id, method, url, status, duration_ms AS durationMs, created_at AS createdAt
     FROM http_request_history

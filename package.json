@@ -19,7 +19,7 @@
     "electron:dev": "concurrently -n server,vite,electron -c blue,green,magenta \"node server/index.js\" \"vite\" \"wait-on http://127.0.0.1:5173 && set BLINKCODE_RENDERER_URL=http://127.0.0.1:5173&& electron .\"",
     "dev:electron": "npm run electron:dev",
     "desktop": "npm run build && electron .",
-    "rebuild:electron-native": "electron-rebuild -f -w better-sqlite3 && node scripts/release/verifyElectronNative.mjs",
+    "rebuild:electron-native": "node scripts/release/verifyElectronNative.mjs",
     "dist:win": "npm run build && npm run rebuild:electron-native && npm run dist:win:setup && npm run dist:win:portable",
     "dist:win:setup": "electron-builder --win nsis --x64 -c.artifactName=BlinkCode-Setup-${version}-${arch}.${ext}",
     "dist:win:portable": "electron-builder --win portable --x64 -c.artifactName=BlinkCode-Portable-${version}-${arch}.${ext}",

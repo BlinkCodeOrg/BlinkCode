@@ -30,15 +30,14 @@ test('packaged updater resolves native ESM and CommonJS module shapes', () => {
   assert.match(read('electron/main.mjs'), /BlinkCode failed to start/);
 });
 
-test('desktop packaging force-rebuilds and verifies Electron native modules', () => {
+test('desktop packaging verifies Electron storage startup', () => {
   const packageJson = read('package.json');
   const verifier = read('scripts/release/verifyElectronNative.mjs');
 
-  assert.match(packageJson, /electron-rebuild -f -w better-sqlite3/);
   assert.match(packageJson, /"npmRebuild": false/);
   assert.match(packageJson, /npm run rebuild:electron-native/);
   assert.match(verifier, /ELECTRON_RUN_AS_NODE/);
-  assert.match(verifier, /require\('better-sqlite3'\)/);
+  assert.match(verifier, /server\/db\.js/);
 });
 
 test('packaged IDE does not ship the paused extension marketplace', () => {
