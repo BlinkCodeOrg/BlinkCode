@@ -5,7 +5,7 @@ import type { IDisposable } from 'xterm';
 import type { TerminalInstance } from '../../types';
 import { useShell } from '../../hooks/useShell';
 import { createTerminalLinkProvider } from './createTerminalLinkProvider';
-import { createXtermOptions } from './createXtermOptions';
+import { createXtermOptions, createXtermTheme } from './createXtermOptions';
 import { extractUrls } from './extractUrls';
 
 interface UseTerminalXtermParams {
@@ -119,6 +119,8 @@ export function useTerminalXterm({
   useLayoutEffect(() => {
     if (!open) return;
 
+    const currentTheme = createXtermTheme();
+
     const resizeVisibleTerminals = () => {
       for (const inst of instances) {
         const currentTerm = terminalsRef.current.get(inst.id);
@@ -162,6 +164,8 @@ export function useTerminalXterm({
           shell.sendData(inst.id, data);
         });
       }
+
+      term.options.theme = currentTheme;
 
       if (!host.hasChildNodes()) {
         term.open(host);

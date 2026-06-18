@@ -1,7 +1,7 @@
 .terminal-panel {
   display: flex;
   flex-direction: column;
-  background: var(--bg-panel);
+  background: var(--bg-terminal);
   border-top: 0;
   position: relative;
   overflow: hidden;
@@ -32,10 +32,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 8px 0 10px;
-  height: 34px;
-  min-height: 34px;
-  background: color-mix(in srgb, var(--bg-panel) 90%, var(--surface-raised-base));
+  padding: 0 6px 0 8px;
+  height: 31px;
+  min-height: 31px;
+  background: color-mix(in srgb, var(--bg-terminal) 82%, var(--bg-toolbar));
   border-bottom: 1px solid var(--border-subtle);
 }
 
@@ -73,9 +73,9 @@
   font-size: 12px;
   font-family: 'JetBrains Mono', monospace;
   font-weight: 500;
-  min-height: 25px;
-  padding: 3px 4px 3px 9px;
-  border-radius: 6px;
+  min-height: 23px;
+  padding: 2px 4px 2px 8px;
+  border-radius: 5px;
   cursor: pointer;
   transition: color 150ms ease;
   white-space: nowrap;
@@ -117,8 +117,8 @@
   border: none;
   color: var(--text-dim);
   cursor: pointer;
-  width: 27px;
-  height: 27px;
+  width: 25px;
+  height: 25px;
   padding: 0;
   justify-content: center;
   border-radius: 6px;
@@ -152,13 +152,13 @@
 .terminal-body {
   flex: 1;
   overflow: hidden;
-  padding: 8px 10px 10px 12px;
+  padding: 2px 4px 4px;
   font-family: 'JetBrains Mono', monospace;
   font-size: 12px;
-  line-height: 1.8;
+  line-height: 1.35;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-panel) 92%, var(--surface-base)), var(--bg-panel));
+  background: var(--bg-terminal);
 }
 
 .terminal-instance {
@@ -187,6 +187,8 @@
 .xterm-host {
   flex: 1;
   min-height: 0;
+  padding: 1px 2px 0;
+  background: var(--bg-terminal);
 }
 
 .xterm-host .xterm {
@@ -195,6 +197,11 @@
 
 .xterm-host .xterm-viewport {
   overflow-y: auto !important;
+  background: var(--bg-terminal) !important;
+}
+
+.xterm-host .xterm-screen {
+  background: var(--bg-terminal);
 }
 
 .term-links-list {

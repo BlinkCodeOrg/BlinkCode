@@ -1,5 +1,5 @@
 import type { FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, ExternalLink, Globe, Monitor, RefreshCw, Smartphone, Tablet, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink, Globe, Monitor, RefreshCw, Smartphone, SquareTerminal, Tablet, X } from 'lucide-react';
 import { Input } from '../ui/Input';
 import { useT } from '../../hooks/useT';
 
@@ -16,6 +16,10 @@ type BrowserPreviewToolbarProps = {
   onReload: () => void;
   onOpenExternal: () => void;
   onClose: () => void;
+  consoleOpen: boolean;
+  consoleCount: number;
+  consoleProblemCount: number;
+  onToggleConsole: () => void;
   device: 'responsive' | 'mobile' | 'tablet';
   onDeviceChange: (device: 'responsive' | 'mobile' | 'tablet') => void;
 };
@@ -33,6 +37,10 @@ export function BrowserPreviewToolbar({
   onReload,
   onOpenExternal,
   onClose,
+  consoleOpen,
+  consoleCount,
+  consoleProblemCount,
+  onToggleConsole,
   device,
   onDeviceChange,
 }: BrowserPreviewToolbarProps) {
@@ -87,6 +95,15 @@ export function BrowserPreviewToolbar({
         </div>
         <button type="button" className="browser-preview-button" onClick={onOpenExternal} disabled={!isSupportedUrl} title={tt('browser.openExternal')}>
           <ExternalLink size={16} />
+        </button>
+        <button
+          type="button"
+          className={`browser-preview-button browser-preview-console-toggle ${consoleOpen ? 'active' : ''} ${consoleProblemCount ? 'has-problems' : ''}`}
+          onClick={onToggleConsole}
+          title={tt('browser.console')}
+        >
+          <SquareTerminal size={16} />
+          {consoleCount > 0 && <span>{consoleProblemCount || consoleCount}</span>}
         </button>
         <button type="button" className="browser-preview-button browser-preview-button-danger" onClick={onClose} title={tt('browser.close')}>
           <X size={16} />

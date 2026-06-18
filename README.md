@@ -127,7 +127,7 @@ Build artifacts are written into the ignored `release/` directory:
 
 | Platform | Artifacts |
 |---|---|
-| Windows x64 | `BlinkCode-Setup-1.0.0-x64.exe`, `BlinkCode-Portable-1.0.0-x64.exe` |
+| Windows x64 | `BlinkCode-Setup-1.3.0-x64.exe`, `BlinkCode-Portable-1.3.0-x64.exe` |
 | macOS x64 / arm64 | DMG and ZIP packages |
 | Linux x64 / arm64 | AppImage and DEB packages |
 

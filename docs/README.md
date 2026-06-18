@@ -20,6 +20,7 @@ This folder contains the full BlinkCode documentation in English and Russian.
 | Topic | English | Русский |
 |---|---|---|
 | Features / Возможности | [features.md](./EN/features.md) | [features.md](./RU/features.md) |
+| Project inventory / Реальная карта проекта | [PROJECT_INVENTORY.md](./PROJECT_INVENTORY.md) | [PROJECT_INVENTORY.ru.md](./PROJECT_INVENTORY.ru.md) |
 | Keyboard shortcuts / Горячие клавиши | [shortcuts.md](./EN/shortcuts.md) | [shortcuts.md](./RU/shortcuts.md) |
 | Architecture / Архитектура | [architecture.md](./EN/architecture.md) | [architecture.md](./RU/architecture.md) |
 | Language servers (LSP) | [lsp.md](./EN/lsp.md) | [lsp.md](./RU/lsp.md) |
@@ -31,6 +32,7 @@ This folder contains the full BlinkCode documentation in English and Russian.
 ## English — quick links
 
 - 📖 Full feature list → [EN/features.md](./EN/features.md)
+- 🧭 Project inventory from the real codebase → [PROJECT_INVENTORY.md](./PROJECT_INVENTORY.md)
 - ⌨️ All shortcuts in one table → [EN/shortcuts.md](./EN/shortcuts.md)
 - 🧩 How the editor talks to language servers → [EN/lsp.md](./EN/lsp.md)
 - 🛠 Running BlinkCode from source → [EN/development.md](./EN/development.md)
@@ -40,6 +42,7 @@ This folder contains the full BlinkCode documentation in English and Russian.
 ## Русский — быстрые ссылки
 
 - 📖 Полный список фич → [RU/features.md](./RU/features.md)
+- 🧭 Реальная карта проекта по коду → [PROJECT_INVENTORY.ru.md](./PROJECT_INVENTORY.ru.md)
 - ⌨️ Все шорткаты в одной таблице → [RU/shortcuts.md](./RU/shortcuts.md)
 - 🧩 Как редактор общается с language-серверами → [RU/lsp.md](./RU/lsp.md)
 - 🛠 Запуск из исходников → [RU/development.md](./RU/development.md)

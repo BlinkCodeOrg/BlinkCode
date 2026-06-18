@@ -181,12 +181,32 @@ function SummaryBlock({ title, action, onAction, icon, children }: { title: stri
 }
 
 function RestHistory({ tt, restHistory, onOpenRest }: { tt: TFn; restHistory: RestClientHistoryEntry[]; onOpenRest: () => void }) {
+  const [latestRequest] = restHistory;
+
+  const getTone = (status: number) => {
+    if (status >= 500) return 'bad';
+    if (status >= 400) return 'warn';
+    if (status >= 200) return 'good';
+    return '';
+  };
+
   return (
     <div className="web-center-list">
+      {latestRequest && (
+        <div className="web-center-rest-summary">
+          <Globe size={13} />
+          <span>{tt('webCenter.lastRequest')}</span>
+          <strong className={`web-center-rest-status ${getTone(latestRequest.status)}`}>{latestRequest.status}</strong>
+          <small>{latestRequest.durationMs}ms</small>
+        </div>
+      )}
       {restHistory.slice(0, 5).map(item => (
         <button key={item.id} onClick={onOpenRest}>
           <Globe size={13} />
-          <span>{item.method} {item.status}</span>
+          <span>
+            <b>{item.method}</b>
+            <em className={`web-center-rest-status ${getTone(item.status)}`}>{item.status}</em>
+          </span>
           <small>{item.url}</small>
         </button>
       ))}
@@ -230,11 +250,23 @@ function ProblemSummary({ tt, problems, onOpen }: { tt: TFn; problems: { counts:
 
 function GitSummary({ tt, status, onDiff }: { tt: TFn; status: GitStatusResponse | null; onDiff: (item: GitFileEntry, staged: boolean) => void }) {
   if (!status?.isRepo) return <p className="web-center-muted">{tt('webCenter.noGit')}</p>;
+  const totals = {
+    staged: status.staged.length,
+    unstaged: status.unstaged.length,
+    untracked: status.untracked.length,
+    conflicts: status.conflicts.length,
+  };
   const changes = [...status.conflicts.map(item => ({ item, staged: false })), ...status.unstaged.map(item => ({ item, staged: false })), ...status.staged.map(item => ({ item, staged: true })), ...status.untracked.map(item => ({ item, staged: false }))].slice(0, 5);
-  const hidden = status.conflicts.length + status.unstaged.length + status.staged.length + status.untracked.length - changes.length;
+  const hidden = totals.conflicts + totals.unstaged + totals.staged + totals.untracked - changes.length;
   return (
     <div className="web-center-list">
       <div className="web-center-branch"><GitBranch size={13} /> {status.branch || 'detached'} {tt('webCenter.branch')}</div>
+      <div className="web-center-git-stats">
+        <span><strong>{totals.staged}</strong>{tt('webCenter.staged')}</span>
+        <span><strong>{totals.unstaged}</strong>{tt('webCenter.unstaged')}</span>
+        <span><strong>{totals.untracked}</strong>{tt('webCenter.untracked')}</span>
+        <span className={totals.conflicts ? 'bad' : ''}><strong>{totals.conflicts}</strong>{tt('webCenter.conflicts')}</span>
+      </div>
       {changes.length === 0 && <p className="web-center-muted">{tt('webCenter.cleanTree')}</p>}
       {changes.map(({ item, staged }) => (
         <button key={`${staged}:${item.path}`} onClick={() => onDiff(item, staged)}>

@@ -16,9 +16,14 @@ function packageManagerFromManifest(directory) {
 export function detectPackageManager(directory) {
   const declared = packageManagerFromManifest(directory);
   if (declared) return declared;
-  if (fs.existsSync(path.join(directory, 'package-lock.json'))) return 'npm';
-  if (fs.existsSync(path.join(directory, 'pnpm-lock.yaml'))) return 'pnpm';
-  if (fs.existsSync(path.join(directory, 'yarn.lock'))) return 'yarn';
-  if (fs.existsSync(path.join(directory, 'bun.lockb')) || fs.existsSync(path.join(directory, 'bun.lock'))) return 'bun';
+  const hasNpmLock = fs.existsSync(path.join(directory, 'package-lock.json')) || fs.existsSync(path.join(directory, 'npm-shrinkwrap.json'));
+  const hasPnpmLock = fs.existsSync(path.join(directory, 'pnpm-lock.yaml'));
+  const hasYarnLock = fs.existsSync(path.join(directory, 'yarn.lock'));
+  const hasBunLock = fs.existsSync(path.join(directory, 'bun.lockb')) || fs.existsSync(path.join(directory, 'bun.lock'));
+
+  if (hasNpmLock) return 'npm';
+  if (hasPnpmLock) return 'pnpm';
+  if (hasYarnLock) return 'yarn';
+  if (hasBunLock) return 'bun';
   return 'npm';
 }
