@@ -169,24 +169,56 @@ Full documentation lives in [`docs/`](./docs/README.md):
 
 ```text
 BlinkCode/
-├── electron/            # main process + preload
-├── server/              # HTTP / WebSocket backend
+├── electron/                 # Electron main process, preload and native IPC
+│   ├── main.mjs
+│   ├── preload.cjs
+│   ├── registerSecretIpc.mjs
+│   └── registerUpdaterIpc.mjs
+├── server/                   # Express/WebSocket backend for the desktop IDE
+│   ├── ai/                   # AI provider checks, requests and agent tools
+│   ├── debugger/             # Node/Chrome inspector integration
+│   ├── dependencies/         # package manager and dependency detection
+│   ├── extensions/           # extension marketplace and manifest services
+│   ├── migrations/           # local data migrations
+│   ├── restClient/           # .http parsing, execution and history
 │   ├── index.js
-│   ├── lsp.js           # LSP WebSocket bridge
-│   ├── pty.js
-│   └── db.js
-├── src/
-│   ├── components/      # UI (editor, sidebar, panels, ...)
-│   ├── lsp/             # LSP client + Monaco adapter
+│   ├── lsp.js                # LSP WebSocket bridge
+│   ├── pty.js                # PTY terminal bridge
+│   └── db.js                 # local JSON-backed state
+├── src/                      # React/Vite renderer application
+│   ├── assets/               # logos, icons and brand assets
+│   ├── components/           # editor shell, panels, modals and workbench UI
+│   ├── features/             # domain features: AI, themes, Git, templates, etc.
 │   ├── hooks/
+│   ├── lsp/                  # browser-side LSP client and Monaco integration
+│   ├── shared/
 │   ├── store/
+│   ├── types/
 │   └── utils/
-├── docs/
+├── extensions/               # bundled extension catalog and examples
+│   └── marketplace/
+│       ├── blinkcode-markdown-preview/
+│       ├── blinkcode-spell-checker/
+│       └── blinkcode-theme-import/
+├── scripts/                  # release, quality, unit and E2E helper scripts
+│   ├── e2e/
+│   ├── quality/
+│   ├── release/
+│   └── unit/
+├── e2e/                      # Playwright fixtures and E2E tests
+│   ├── fixtures/
+│   └── tests/
+├── docs/                     # English/Russian docs and project inventory
 │   ├── EN/
 │   └── RU/
-├── build/
-├── release/
-└── package.json
+├── public/                   # public web assets
+├── screenshots/              # README screenshots and GIFs
+├── build/                    # electron-builder icons/resources
+├── package.json              # app metadata, scripts and builder config
+├── vite.config.ts
+├── playwright.config.ts
+├── LICENSE
+└── TRADEMARK.md
 ```
 
 Detailed breakdown: [`docs/EN/architecture.md`](./docs/EN/architecture.md).

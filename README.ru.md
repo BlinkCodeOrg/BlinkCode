@@ -159,24 +159,56 @@ npm run dist:linux
 
 ```text
 BlinkCode/
-├── electron/            # main process + preload
-├── server/              # HTTP / WebSocket backend
+├── electron/                 # Electron main process, preload и native IPC
+│   ├── main.mjs
+│   ├── preload.cjs
+│   ├── registerSecretIpc.mjs
+│   └── registerUpdaterIpc.mjs
+├── server/                   # Express/WebSocket backend для desktop IDE
+│   ├── ai/                   # AI providers, requests и agent tools
+│   ├── debugger/             # Node/Chrome inspector integration
+│   ├── dependencies/         # определение package manager и dependencies
+│   ├── extensions/           # extension marketplace и manifest services
+│   ├── migrations/           # миграции локальных данных
+│   ├── restClient/           # .http parsing, execution и history
 │   ├── index.js
-│   ├── lsp.js           # WebSocket-мост LSP
-│   ├── pty.js
-│   └── db.js
-├── src/
-│   ├── components/      # UI (editor, sidebar, panels, …)
-│   ├── lsp/             # LSP-клиент + Monaco-адаптер
+│   ├── lsp.js                # WebSocket-мост LSP
+│   ├── pty.js                # PTY terminal bridge
+│   └── db.js                 # локальное JSON-состояние
+├── src/                      # React/Vite renderer application
+│   ├── assets/               # логотипы, иконки и brand assets
+│   ├── components/           # editor shell, panels, modals и workbench UI
+│   ├── features/             # AI, themes, Git, templates и другие фичи
 │   ├── hooks/
+│   ├── lsp/                  # browser-side LSP client и Monaco integration
+│   ├── shared/
 │   ├── store/
+│   ├── types/
 │   └── utils/
-├── docs/
+├── extensions/               # bundled extension catalog и examples
+│   └── marketplace/
+│       ├── blinkcode-markdown-preview/
+│       ├── blinkcode-spell-checker/
+│       └── blinkcode-theme-import/
+├── scripts/                  # release, quality, unit и E2E helper scripts
+│   ├── e2e/
+│   ├── quality/
+│   ├── release/
+│   └── unit/
+├── e2e/                      # Playwright fixtures и E2E tests
+│   ├── fixtures/
+│   └── tests/
+├── docs/                     # English/Russian docs и project inventory
 │   ├── EN/
 │   └── RU/
-├── build/
-├── release/
-└── package.json
+├── public/                   # public web assets
+├── screenshots/              # README screenshots и GIFs
+├── build/                    # electron-builder icons/resources
+├── package.json              # app metadata, scripts и builder config
+├── vite.config.ts
+├── playwright.config.ts
+├── LICENSE
+└── TRADEMARK.md
 ```
 
 Детально — в [`docs/RU/architecture.md`](./docs/RU/architecture.md).
