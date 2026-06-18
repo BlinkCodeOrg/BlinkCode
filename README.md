@@ -32,8 +32,9 @@
 6. [Documentation](#documentation)
 7. [Tech stack](#tech-stack)
 8. [Project structure](#project-structure)
-9. [Contributing](#contributing)
-10. [License](#license)
+9. [Trademark](#trademark)
+10. [Contributing](#contributing)
+11. [License](#license)
 
 ---
 
@@ -189,6 +190,12 @@ BlinkCode/
 ```
 
 Detailed breakdown: [`docs/EN/architecture.md`](./docs/EN/architecture.md).
+
+## Trademark
+
+BlinkCode source code is licensed under Apache License 2.0. The BlinkCode name,
+logo, icon, official builds, and related branding are covered by the
+[BlinkCode Trademark Policy](./TRADEMARK.md).
 
 ## Contributing
 

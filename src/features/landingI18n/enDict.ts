@@ -33,6 +33,6 @@ export const EN = {
   faq6q: 'Can I change the theme?', faq6a: 'Yes, 11 themes are available: Tokyo Night, Catppuccin, Gruvbox, Kanagawa, Nord, Matrix, One Dark, AMOLED and more. Each theme has a dark and light version.',
   faq7q: 'Where are my files saved?', faq7a: 'Files are saved locally on your machine. When running on localhost, you have full control over your data.',
   faq8q: 'What about data and privacy?', faq8a: 'BlinkCode does not store your code in the cloud. All data stays on your machine. No accounts, no tracking, no analytics.',
-  faq9q: 'Is BlinkCode open source?', faq9a: 'Yes, BlinkCode is fully open source. The source code is publicly available on GitHub under the MIT license, which means anyone can use, modify, or contribute to its development. Any community member can create issues, submit pull requests, and extend the functionality.',
+  faq9q: 'Is BlinkCode open source?', faq9a: 'Yes, BlinkCode is open source. The source code is publicly available on GitHub under the Apache License 2.0, which allows broad use, modification, and distribution of the code. The BlinkCode name, logo, icon, and official branding are covered separately by the project trademark policy.',
   footerTech: 'React · Monaco Editor · Express',
 };
