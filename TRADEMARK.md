@@ -156,13 +156,13 @@ or the project maintainers.
 
 To request permission for trademark or brand use, contact the project maintainer:
 
-- GitHub: `https://github.com/lovlygod`
-- Telegram: `@fenpol`
-- Email: `whylovlygod@icloud.com`
+- GitHub: [lovlygod](https://github.com/lovlygod)
+- Telegram: [@fenpol](https://t.me/fenpol)
+- Email: [whylovlygod@icloud.com](mailto:whylovlygod@icloud.com)
 
 You may also open an issue in the official repository:
 
-- `https://github.com/BlinkCodeOrg/BlinkCode/issues`
+- [BlinkCode GitHub Issues](https://github.com/BlinkCodeOrg/BlinkCode/issues)
 
 When requesting permission, describe what you want to use, where it will appear,
 whether it is commercial or non-commercial, and how you will avoid confusion with
