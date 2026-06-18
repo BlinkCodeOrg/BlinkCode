@@ -72,13 +72,13 @@ client, and project-aware AI panel.
 
 ## Features
 
-Highlights вЂ” full list in [`docs/EN/features.md`](./docs/EN/features.md),
+Highlights — full list in [`docs/EN/features.md`](./docs/EN/features.md),
 all keybindings in [`docs/EN/shortcuts.md`](./docs/EN/shortcuts.md).
 
 - **Real IntelliSense via LSP** for TypeScript, JavaScript, TSX, JSX, HTML,
   CSS, SCSS, LESS and JSON, with rename, references, formatting, code actions
   and inline diagnostics
-- **Problems panel** вЂ” workspace diagnostics grouped by file with filters and click-to-navigate from the status bar
+- **Problems panel** — workspace diagnostics grouped by file with filters and click-to-navigate from the status bar
 - **Command Palette** (`Ctrl+Shift+P`) and **Quick Open** (`Ctrl+P`)
 - **React/Vite workflow** for local JavaScript and TypeScript web apps
 - **Web App Center** for stack detection, scripts, dev-server preview, top problems, Git summary, REST shortcuts, templates and dependencies
@@ -89,7 +89,7 @@ all keybindings in [`docs/EN/shortcuts.md`](./docs/EN/shortcuts.md).
 - **Safe web-project editing** with `.env` diagnostics/masking, schema-aware JSON/YAML and large-file guards
 - **Embedded terminal** based on `xterm` with real PTY sessions
 - **Embedded browser preview** for local dev servers and terminal links
-- **Custom Electron shell** вЂ” titlebar, activity bar, status bar, toasts, onboarding
+- **Custom Electron shell** — titlebar, activity bar, status bar, toasts, onboarding
 - **Configurable themes**, bracket colorization, indent guides, dot-grid welcome
 - **Windows installer and portable** builds via `electron-builder`
 
@@ -142,15 +142,15 @@ documented in [`docs/EN/building.md`](./docs/EN/building.md).
 
 Full documentation lives in [`docs/`](./docs/README.md):
 
-| English | Р СѓСЃСЃРєРёР№ |
+| English | Russian |
 |---|---|
-| [Documentation home](./docs/README.md) | [Р“Р»Р°РІРЅР°СЏ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё](./docs/README.md) |
-| [Features](./docs/EN/features.md) | [Р’РѕР·РјРѕР¶РЅРѕСЃС‚Рё](./docs/RU/features.md) |
-| [Keyboard shortcuts](./docs/EN/shortcuts.md) | [Р“РѕСЂСЏС‡РёРµ РєР»Р°РІРёС€Рё](./docs/RU/shortcuts.md) |
-| [Architecture](./docs/EN/architecture.md) | [РђСЂС…РёС‚РµРєС‚СѓСЂР°](./docs/RU/architecture.md) |
-| [Language servers (LSP)](./docs/EN/lsp.md) | [Language-СЃРµСЂРІРµСЂС‹ (LSP)](./docs/RU/lsp.md) |
-| [Development](./docs/EN/development.md) | [Р Р°Р·СЂР°Р±РѕС‚РєР°](./docs/RU/development.md) |
-| [Building & packaging](./docs/EN/building.md) | [РЎР±РѕСЂРєР° Рё СѓРїР°РєРѕРІРєР°](./docs/RU/building.md) |
+| [Documentation home](./docs/README.md) | [Documentation home](./docs/README.md) |
+| [Features](./docs/EN/features.md) | [Features](./docs/RU/features.md) |
+| [Keyboard shortcuts](./docs/EN/shortcuts.md) | [Keyboard shortcuts](./docs/RU/shortcuts.md) |
+| [Architecture](./docs/EN/architecture.md) | [Architecture](./docs/RU/architecture.md) |
+| [Language servers (LSP)](./docs/EN/lsp.md) | [Language servers (LSP)](./docs/RU/lsp.md) |
+| [Development](./docs/EN/development.md) | [Development](./docs/RU/development.md) |
+| [Building & packaging](./docs/EN/building.md) | [Building & packaging](./docs/RU/building.md) |
 
 ## Tech stack
 
@@ -168,24 +168,24 @@ Full documentation lives in [`docs/`](./docs/README.md):
 
 ```text
 BlinkCode/
-в”њв”Ђв”Ђ electron/            # main process + preload
-в”њв”Ђв”Ђ server/              # HTTP / WebSocket backend
-в”‚   в”њв”Ђв”Ђ index.js
-в”‚   в”њв”Ђв”Ђ lsp.js           # LSP WebSocket bridge
-в”‚   в”њв”Ђв”Ђ pty.js
-в”‚   в””в”Ђв”Ђ db.js
-в”њв”Ђв”Ђ src/
-в”‚   в”њв”Ђв”Ђ components/      # UI (editor, sidebar, panels, вЂ¦)
-в”‚   в”њв”Ђв”Ђ lsp/             # LSP client + Monaco adapter
-в”‚   в”њв”Ђв”Ђ hooks/
-в”‚   в”њв”Ђв”Ђ store/
-в”‚   в””в”Ђв”Ђ utils/
-в”њв”Ђв”Ђ docs/
-в”‚   в”њв”Ђв”Ђ EN/
-в”‚   в””в”Ђв”Ђ RU/
-в”њв”Ђв”Ђ build/
-в”њв”Ђв”Ђ release/
-в””в”Ђв”Ђ package.json
+├── electron/            # main process + preload
+├── server/              # HTTP / WebSocket backend
+│   ├── index.js
+│   ├── lsp.js           # LSP WebSocket bridge
+│   ├── pty.js
+│   └── db.js
+├── src/
+│   ├── components/      # UI (editor, sidebar, panels, ...)
+│   ├── lsp/             # LSP client + Monaco adapter
+│   ├── hooks/
+│   ├── store/
+│   └── utils/
+├── docs/
+│   ├── EN/
+│   └── RU/
+├── build/
+├── release/
+└── package.json
 ```
 
 Detailed breakdown: [`docs/EN/architecture.md`](./docs/EN/architecture.md).
