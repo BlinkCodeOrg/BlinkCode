@@ -18,7 +18,7 @@ export default function BrowserPreview() {
     setBrowserError,
   } = useEditor();
 
-  const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const previewRef = useRef<HTMLElement | null>(null);
   const [addressValue, setAddressValue] = useState(state.browserUrl || '');
   const [history, setHistory] = useState<string[]>(state.browserUrl ? [state.browserUrl] : []);
   const [historyIndex, setHistoryIndex] = useState(state.browserUrl ? 0 : -1);
@@ -29,9 +29,9 @@ export default function BrowserPreview() {
   const validatedUrl = useMemo(() => normalizeBrowserUrl(state.browserUrl || ''), [state.browserUrl]);
   const isSupportedUrl = Boolean(validatedUrl);
 
-  const addConsoleEntry = useCallback((level: BrowserPreviewConsoleEntry['level'], message: string) => {
+  const addConsoleEntry = useCallback((level: BrowserPreviewConsoleEntry['level'], message: string, source?: string) => {
     const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    setConsoleEntries(entries => [...entries.slice(-59), { id: `${Date.now()}:${Math.random()}`, level, message, time, url: state.browserUrl || validatedUrl || '' }]);
+    setConsoleEntries(entries => [...entries.slice(-119), { id: `${Date.now()}:${Math.random()}`, level, message, source, time, url: state.browserUrl || validatedUrl || '' }]);
     if (level === 'error' || level === 'warn') setConsoleOpen(true);
   }, [state.browserUrl, validatedUrl]);
 
@@ -84,9 +84,8 @@ export default function BrowserPreview() {
     setBrowserLoading(true);
     setBrowserError(null);
     addConsoleEntry('info', `Reload: ${validatedUrl || state.browserUrl || ''}`);
-    if (iframeRef.current && validatedUrl) {
-      iframeRef.current.src = validatedUrl;
-    }
+    const webview = previewRef.current as (HTMLElement & { reload?: () => void }) | null;
+    if (webview?.reload) webview.reload();
   };
 
   const handleBack = () => {
@@ -103,19 +102,76 @@ export default function BrowserPreview() {
     navigate(history[nextIndex], false);
   };
 
-  const handleIframeLoad = () => {
-    setBrowserLoading(false);
-    setBrowserError(null);
-    addConsoleEntry('info', `Loaded: ${validatedUrl || state.browserUrl || ''}`);
-    if (validatedUrl) setBrowserUrl(validatedUrl);
-  };
+  const copyConsole = useCallback(() => {
+    if (!consoleEntries.length) return;
+    const text = consoleEntries
+      .map(entry => `[${entry.time}] ${entry.level.toUpperCase()} ${entry.message}${entry.source ? ` (${entry.source})` : ''}`)
+      .join('\n');
+    void navigator.clipboard?.writeText(text);
+  }, [consoleEntries]);
 
-  const handleIframeError = () => {
-    setBrowserLoading(false);
-    const message = 'Failed to load the requested page in iframe preview.';
-    setBrowserError(message);
-    addConsoleEntry('error', message);
-  };
+  useEffect(() => {
+    const webview = previewRef.current;
+    if (!webview || !validatedUrl) return undefined;
+
+    const onDidStartLoading = () => {
+      setBrowserLoading(true);
+      setBrowserError(null);
+    };
+    const onDidStopLoading = () => {
+      setBrowserLoading(false);
+    };
+    const onDidFinishLoad = () => {
+      setBrowserLoading(false);
+      setBrowserError(null);
+      addConsoleEntry('info', `Loaded: ${validatedUrl}`);
+      setBrowserUrl(validatedUrl);
+    };
+    const onDidFailLoad = (event: Event) => {
+      const detail = event as Event & { errorCode?: number; errorDescription?: string; validatedURL?: string };
+      if (detail.errorCode === -3) return;
+      setBrowserLoading(false);
+      const message = detail.errorDescription || 'Failed to load the requested page in preview.';
+      setBrowserError(message);
+      addConsoleEntry('error', message, detail.validatedURL || validatedUrl);
+    };
+    const onDidNavigate = (event: Event) => {
+      const detail = event as Event & { url?: string };
+      if (detail.url && detail.url !== state.browserUrl) setBrowserUrl(detail.url);
+    };
+    const onConsoleMessage = (event: Event) => {
+      const detail = event as Event & { level?: number; message?: string; line?: number; sourceId?: string };
+      const level = detail.level === 3
+        ? 'error'
+        : detail.level === 2
+          ? 'warn'
+          : detail.level === 1
+            ? 'info'
+            : 'log';
+      const source = detail.sourceId
+        ? `${detail.sourceId}${detail.line ? `:${detail.line}` : ''}`
+        : undefined;
+      addConsoleEntry(level, detail.message || 'Console message', source);
+    };
+
+    webview.addEventListener('did-start-loading', onDidStartLoading);
+    webview.addEventListener('did-stop-loading', onDidStopLoading);
+    webview.addEventListener('did-finish-load', onDidFinishLoad);
+    webview.addEventListener('did-fail-load', onDidFailLoad);
+    webview.addEventListener('did-navigate', onDidNavigate);
+    webview.addEventListener('did-navigate-in-page', onDidNavigate);
+    webview.addEventListener('console-message', onConsoleMessage);
+
+    return () => {
+      webview.removeEventListener('did-start-loading', onDidStartLoading);
+      webview.removeEventListener('did-stop-loading', onDidStopLoading);
+      webview.removeEventListener('did-finish-load', onDidFinishLoad);
+      webview.removeEventListener('did-fail-load', onDidFailLoad);
+      webview.removeEventListener('did-navigate', onDidNavigate);
+      webview.removeEventListener('did-navigate-in-page', onDidNavigate);
+      webview.removeEventListener('console-message', onConsoleMessage);
+    };
+  }, [addConsoleEntry, setBrowserError, setBrowserLoading, setBrowserUrl, state.browserUrl, validatedUrl]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -152,19 +208,18 @@ export default function BrowserPreview() {
         onDeviceChange={setDevice}
       />
       <BrowserPreviewBody
-        iframeRef={iframeRef}
+        previewRef={previewRef}
         browserUrl={state.browserUrl}
         browserError={state.browserError}
         validatedUrl={validatedUrl}
         isSupportedUrl={isSupportedUrl}
-        onIframeLoad={handleIframeLoad}
-        onIframeError={handleIframeError}
         consoleEntries={consoleEntries}
         consoleOpen={consoleOpen}
         consoleFilter={consoleFilter}
         onConsoleFilterChange={setConsoleFilter}
         onClearConsole={() => setConsoleEntries([])}
         onCloseConsole={() => setConsoleOpen(false)}
+        onCopyConsole={copyConsole}
         device={device}
       />
     </section>

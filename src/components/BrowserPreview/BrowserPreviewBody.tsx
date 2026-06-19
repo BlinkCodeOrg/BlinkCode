@@ -1,46 +1,45 @@
 import type { RefObject } from 'react';
-import { AlertTriangle, CheckCircle2, Circle, CircleAlert, Globe, ShieldAlert, Trash2, X } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Circle, CircleAlert, Clipboard, Globe, ShieldAlert, Trash2, X } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 
 export interface BrowserPreviewConsoleEntry {
   id: string;
-  level: 'error' | 'info' | 'warn';
+  level: 'error' | 'info' | 'log' | 'warn';
   message: string;
   time: string;
+  source?: string;
   url?: string;
 }
 
 type BrowserPreviewBodyProps = {
-  iframeRef: RefObject<HTMLIFrameElement | null>;
+  previewRef: RefObject<HTMLElement | null>;
   browserUrl: string | null;
   browserError: string | null;
   validatedUrl: string | null;
   isSupportedUrl: boolean;
-  onIframeLoad: () => void;
-  onIframeError: () => void;
   consoleEntries: BrowserPreviewConsoleEntry[];
   consoleOpen: boolean;
   consoleFilter: 'all' | BrowserPreviewConsoleEntry['level'];
   onConsoleFilterChange: (filter: 'all' | BrowserPreviewConsoleEntry['level']) => void;
   onClearConsole: () => void;
   onCloseConsole: () => void;
+  onCopyConsole: () => void;
   device: 'responsive' | 'mobile' | 'tablet';
 };
 
 export function BrowserPreviewBody({
-  iframeRef,
+  previewRef,
   browserUrl,
   browserError,
   validatedUrl,
   isSupportedUrl,
-  onIframeLoad,
-  onIframeError,
   consoleEntries,
   consoleOpen,
   consoleFilter,
   onConsoleFilterChange,
   onClearConsole,
   onCloseConsole,
+  onCopyConsole,
   device,
 }: BrowserPreviewBodyProps) {
   const tt = useT();
@@ -51,6 +50,7 @@ export function BrowserPreviewBody({
     all: consoleEntries.length,
     error: consoleEntries.filter(entry => entry.level === 'error').length,
     warn: consoleEntries.filter(entry => entry.level === 'warn').length,
+    log: consoleEntries.filter(entry => entry.level === 'log').length,
     info: consoleEntries.filter(entry => entry.level === 'info').length,
   };
 
@@ -85,14 +85,12 @@ export function BrowserPreviewBody({
           )}
 
           <div className={`browser-preview-device browser-preview-device-${device}`}>
-            <iframe
-              ref={iframeRef}
+            <webview
+              ref={previewRef}
               className="browser-preview-frame"
               src={validatedUrl || undefined}
-              onLoad={onIframeLoad}
-              onError={onIframeError}
-              sandbox="allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox allow-same-origin"
-              referrerPolicy="no-referrer"
+              allowpopups
+              webpreferences="contextIsolation=yes, nodeIntegration=no, sandbox=yes"
               title={tt('browser.frameTitle')}
             />
           </div>
@@ -103,6 +101,9 @@ export function BrowserPreviewBody({
                 <small>{tt('browser.consoleHint')}</small>
               </div>
               <div className="browser-preview-console-actions">
+                <button type="button" onClick={onCopyConsole} disabled={consoleEntries.length === 0} title={tt('common.copy')}>
+                  <Clipboard size={13} />
+                </button>
                 <button type="button" onClick={onClearConsole} disabled={consoleEntries.length === 0} title={tt('common.clear')}>
                   <Trash2 size={13} />
                 </button>
@@ -116,6 +117,7 @@ export function BrowserPreviewBody({
                 ['all', tt('browser.consoleAll'), counts.all],
                 ['error', tt('browser.consoleErrors'), counts.error],
                 ['warn', tt('browser.consoleWarnings'), counts.warn],
+                ['log', tt('browser.consoleLogs'), counts.log],
                 ['info', tt('browser.consoleInfo'), counts.info],
               ] as const).map(([filter, label, count]) => (
                 <button
@@ -141,6 +143,7 @@ export function BrowserPreviewBody({
                   <div>
                     <strong>{entry.level}</strong>
                     <span>{entry.message}</span>
+                    {entry.source && <small>{entry.source}</small>}
                     {entry.url && <small>{entry.url}</small>}
                   </div>
                   <time>{entry.time}</time>
