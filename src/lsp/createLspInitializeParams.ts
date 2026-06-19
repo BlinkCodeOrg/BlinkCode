@@ -1,7 +1,7 @@
 export function createLspInitializeParams(rootUri: string, workspacePath: string) {
   return {
     processId: null,
-    clientInfo: { name: 'BlinkCode', version: '1.3.2' },
+    clientInfo: { name: 'BlinkCode', version: '1.3.3' },
     rootUri,
     rootPath: workspacePath,
     workspaceFolders: [{ uri: rootUri, name: 'workspace' }],

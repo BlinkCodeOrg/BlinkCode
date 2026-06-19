@@ -342,12 +342,105 @@
 }
 
 .theme-link {
+  border: 0;
+  padding: 0;
+  background: transparent;
   color: var(--accent);
+  cursor: pointer;
+  font: inherit;
   text-decoration: none;
 }
 
 .theme-link:hover {
   text-decoration: underline;
+}
+
+.settings-editor-bg-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin: 10px 0 12px;
+}
+
+.settings-editor-bg-swatch {
+  position: relative;
+  min-width: 0;
+  height: 58px;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: 8px;
+  background: var(--bg-input);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: border-color 120ms ease, transform 120ms ease, background 120ms ease;
+}
+
+.settings-editor-bg-swatch:hover,
+.settings-editor-bg-swatch.active {
+  border-color: var(--accent-border);
+  transform: translateY(-1px);
+}
+
+.settings-editor-bg-swatch.active {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 46%, transparent);
+}
+
+.settings-editor-bg-swatch::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.9;
+}
+
+.settings-editor-bg-swatch span {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  bottom: 6px;
+  z-index: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.7);
+}
+
+.settings-editor-bg-none::before {
+  background:
+    linear-gradient(135deg, transparent 0 45%, var(--danger-solid) 46% 54%, transparent 55%),
+    var(--bg-input);
+}
+
+.settings-editor-bg-aurora::before {
+  background:
+    radial-gradient(circle at 18% 22%, rgba(79, 140, 255, 0.95), transparent 34%),
+    radial-gradient(circle at 78% 18%, rgba(20, 184, 166, 0.78), transparent 30%),
+    radial-gradient(circle at 68% 82%, rgba(168, 85, 247, 0.64), transparent 34%),
+    linear-gradient(135deg, #07111f, #111827 54%, #09111d);
+}
+
+.settings-editor-bg-blueprint::before {
+  background:
+    linear-gradient(rgba(96, 165, 250, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(96, 165, 250, 0.2) 1px, transparent 1px),
+    radial-gradient(circle at 24% 28%, rgba(59, 130, 246, 0.46), transparent 32%),
+    linear-gradient(135deg, #071426, #0c1220);
+  background-size: 12px 12px, 12px 12px, auto, auto;
+}
+
+.settings-editor-bg-midnight::before {
+  background:
+    radial-gradient(circle at 50% 8%, rgba(148, 163, 184, 0.38), transparent 28%),
+    radial-gradient(circle at 18% 78%, rgba(79, 140, 255, 0.34), transparent 30%),
+    linear-gradient(180deg, #050816, #0f172a 52%, #020617);
+}
+
+.settings-editor-bg-custom::before {
+  background:
+    radial-gradient(circle at 20% 18%, color-mix(in srgb, var(--accent) 52%, transparent), transparent 34%),
+    linear-gradient(135deg, var(--bg-input), var(--bg-panel));
 }
 
 .settings-chip {

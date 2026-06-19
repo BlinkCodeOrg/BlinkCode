@@ -131,6 +131,10 @@ export interface EditorSettings {
   bottomPanelWidth: number;
   dotGridColor: string;
   backgroundStyle: 'dotgrid' | 'solid';
+  editorBackgroundPreset: 'none' | 'aurora' | 'blueprint' | 'midnight' | 'custom';
+  editorBackgroundCustom: string | null;
+  editorBackgroundOpacity: number;
+  editorBackgroundBlur: number;
   keybindings: Keybinding[];
   language: 'en' | 'ru';
   colorScheme: 'dark' | 'light' | 'system';

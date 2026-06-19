@@ -686,6 +686,15 @@ Security work should be explicit because BlinkCode runs local commands and reads
 - **Current state:** Dirty real-file buffers are periodically snapshotted to SQLite, written again during unload, restored as dirty tabs on startup and removed after a successful file save.
 - **Why it matters:** Data loss is one of the worst editor experiences.
 
+### 8.7 Project Snapshots
+
+- **Priority:** P1
+- [ ] **Status:** Planned
+- **Description:** Add local named project checkpoints that can be created before risky edits, AI-assisted changes, refactors or UI experiments.
+- **Expected behavior:** Users can create a snapshot, name it, browse snapshot history, inspect changed files, restore a single file or restore the full workspace state.
+- **Why it matters:** React/Vite developers often experiment quickly. A simple local checkpoint flow gives users confidence to try larger changes without needing to understand advanced Git recovery.
+- **Implementation direction:** Store snapshots outside the project tree under BlinkCode workspace storage, ignore dependency/build folders by default, keep size limits visible, and offer optional auto-snapshots before AI actions or bulk replacements.
+
 ---
 
 ## 9. Tests and automation
@@ -800,6 +809,7 @@ This table is the quick checklist for tracking what is already implemented and w
 | 8.4 | AI sandbox and confirmations | P2 | [x] Done | Mutations require reviewed, payload-bound, single-use approval tokens and visible diffs. |
 | 8.5 | Large file limits | P2 | [x] Done | Oversized text files use a chunked read-only preview. |
 | 8.6 | Recovery storage | P2 | [x] Done | Dirty buffers are stored in SQLite, restored on startup and removed after successful saves. |
+| 8.7 | Project Snapshots | P1 | [ ] Planned | Local named checkpoints for risky edits, AI changes, file-level restore and full workspace rollback. |
 | 9.1 | Unit tests | P1 | [x] Done | Node and TypeScript tests cover reducer transitions, file operations, security, migrations, recovery, NPM discovery and core regression guards. |
 | 9.2 | End-to-end tests | P1 | [x] Done | Playwright covers editing, terminal, Git, Browser Preview, recovery, settings, Explorer, scripts and keybindings. |
 | 9.3 | CI pipeline | P1 | [x] Done | GitHub Actions installs Chromium and runs the complete `npm run quality:full` gate. |
@@ -809,21 +819,21 @@ This table is the quick checklist for tracking what is already implemented and w
 
 ## Suggested order of work
 
-### Sprint 1 — finish core IDE foundation
+### Sprint 1 - finish core IDE foundation
 
 - [x] Global search and replace.
 - [x] Problems panel.
 - [x] Last cursor/view-state persistence.
 - [x] SQLite schema migration cleanup.
 
-### Sprint 2 — Git workflow
+### Sprint 2 - Git workflow
 
 - [x] Git status API
 - [x] Source Control panel
 - [x] Stage, unstage and commit actions
 - [x] Inline diff and gutter indicators.
 
-### Sprint 3 — web workflow
+### Sprint 3 - web workflow
 
 - [x] Web App Center.
 - [x] Browser Preview auto-detection.
@@ -831,14 +841,14 @@ This table is the quick checklist for tracking what is already implemented and w
 - [x] REST Client basics.
 - [x] React/Vite local development workflow positioning.
 
-### Sprint 4 — AI workflow
+### Sprint 4 - AI workflow
 
 - [x] Selected-code context in AI chat.
 - [x] Inline completions.
 - [x] Quick actions.
 - [x] Tool-using AI agent with confirmations.
 
-### Sprint 5 — distribution and reliability
+### Sprint 5 - distribution and reliability
 
 - [x] CI pipeline.
 - [x] Auto-update.

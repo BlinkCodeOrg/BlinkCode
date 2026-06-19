@@ -24,6 +24,17 @@ import RestClientBar from '../RestClient/RestClientBar';
 import { ExtensionDetailTab } from '../ExtensionsPanel/ExtensionDetailTab';
 import './CodeEditor.css';
 
+const editorBackgroundPresets: Record<string, string> = {
+  aurora: 'radial-gradient(circle at 18% 22%, rgba(79, 140, 255, 0.95), transparent 32%), radial-gradient(circle at 78% 18%, rgba(20, 184, 166, 0.75), transparent 28%), radial-gradient(circle at 68% 82%, rgba(168, 85, 247, 0.62), transparent 34%), linear-gradient(135deg, #07111f, #111827 54%, #09111d)',
+  blueprint: 'linear-gradient(rgba(96, 165, 250, 0.18) 1px, transparent 1px), linear-gradient(90deg, rgba(96, 165, 250, 0.18) 1px, transparent 1px), radial-gradient(circle at 24% 28%, rgba(59, 130, 246, 0.44), transparent 30%), linear-gradient(135deg, #071426, #0c1220)',
+  midnight: 'radial-gradient(circle at 50% 8%, rgba(148, 163, 184, 0.36), transparent 26%), radial-gradient(circle at 18% 78%, rgba(79, 140, 255, 0.32), transparent 30%), linear-gradient(180deg, #050816, #0f172a 52%, #020617)',
+};
+
+function getEditorBackgroundImage(settings: { editorBackgroundPreset: string; editorBackgroundCustom: string | null }) {
+  if (settings.editorBackgroundPreset === 'custom') return settings.editorBackgroundCustom || '';
+  return editorBackgroundPresets[settings.editorBackgroundPreset] || '';
+}
+
 export default function CodeEditor({ group = 'primary' }: { group?: 'primary' | 'secondary' }) {
   const { state, updateFileContent, getActiveFile, getSplitActiveFile, registerEditor, dispatch, addToast } = useEditor();
   const getFileForGroup = group === 'primary' ? getActiveFile : getSplitActiveFile;
@@ -56,6 +67,17 @@ export default function CodeEditor({ group = 'primary' }: { group?: 'primary' | 
   useGitInlineDecorations(activeFile, monacoLifecycle.editorRef, monacoLifecycle.monacoRef);
 
   const isSolid = state.settings.backgroundStyle === 'solid';
+  const editorBackgroundImage = getEditorBackgroundImage(state.settings);
+  const hasEditorBackground = Boolean(editorBackgroundImage);
+  const editorBackgroundStyle = hasEditorBackground
+    ? ({
+        '--editor-bg-image': state.settings.editorBackgroundPreset === 'custom'
+          ? `url("${editorBackgroundImage}")`
+          : editorBackgroundImage,
+        '--editor-bg-opacity': String(Math.max(0, Math.min(100, state.settings.editorBackgroundOpacity)) / 100),
+        '--editor-bg-blur': `${Math.max(0, Math.min(16, state.settings.editorBackgroundBlur))}px`,
+      } as React.CSSProperties)
+    : undefined;
   const editorOptions = useMemo(
     () => ({ readOnly: isUnsupportedTextFile }),
     [isUnsupportedTextFile],
@@ -150,7 +172,7 @@ export default function CodeEditor({ group = 'primary' }: { group?: 'primary' | 
   }
 
   return (
-    <div className="code-editor">
+    <div className={`code-editor ${hasEditorBackground ? 'code-editor-with-background' : ''}`} style={editorBackgroundStyle}>
       {activeFile.name.toLowerCase().endsWith('.http') && (
         <RestClientBar content={activeFile.content || ''} onError={message => addToast(message, 'error')} />
       )}
