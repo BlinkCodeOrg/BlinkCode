@@ -123,6 +123,137 @@
   color: var(--text-primary);
 }
 
+.update-indicator {
+  position: relative;
+  -webkit-app-region: no-drag;
+}
+
+.update-indicator-button {
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  background: color-mix(in srgb, var(--accent) 10%, transparent);
+}
+
+.update-indicator-button:hover,
+.update-indicator-button.ready {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-base));
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border-light));
+}
+
+.update-indicator-button.error {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 34%, transparent);
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+}
+
+.update-spin {
+  animation: updateSpin 900ms linear infinite;
+}
+
+.update-popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: min(360px, 92vw);
+  padding: 12px;
+  border: 1px solid var(--border-light);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--bg-dropdown) 96%, var(--surface-raised-base));
+  box-shadow: var(--shadow-overlay);
+  z-index: 500;
+  animation: updatePopoverIn 120ms ease;
+}
+
+.update-popover-head {
+  display: grid;
+  grid-template-columns: 28px 1fr 24px;
+  gap: 8px;
+  align-items: start;
+}
+
+.update-popover-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.update-popover-title {
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.update-popover-subtitle {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.update-popover-close {
+  width: 24px;
+  height: 24px;
+  border: 0;
+  border-radius: 6px;
+  color: var(--text-tertiary);
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.update-popover-close:hover {
+  color: var(--text-primary);
+  background: var(--hover-bg);
+}
+
+.update-popover-body {
+  margin: 10px 0 12px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.update-popover-body p {
+  margin: 0;
+}
+
+.update-release-notes {
+  margin: 10px 0 0;
+  max-height: 132px;
+  overflow: auto;
+  white-space: pre-wrap;
+  border: 1px solid var(--border-subtle);
+  border-radius: 7px;
+  padding: 8px;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--surface-base) 78%, transparent);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+}
+
+.update-popover-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+@keyframes updateSpin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes updatePopoverIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .header-divider {
   width: 1px;
   height: 16px;

@@ -14,6 +14,16 @@ export default function SettingsUpdatesSection({ tt }: { tt: (key: string, args?
     catch (error) { setStatus({ status: 'error', error: error instanceof Error ? error.message : String(error) }); }
   };
 
+  const download = async () => {
+    setStatus({ ...status, status: 'downloading' });
+    try {
+      const next = await window.electronAPI?.downloadUpdate?.();
+      if (next) setStatus(next);
+    } catch (error) {
+      setStatus({ status: 'error', error: error instanceof Error ? error.message : String(error) });
+    }
+  };
+
   return (
     <div className="settings-section" data-testid="settings-updates">
       <div className="settings-section-title">{tt('updates.title')}</div>
@@ -30,6 +40,8 @@ export default function SettingsUpdatesSection({ tt }: { tt: (key: string, args?
         <div className="settings-row-control">
           {status.status === 'ready'
             ? <Button variant="primary" onClick={() => window.electronAPI?.installUpdate?.()}>{tt('updates.restart')}</Button>
+            : status.status === 'available'
+              ? <Button variant="primary" onClick={download}>{tt('updates.downloadAndInstall')}</Button>
             : <Button disabled={status.status === 'checking' || status.status === 'downloading'} onClick={check}>{tt('updates.check')}</Button>}
         </div>
       </div>

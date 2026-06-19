@@ -24,7 +24,8 @@ declare global {
       getSecret?: (key: string) => Promise<string>;
       setSecret?: (key: string, value: string) => Promise<boolean>;
       deleteSecret?: (key: string) => Promise<boolean>;
-      checkForUpdates?: () => Promise<{ status: string; version?: string }>;
+      checkForUpdates?: () => Promise<{ status: string; version?: string; releaseNotes?: string; percent?: number; error?: string }>;
+      downloadUpdate?: () => Promise<{ status: string; version?: string; releaseNotes?: string; percent?: number; error?: string }>;
       installUpdate?: () => Promise<boolean>;
       onUpdateStatus?: (callback: (status: { status: string; version?: string; releaseNotes?: string; percent?: number; error?: string }) => void) => () => void;
     };

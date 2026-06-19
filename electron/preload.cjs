@@ -21,6 +21,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   setSecret: (key, value) => ipcRenderer.invoke('secret:set', key, value),
   deleteSecret: (key) => ipcRenderer.invoke('secret:delete', key),
   checkForUpdates: () => ipcRenderer.invoke('update:check'),
+  downloadUpdate: () => ipcRenderer.invoke('update:download'),
   installUpdate: () => ipcRenderer.invoke('update:install'),
   onUpdateStatus: (callback) => {
     const listener = (_event, payload) => callback(payload);
