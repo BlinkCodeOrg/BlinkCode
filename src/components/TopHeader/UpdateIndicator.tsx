@@ -13,6 +13,12 @@ type UpdateStatus = {
 
 const HIDDEN_STATUSES = new Set(['idle', 'current', 'checked', 'development']);
 const VISIBLE_STATUSES = new Set(['available', 'downloading', 'ready', 'error']);
+const AUTO_OPEN_STATUSES = new Set(['available', 'downloading', 'ready']);
+
+function compactErrorMessage(error: unknown) {
+  const raw = error instanceof Error ? error.message : String(error || '');
+  return raw.split('\n')[0].replace(/^Error invoking remote method '[^']+':\s*/i, '') || 'Could not check for updates.';
+}
 
 function formatPercent(percent?: number) {
   if (typeof percent !== 'number' || !Number.isFinite(percent)) return '';
@@ -31,7 +37,7 @@ export function UpdateIndicator() {
     if (!api?.onUpdateStatus) return undefined;
     return api.onUpdateStatus(next => {
       setStatus(next);
-      if (VISIBLE_STATUSES.has(next.status)) setOpen(true);
+      if (AUTO_OPEN_STATUSES.has(next.status)) setOpen(true);
     });
   }, []);
 
@@ -45,7 +51,7 @@ export function UpdateIndicator() {
         const next = await api.checkForUpdates?.();
         if (next && !HIDDEN_STATUSES.has(next.status)) setStatus(next);
       } catch (error) {
-        setStatus({ status: 'error', error: error instanceof Error ? error.message : String(error) });
+        setStatus({ status: 'error', error: compactErrorMessage(error) });
       } finally {
         setChecking(false);
       }
@@ -82,7 +88,7 @@ export function UpdateIndicator() {
       const next = await window.electronAPI?.downloadUpdate?.();
       if (next) setStatus(next);
     } catch (error) {
-      setStatus({ status: 'error', error: error instanceof Error ? error.message : String(error) });
+      setStatus({ status: 'error', error: compactErrorMessage(error) });
     }
   };
 

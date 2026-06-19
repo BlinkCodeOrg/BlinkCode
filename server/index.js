@@ -1275,8 +1275,7 @@ export function startBlinkCodeServer(port = process.env.PORT || 3001) {
       server.off('error', onError);
 
       if (error?.code === 'EADDRINUSE') {
-        console.warn(`BlinkCode server is already running on http://localhost:${port}`);
-        resolve(server);
+        reject(new Error(`Port ${port} is already in use`));
         return;
       }
 

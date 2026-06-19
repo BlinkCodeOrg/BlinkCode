@@ -11,7 +11,7 @@ export const THEME_LIST: { id: ThemeName; desc: string; url: string }[] = [
   { id: 'gruvbox', desc: 'Based on the Gruvbox theme', url: 'https://github.com/morhetz/gruvbox' },
   { id: 'kanagawa', desc: 'Based on the Kanagawa theme', url: 'https://github.com/rebelot/kanagawa.nvim' },
   { id: 'nord', desc: 'Based on the Nord theme', url: 'https://github.com/nordtheme/nord' },
-  { id: 'matrix', desc: 'РҐР°РєРµСЂСЃРєР°СЏ С‚РµРјР°: Р·РµР»РµРЅС‹Р№ РЅР° С‡РµСЂРЅРѕРј', url: '' },
+  { id: 'matrix', desc: 'Green-on-black terminal style theme', url: '' },
   { id: 'one-dark', desc: 'Based on the Atom One Dark theme', url: 'https://github.com/Th3Whit3Wolf/one-nvim' },
   { id: 'amoled', desc: 'Pure black AMOLED theme', url: '' },
   { id: 'imported', desc: 'Imported VS Code theme', url: '' },

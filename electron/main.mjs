@@ -1,10 +1,11 @@
 import electron from 'electron';
+import net from 'net';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createProjectFromTemplate } from './createProjectFromTemplate.mjs';
 import { registerSecretIpc } from './registerSecretIpc.mjs';
 import { registerUpdaterIpc } from './registerUpdaterIpc.mjs';
-// Server is imported dynamically — in dev mode it runs as a separate
+// Server is imported dynamically: in dev mode it runs as a separate
 // system-Node process so Electron must NOT load the native better-sqlite3
 // module (different ABI). In packaged mode we start it in-process.
 
@@ -16,6 +17,7 @@ const __dirname = path.dirname(__filename);
 let mainWindow = null;
 let allowWindowClose = false;
 let appIsQuitting = false;
+let activeBackendPort = null;
 const approvedProjectParentPaths = new Set();
 
 function isSafeHttpUrl(rawUrl) {
@@ -107,7 +109,7 @@ function registerIpc() {
   ipcMain.handle('shell:trashItem', async (_event, filePath) => {
     if (typeof filePath !== 'string' || !path.isAbsolute(filePath)) return false;
     try {
-      const backendPort = process.env.PORT || (app.isPackaged ? '3210' : '3001');
+      const backendPort = activeBackendPort || process.env.PORT || (app.isPackaged ? '3210' : '3001');
       const response = await fetch(`http://127.0.0.1:${backendPort}/api/tree`);
       const data = await response.json();
       const workspacePath = path.resolve(String(data.workspacePath || ''));
@@ -126,6 +128,31 @@ function wait(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function canUsePort(port) {
+  return new Promise(resolve => {
+    const tester = net.createServer();
+
+    tester.once('error', () => {
+      resolve(false);
+    });
+    tester.once('listening', () => {
+      tester.close(() => resolve(true));
+    });
+    tester.listen(port, '127.0.0.1');
+  });
+}
+
+async function findAvailablePort(startPort, attempts = 30) {
+  const firstPort = Number(startPort) || 3210;
+
+  for (let offset = 0; offset < attempts; offset += 1) {
+    const port = firstPort + offset;
+    if (await canUsePort(port)) return String(port);
+  }
+
+  return String(firstPort);
+}
+
 async function waitForServer(url, attempts = 60) {
   for (let i = 0; i < attempts; i += 1) {
     try {
@@ -141,7 +168,11 @@ async function waitForServer(url, attempts = 60) {
 
 async function createWindow() {
   allowWindowClose = false;
-  const backendPort = process.env.PORT || (app.isPackaged ? '3210' : '3001');
+  const configuredBackendPort = process.env.PORT || (app.isPackaged ? '3210' : '3001');
+  const backendPort = app.isPackaged
+    ? await findAvailablePort(configuredBackendPort)
+    : configuredBackendPort;
+  activeBackendPort = backendPort;
   const backendUrl = `http://127.0.0.1:${backendPort}`;
   const rendererUrl = app.isPackaged
     ? backendUrl
