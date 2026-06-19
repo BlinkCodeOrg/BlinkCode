@@ -22,12 +22,25 @@ function compareVersions(left, right) {
 function compactUpdateError(error) {
   const raw = error instanceof Error ? error.message : String(error || '');
   if (/404|Cannot find latest\.yml|No published versions/i.test(raw)) {
-    return 'Update files are not published for the latest GitHub release yet.';
+    return { errorKey: 'updates.errorMissingFiles' };
   }
   if (/ENOTFOUND|ECONNREFUSED|ETIMEDOUT|network|fetch/i.test(raw)) {
-    return 'Could not reach GitHub to check for updates.';
+    return { errorKey: 'updates.errorNetwork' };
   }
-  return raw.split('\n')[0] || 'Could not check for updates.';
+  return { errorKey: 'updates.errorUnknown', error: raw.split('\n')[0] || '' };
+}
+
+function selectWindowsDownloadAsset(assets = []) {
+  const candidates = assets
+    .filter(asset => typeof asset?.browser_download_url === 'string' && /\.exe$/i.test(asset.name || ''));
+  return candidates.find(asset => /Setup/i.test(asset.name || ''))
+    || candidates.find(asset => /Portable/i.test(asset.name || ''))
+    || candidates[0]
+    || null;
+}
+
+function hasUpdateMetadata(assets = []) {
+  return assets.some(asset => /(^|\/)latest\.yml$/i.test(asset?.name || ''));
 }
 
 async function getLatestGitHubRelease() {
@@ -44,9 +57,13 @@ async function getLatestGitHubRelease() {
   const release = await response.json();
   const version = normalizeVersion(release?.tag_name);
   if (!version) return null;
+  const manualAsset = selectWindowsDownloadAsset(release?.assets || []);
   return {
     version,
     releaseNotes: typeof release?.body === 'string' ? release.body : '',
+    releaseUrl: typeof release?.html_url === 'string' ? release.html_url : '',
+    manualDownloadUrl: manualAsset?.browser_download_url || '',
+    hasUpdateMetadata: hasUpdateMetadata(release?.assets || []),
   };
 }
 
@@ -74,15 +91,38 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
   }));
   autoUpdater.on('download-progress', progress => send('update:status', { status: 'downloading', percent: progress.percent }));
   autoUpdater.on('update-downloaded', info => send('update:status', { status: 'ready', version: info.version }));
-  autoUpdater.on('error', error => send('update:status', { status: 'error', error: compactUpdateError(error) }));
+  autoUpdater.on('error', error => send('update:status', { status: 'error', ...compactUpdateError(error) }));
   ipcMain.handle('update:check', async () => {
     try {
       const latestRelease = await getLatestGitHubRelease();
       if (!latestRelease || compareVersions(latestRelease.version, currentVersion) <= 0) {
         return { status: 'current', version: latestRelease?.version || currentVersion };
       }
+      if (!latestRelease.hasUpdateMetadata) {
+        return {
+          status: 'manual',
+          version: latestRelease.version,
+          releaseNotes: latestRelease.releaseNotes,
+          releaseUrl: latestRelease.releaseUrl,
+          manualDownloadUrl: latestRelease.manualDownloadUrl || latestRelease.releaseUrl,
+        };
+      }
 
-      const result = await autoUpdater.checkForUpdates();
+      let result;
+      try {
+        result = await autoUpdater.checkForUpdates();
+      } catch (error) {
+        if (/404|Cannot find latest\.yml/i.test(error instanceof Error ? error.message : String(error || ''))) {
+          return {
+            status: 'manual',
+            version: latestRelease.version,
+            releaseNotes: latestRelease.releaseNotes,
+            releaseUrl: latestRelease.releaseUrl,
+            manualDownloadUrl: latestRelease.manualDownloadUrl || latestRelease.releaseUrl,
+          };
+        }
+        throw error;
+      }
       const info = result?.updateInfo;
       if (info?.version && compareVersions(info.version, currentVersion) > 0) {
         return {
@@ -93,7 +133,7 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
       }
       return { status: 'current', version: info?.version || currentVersion };
     } catch (error) {
-      return { status: 'error', error: compactUpdateError(error) };
+      return { status: 'error', ...compactUpdateError(error) };
     }
   });
   ipcMain.handle('update:download', async () => {

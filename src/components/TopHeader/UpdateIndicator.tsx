@@ -9,15 +9,18 @@ type UpdateStatus = {
   releaseNotes?: string;
   percent?: number;
   error?: string;
+  errorKey?: string;
+  releaseUrl?: string;
+  manualDownloadUrl?: string;
 };
 
 const HIDDEN_STATUSES = new Set(['idle', 'current', 'checked', 'development']);
-const VISIBLE_STATUSES = new Set(['available', 'downloading', 'ready', 'error']);
-const AUTO_OPEN_STATUSES = new Set(['available', 'downloading', 'ready']);
+const VISIBLE_STATUSES = new Set(['available', 'manual', 'downloading', 'ready', 'error']);
+const AUTO_OPEN_STATUSES = new Set(['available', 'manual', 'downloading', 'ready']);
 
 function compactErrorMessage(error: unknown) {
   const raw = error instanceof Error ? error.message : String(error || '');
-  return raw.split('\n')[0].replace(/^Error invoking remote method '[^']+':\s*/i, '') || 'Could not check for updates.';
+  return raw.split('\n')[0].replace(/^Error invoking remote method '[^']+':\s*/i, '');
 }
 
 function formatPercent(percent?: number) {
@@ -51,7 +54,7 @@ export function UpdateIndicator() {
         const next = await api.checkForUpdates?.();
         if (next && !HIDDEN_STATUSES.has(next.status)) setStatus(next);
       } catch (error) {
-        setStatus({ status: 'error', error: compactErrorMessage(error) });
+        setStatus({ status: 'error', errorKey: 'updates.errorUnknown', error: compactErrorMessage(error) });
       } finally {
         setChecking(false);
       }
@@ -78,22 +81,30 @@ export function UpdateIndicator() {
   if (!window.electronAPI?.checkForUpdates || !visible) return null;
 
   const isAvailable = status.status === 'available';
+  const isManual = status.status === 'manual';
   const isDownloading = status.status === 'downloading';
   const isReady = status.status === 'ready';
   const isError = status.status === 'error';
   const progress = formatPercent(status.percent);
+  const errorMessage = status.errorKey ? tt(status.errorKey) : (status.error || tt('updates.errorMessage'));
 
   const download = async () => {
     try {
       const next = await window.electronAPI?.downloadUpdate?.();
       if (next) setStatus(next);
     } catch (error) {
-      setStatus({ status: 'error', error: compactErrorMessage(error) });
+      setStatus({ status: 'error', errorKey: 'updates.errorUnknown', error: compactErrorMessage(error) });
     }
   };
 
   const install = () => {
     void window.electronAPI?.installUpdate?.();
+  };
+
+  const openManualDownload = () => {
+    const url = status.manualDownloadUrl || status.releaseUrl;
+    if (!url) return;
+    void window.electronAPI?.openExternal?.(url);
   };
 
   return (
@@ -124,15 +135,17 @@ export function UpdateIndicator() {
 
           <div className="update-popover-body">
             {isAvailable && <p>{tt('updates.confirmMessage')}</p>}
+            {isManual && <p>{tt('updates.manualMessage')}</p>}
             {isDownloading && <p>{tt('updates.downloadingMessage', { percent: progress || 0 })}</p>}
             {isReady && <p>{tt('updates.readyMessage')}</p>}
-            {isError && <p>{status.error || tt('updates.errorMessage')}</p>}
+            {isError && <p>{errorMessage}</p>}
             {status.releaseNotes && <pre className="update-release-notes">{status.releaseNotes}</pre>}
           </div>
 
           <div className="update-popover-actions">
             <Button variant="ghost" onClick={() => setOpen(false)}>{tt('common.later')}</Button>
             {isAvailable && <Button variant="primary" onClick={download}>{tt('updates.downloadAndInstall')}</Button>}
+            {isManual && <Button variant="primary" onClick={openManualDownload}>{tt(status.manualDownloadUrl ? 'updates.downloadFromGitHub' : 'updates.openRelease')}</Button>}
             {isReady && <Button variant="primary" onClick={install}>{tt('updates.restart')}</Button>}
           </div>
         </div>
