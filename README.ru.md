@@ -118,7 +118,7 @@ npm run dist:linux
 
 | Платформа | Артефакты |
 |---|---|
-| Windows x64 | `BlinkCode-Setup-1.3.0-x64.exe`, `BlinkCode-Portable-1.3.0-x64.exe` |
+| Windows x64 | `BlinkCode-Setup-1.3.1-x64.exe`, `BlinkCode-Portable-1.3.1-x64.exe` |
 | macOS x64 / arm64 | DMG и ZIP |
 | Linux x64 / arm64 | AppImage и DEB |
 
