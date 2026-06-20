@@ -89,6 +89,15 @@ export interface ImportedTheme {
     settings?: { foreground?: string; background?: string; fontStyle?: string };
   }>;
 }
+export type EditorBackgroundPreset =
+  | 'none'
+  | 'blink-bg-1'
+  | 'blink-bg-2'
+  | 'blink-bg-3'
+  | 'blink-bg-4'
+  | 'blink-bg-5'
+  | 'blink-bg-6'
+  | 'custom';
 export interface EditorSettings {
   fontSize: number;
   tabSize: number;
@@ -131,10 +140,12 @@ export interface EditorSettings {
   bottomPanelWidth: number;
   dotGridColor: string;
   backgroundStyle: 'dotgrid' | 'solid';
-  editorBackgroundPreset: 'none' | 'aurora' | 'blueprint' | 'midnight' | 'custom';
+  editorBackgroundPreset: EditorBackgroundPreset;
   editorBackgroundCustom: string | null;
   editorBackgroundOpacity: number;
   editorBackgroundBlur: number;
+  editorBackgroundScale: number;
+  editorBackgroundBrightness: number;
   keybindings: Keybinding[];
   language: 'en' | 'ru';
   colorScheme: 'dark' | 'light' | 'system';

@@ -8,10 +8,16 @@ import { ThemeImportButton } from './ThemeImportButton';
 import { useExtensionFeature } from '../../features/extensions/ExtensionContext';
 import { SettingsNumberStepper } from './SettingsNumberStepper';
 import { SettingsRow } from './SettingsRow';
+import {
+  officialEditorBackgrounds,
+  normalizeEditorBackgroundPreset,
+  type EditorBackgroundPreset,
+} from '../../features/editorSettings/editorBackgrounds';
 
 export default function SettingsAppearanceSection({ s, tt, updateSettings }: { s: EditorSettings; tt: (key: string) => string; updateSettings: (settings: Partial<EditorSettings>) => void }) {
   const themeImportEnabled = useExtensionFeature('theme-import');
   const editorBackgroundInputRef = useRef<HTMLInputElement | null>(null);
+  const selectedEditorBackground = normalizeEditorBackgroundPreset(s.editorBackgroundPreset);
   const importEditorBackground = (file?: File) => {
     if (!file || !file.type.startsWith('image/')) return;
     const reader = new FileReader();
@@ -63,60 +69,81 @@ export default function SettingsAppearanceSection({ s, tt, updateSettings }: { s
                       ariaLabel={tt('settings.editorBackground')}
                       options={[
                         { value: 'none', label: tt('editorBackground.none') },
-                        { value: 'aurora', label: tt('editorBackground.aurora') },
-                        { value: 'blueprint', label: tt('editorBackground.blueprint') },
-                        { value: 'midnight', label: tt('editorBackground.midnight') },
+                        ...officialEditorBackgrounds.map(background => ({ value: background.id, label: tt(background.labelKey) })),
                         { value: 'custom', label: tt('editorBackground.custom') },
                       ]}
-                      value={s.editorBackgroundPreset}
-                      onChange={value => updateSettings({ editorBackgroundPreset: value as EditorSettings['editorBackgroundPreset'] })}
+                      value={selectedEditorBackground}
+                      onChange={value => updateSettings({ editorBackgroundPreset: value as EditorBackgroundPreset })}
                     />
                   </SettingsRow>
-                  <div className="settings-editor-bg-grid">
-                    {(['none', 'aurora', 'blueprint', 'midnight', 'custom'] as const).map(preset => (
-                      <button
-                        key={preset}
-                        type="button"
-                        className={`settings-editor-bg-swatch settings-editor-bg-${preset} ${s.editorBackgroundPreset === preset ? 'active' : ''}`}
-                        onClick={() => {
-                          if (preset === 'custom' && !s.editorBackgroundCustom) {
-                            editorBackgroundInputRef.current?.click();
-                            return;
-                          }
-                          updateSettings({ editorBackgroundPreset: preset });
-                        }}
-                      >
-                        <span>{tt(`editorBackground.${preset}`)}</span>
-                      </button>
-                    ))}
-                  </div>
-                  <div className="settings-theme-import">
-                    <input
-                      ref={editorBackgroundInputRef}
-                      className="settings-theme-file-input"
-                      type="file"
-                      accept="image/*"
-                      onChange={event => importEditorBackground(event.target.files?.[0])}
-                    />
-                    <button className="theme-link" type="button" onClick={() => editorBackgroundInputRef.current?.click()}>
-                      {tt('settings.editorBackground.upload')}
-                    </button>
-                    {s.editorBackgroundCustom && (
-                      <button className="theme-link" type="button" onClick={() => updateSettings({ editorBackgroundCustom: null, editorBackgroundPreset: 'none' })}>
-                        {tt('settings.editorBackground.remove')}
-                      </button>
+                  <div className="settings-editor-bg-layout">
+                    <div className="settings-editor-bg-picker">
+                      <div className="settings-editor-bg-grid">
+                        {([
+                          { id: 'none', labelKey: 'editorBackground.none', src: '' },
+                          ...officialEditorBackgrounds,
+                          { id: 'custom', labelKey: 'editorBackground.custom', src: s.editorBackgroundCustom || '' },
+                        ] as const).map(background => (
+                          <button
+                            key={background.id}
+                            type="button"
+                            className={`settings-editor-bg-swatch ${background.id === 'none' ? 'settings-editor-bg-none' : ''} ${background.id === 'custom' ? 'settings-editor-bg-custom' : ''} ${selectedEditorBackground === background.id ? 'active' : ''}`}
+                            style={background.src ? ({ '--settings-editor-bg-preview': `url("${background.src}")` } as React.CSSProperties) : undefined}
+                            onClick={() => {
+                              if (background.id === 'custom' && !s.editorBackgroundCustom) {
+                                editorBackgroundInputRef.current?.click();
+                                return;
+                              }
+                              updateSettings({ editorBackgroundPreset: background.id });
+                            }}
+                          >
+                            <span>{tt(background.labelKey)}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {selectedEditorBackground !== 'none' && (
+                      <div className="settings-editor-bg-controls">
+                        <label className="settings-editor-bg-range">
+                          <span>{tt('settings.editorBackground.opacity')}</span>
+                          <strong>{s.editorBackgroundOpacity}%</strong>
+                          <input type="range" min={5} max={70} value={s.editorBackgroundOpacity} onChange={event => updateSettings({ editorBackgroundOpacity: Number(event.currentTarget.value) })} />
+                        </label>
+                        <label className="settings-editor-bg-range">
+                          <span>{tt('settings.editorBackground.blur')}</span>
+                          <strong>{s.editorBackgroundBlur}px</strong>
+                          <input type="range" min={0} max={16} value={s.editorBackgroundBlur} onChange={event => updateSettings({ editorBackgroundBlur: Number(event.currentTarget.value) })} />
+                        </label>
+                        <label className="settings-editor-bg-range">
+                          <span>{tt('settings.editorBackground.scale')}</span>
+                          <strong>{s.editorBackgroundScale}%</strong>
+                          <input type="range" min={100} max={140} value={s.editorBackgroundScale} onChange={event => updateSettings({ editorBackgroundScale: Number(event.currentTarget.value) })} />
+                        </label>
+                        <label className="settings-editor-bg-range">
+                          <span>{tt('settings.editorBackground.brightness')}</span>
+                          <strong>{s.editorBackgroundBrightness}%</strong>
+                          <input type="range" min={45} max={115} value={s.editorBackgroundBrightness} onChange={event => updateSettings({ editorBackgroundBrightness: Number(event.currentTarget.value) })} />
+                        </label>
+                      </div>
                     )}
+                    <div className="settings-editor-bg-actions">
+                      <input
+                        ref={editorBackgroundInputRef}
+                        className="settings-theme-file-input"
+                        type="file"
+                        accept="image/*"
+                        onChange={event => importEditorBackground(event.target.files?.[0])}
+                      />
+                      <button className="settings-editor-bg-action" type="button" onClick={() => editorBackgroundInputRef.current?.click()}>
+                        {tt('settings.editorBackground.upload')}
+                      </button>
+                      {s.editorBackgroundCustom && (
+                        <button className="settings-editor-bg-action danger" type="button" onClick={() => updateSettings({ editorBackgroundCustom: null, editorBackgroundPreset: 'none' })}>
+                          {tt('settings.editorBackground.remove')}
+                        </button>
+                      )}
+                    </div>
                   </div>
-                  {s.editorBackgroundPreset !== 'none' && (
-                    <>
-                      <SettingsRow name={tt('settings.editorBackground.opacity')} description={tt('settings.editorBackground.opacity.desc')}>
-                        <SettingsNumberStepper min={5} max={70} value={s.editorBackgroundOpacity} onChange={editorBackgroundOpacity => updateSettings({ editorBackgroundOpacity })} />
-                      </SettingsRow>
-                      <SettingsRow name={tt('settings.editorBackground.blur')} description={tt('settings.editorBackground.blur.desc')}>
-                        <SettingsNumberStepper min={0} max={16} value={s.editorBackgroundBlur} onChange={editorBackgroundBlur => updateSettings({ editorBackgroundBlur })} />
-                      </SettingsRow>
-                    </>
-                  )}
                   <hr className="settings-divider" />
 
                   <div className="settings-row">

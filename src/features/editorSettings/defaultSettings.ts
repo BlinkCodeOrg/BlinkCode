@@ -55,6 +55,8 @@ export const defaultSettings: EditorSettings = {
   editorBackgroundCustom: null,
   editorBackgroundOpacity: 18,
   editorBackgroundBlur: 0,
+  editorBackgroundScale: 102,
+  editorBackgroundBrightness: 90,
   keybindings: defaultKeybindings,
   language: 'en',
   colorScheme: 'dark',
