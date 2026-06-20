@@ -721,6 +721,7 @@ export const en: Record<string, string> = {
   'updates.confirmMessage': 'A new BlinkCode version is available. Download it now? The app will keep your workspace, open tabs, settings and local data.',
   'updates.manualMessage': 'A new BlinkCode version is available, but automatic update files are not attached yet. Download the installer from GitHub Releases.',
   'updates.downloadingMessage': 'Downloading update... {percent}',
+  'updates.downloadingPercent': 'Downloading {percent}%',
   'updates.readyMessage': 'The update has been downloaded. BlinkCode will close and reopen to finish installation.',
   'updates.errorMessage': 'Could not check or download the update.',
   'updates.errorMissingFiles': 'Update files are not attached to the latest GitHub release yet.',

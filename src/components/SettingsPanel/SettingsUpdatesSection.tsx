@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Button } from '../ui/Button';
+import { formatReleaseNotes } from '../../features/updates/formatReleaseNotes';
 
 type UpdateStatus = { status: string; version?: string; releaseNotes?: string; percent?: number; error?: string; errorKey?: string; releaseUrl?: string; manualDownloadUrl?: string };
 
 export default function SettingsUpdatesSection({ tt }: { tt: (key: string, args?: Record<string, string | number>) => string }) {
   const [status, setStatus] = useState<UpdateStatus>({ status: 'idle' });
+  const releaseNotes = formatReleaseNotes(status.releaseNotes);
   useEffect(() => window.electronAPI?.onUpdateStatus?.(setStatus), []);
   if (!window.electronAPI?.checkForUpdates) return null;
 
@@ -39,7 +41,7 @@ export default function SettingsUpdatesSection({ tt }: { tt: (key: string, args?
           <div>
             <div className="settings-row-name">{tt(`updates.status.${status.status}`)}</div>
             {status.version && <div className="settings-row-desc">{tt('updates.version', { version: status.version })}</div>}
-            {status.releaseNotes && <div className="settings-row-desc">{status.releaseNotes}</div>}
+            {releaseNotes && <pre className="settings-update-notes">{releaseNotes}</pre>}
             {(status.errorKey || status.error) && <div className="settings-row-desc">{status.errorKey ? tt(status.errorKey) : status.error}</div>}
           </div>
         </div>
@@ -50,7 +52,7 @@ export default function SettingsUpdatesSection({ tt }: { tt: (key: string, args?
               ? <Button variant="primary" onClick={openManualDownload}>{tt(status.manualDownloadUrl ? 'updates.downloadFromGitHub' : 'updates.openRelease')}</Button>
             : status.status === 'available'
               ? <Button variant="primary" onClick={download}>{tt('updates.downloadAndInstall')}</Button>
-            : <Button disabled={status.status === 'checking' || status.status === 'downloading'} onClick={check}>{tt('updates.check')}</Button>}
+            : <Button disabled={status.status === 'checking' || status.status === 'downloading'} onClick={check}>{status.status === 'downloading' ? tt('updates.downloadingPercent', { percent: Math.round(status.percent || 0) }) : tt('updates.check')}</Button>}
         </div>
       </div>
     </div>

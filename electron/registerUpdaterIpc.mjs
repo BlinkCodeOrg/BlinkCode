@@ -30,6 +30,28 @@ function compactUpdateError(error) {
   return { errorKey: 'updates.errorUnknown', error: raw.split('\n')[0] || '' };
 }
 
+function normalizeReleaseNotes(notes) {
+  const raw = Array.isArray(notes)
+    ? notes.map(note => (typeof note === 'string' ? note : note?.note || '')).join('\n')
+    : String(notes || '');
+
+  return raw
+    .replace(/<\/(h[1-6]|p|li|ul|ol)>/gi, '\n')
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<li>/gi, '- ')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .split('\n')
+    .map(line => line.trim())
+    .filter(Boolean)
+    .join('\n');
+}
+
 function selectWindowsDownloadAsset(assets = []) {
   const candidates = assets
     .filter(asset => typeof asset?.browser_download_url === 'string' && /\.exe$/i.test(asset.name || ''));
@@ -60,7 +82,7 @@ async function getLatestGitHubRelease() {
   const manualAsset = selectWindowsDownloadAsset(release?.assets || []);
   return {
     version,
-    releaseNotes: typeof release?.body === 'string' ? release.body : '',
+    releaseNotes: normalizeReleaseNotes(release?.body),
     releaseUrl: typeof release?.html_url === 'string' ? release.html_url : '',
     manualDownloadUrl: manualAsset?.browser_download_url || '',
     hasUpdateMetadata: hasUpdateMetadata(release?.assets || []),
@@ -81,16 +103,20 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
   const autoUpdater = resolveAutoUpdater(await import('electron-updater'));
   const currentVersion = app.getVersion();
   autoUpdater.autoDownload = false;
-  autoUpdater.autoInstallOnAppQuit = true;
+  autoUpdater.autoInstallOnAppQuit = false;
+  let downloadedUpdateInfo = null;
   autoUpdater.on('checking-for-update', () => send('update:status', { status: 'checking' }));
   autoUpdater.on('update-not-available', info => send('update:status', { status: 'current', version: info.version }));
   autoUpdater.on('update-available', info => send('update:status', {
     status: compareVersions(info.version, currentVersion) > 0 ? 'available' : 'current',
     version: info.version,
-    releaseNotes: typeof info.releaseNotes === 'string' ? info.releaseNotes : '',
+    releaseNotes: normalizeReleaseNotes(info.releaseNotes),
   }));
   autoUpdater.on('download-progress', progress => send('update:status', { status: 'downloading', percent: progress.percent }));
-  autoUpdater.on('update-downloaded', info => send('update:status', { status: 'ready', version: info.version }));
+  autoUpdater.on('update-downloaded', info => {
+    downloadedUpdateInfo = info;
+    send('update:status', { status: 'ready', version: info.version });
+  });
   autoUpdater.on('error', error => send('update:status', { status: 'error', ...compactUpdateError(error) }));
   ipcMain.handle('update:check', async () => {
     try {
@@ -128,7 +154,7 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
         return {
           status: 'available',
           version: info.version,
-          releaseNotes: typeof info.releaseNotes === 'string' ? info.releaseNotes : '',
+          releaseNotes: normalizeReleaseNotes(info.releaseNotes),
         };
       }
       return { status: 'current', version: info?.version || currentVersion };
@@ -137,11 +163,12 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
     }
   });
   ipcMain.handle('update:download', async () => {
+    send('update:status', { status: 'downloading', percent: 0 });
     await autoUpdater.downloadUpdate();
-    return { status: 'downloading' };
+    return { status: 'ready', version: downloadedUpdateInfo?.version };
   });
   ipcMain.handle('update:install', () => {
-    autoUpdater.quitAndInstall(false, true);
+    autoUpdater.quitAndInstall(true, true);
     return true;
   });
 }

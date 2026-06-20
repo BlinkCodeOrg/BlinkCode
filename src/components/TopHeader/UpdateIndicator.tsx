@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, CheckCircle2, Download, Loader2, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useT } from '../../hooks/useT';
+import { formatReleaseNotes } from '../../features/updates/formatReleaseNotes';
 
 type UpdateStatus = {
   status: string;
@@ -87,6 +88,7 @@ export function UpdateIndicator() {
   const isError = status.status === 'error';
   const progress = formatPercent(status.percent);
   const errorMessage = status.errorKey ? tt(status.errorKey) : (status.error || tt('updates.errorMessage'));
+  const releaseNotes = formatReleaseNotes(status.releaseNotes);
 
   const download = async () => {
     try {
@@ -139,7 +141,7 @@ export function UpdateIndicator() {
             {isDownloading && <p>{tt('updates.downloadingMessage', { percent: progress || 0 })}</p>}
             {isReady && <p>{tt('updates.readyMessage')}</p>}
             {isError && <p>{errorMessage}</p>}
-            {status.releaseNotes && <pre className="update-release-notes">{status.releaseNotes}</pre>}
+            {releaseNotes && <pre className="update-release-notes">{releaseNotes}</pre>}
           </div>
 
           <div className="update-popover-actions">

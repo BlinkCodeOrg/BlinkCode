@@ -722,6 +722,7 @@ export const ru: Record<string, string> = {
   'updates.confirmMessage': 'Доступна новая версия BlinkCode. Скачать ее сейчас? Рабочая область, открытые вкладки, настройки и локальные данные сохранятся.',
   'updates.manualMessage': 'Доступна новая версия BlinkCode, но файлы автообновления еще не прикреплены к релизу. Скачайте установщик из GitHub Releases.',
   'updates.downloadingMessage': 'Загрузка обновления... {percent}',
+  'updates.downloadingPercent': 'Загрузка {percent}%',
   'updates.readyMessage': 'Обновление скачано. BlinkCode закроется и откроется заново для завершения установки.',
   'updates.errorMessage': 'Не удалось проверить или скачать обновление.',
   'updates.errorMissingFiles': 'Файлы обновления еще не прикреплены к последнему релизу GitHub.',

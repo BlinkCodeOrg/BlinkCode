@@ -573,6 +573,19 @@
 .settings-theme-file-input { display: none; }
 .settings-theme-import span { color: var(--text-muted); font-size: 10px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
+.settings-update-notes {
+  max-height: 116px;
+  overflow: auto;
+  margin: 6px 0 0;
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 6px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font: 10px/1.45 'JetBrains Mono', monospace;
+  white-space: pre-wrap;
+}
+
 .keybindings-reset {
   display: flex;
   align-items: center;
