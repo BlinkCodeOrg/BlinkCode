@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronRight, FileText, Lightbulb } from 'lucide-react';
+import { ChevronDown, ChevronRight, Clipboard, FileText, Lightbulb } from 'lucide-react';
 import type { DiagnosticItem, FileGroup } from '../../features/problems/problemTypes';
 import { severityIcon } from '../../features/problems/severityIcon';
 import { useT } from '../../hooks/useT';
@@ -9,10 +9,11 @@ type ProblemFileGroupProps = {
   onToggle: (path: string) => void;
   onGoToProblem: (item: DiagnosticItem) => void;
   onQuickFix: (item: DiagnosticItem) => void;
+  onCopyProblem: (item: DiagnosticItem) => void;
   selectedItem?: DiagnosticItem;
 };
 
-export function ProblemFileGroup({ group, isOpen, onToggle, onGoToProblem, onQuickFix, selectedItem }: ProblemFileGroupProps) {
+export function ProblemFileGroup({ group, isOpen, onToggle, onGoToProblem, onQuickFix, onCopyProblem, selectedItem }: ProblemFileGroupProps) {
   const tt = useT();
   return (
     <div className="problems-file-group">
@@ -38,6 +39,9 @@ export function ProblemFileGroup({ group, isOpen, onToggle, onGoToProblem, onQui
         </button>
         <button className="problems-quick-fix" onClick={() => onQuickFix(item)} title={tt('problems.quickFix')}>
           <Lightbulb size={13} />
+        </button>
+        <button className="problems-copy" onClick={() => onCopyProblem(item)} title={tt('common.copy')}>
+          <Clipboard size={13} />
         </button>
         </div>
       ))}

@@ -14,7 +14,7 @@ import { limitProblemGroups } from '../../features/problems/limitProblemGroups';
 const PROBLEM_PAGE_SIZE = 250;
 
 export default function ProblemsPanel() {
-  const { state, openFile, dispatch } = useEditor();
+  const { state, openFile, dispatch, addToast } = useEditor();
   const tt = useT();
   const [groups, setGroups] = useState<FileGroup[]>([]);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -143,6 +143,11 @@ export default function ProblemsPanel() {
       editor?.getAction?.('editor.action.quickFix')?.run?.();
     }, 220);
   }, [goToProblem]);
+  const copyProblem = useCallback((item: DiagnosticItem) => {
+    const text = `${item.relPath}:${item.startLineNumber}:${item.startColumn} ${item.message}`;
+    void navigator.clipboard?.writeText(text);
+    addToast(tt('problems.copied'), 'success');
+  }, [addToast, tt]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!flatItems.length) return;
@@ -190,6 +195,7 @@ export default function ProblemsPanel() {
             onGoToProblem={goToProblem}
             onQuickFix={applyQuickFix}
             selectedItem={flatItems[selectedIndex]}
+            onCopyProblem={copyProblem}
           />
         ))}
         {visibleLimit < totalFiltered && (

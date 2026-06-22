@@ -3,7 +3,7 @@
   "description": "Desktop code editor for web and app project workflows.",
   "main": "electron/main.mjs",
   "private": true,
-  "version": "1.3.4",
+  "version": "1.3.5",
   "author": "BlinkCode",
   "homepage": "https://github.com/BlinkCodeOrg/BlinkCode",
   "repository": {
@@ -58,6 +58,11 @@
       "dist/**/*",
       "electron/**/*",
       "server/**/*",
+      "!server/blinkcode-store.json",
+      "!server/blinkcode.pre-migration.bak",
+      "!server/*.db",
+      "!server/*.db-*",
+      "!server/*.log",
       "package.json"
     ],
     "extraResources": [

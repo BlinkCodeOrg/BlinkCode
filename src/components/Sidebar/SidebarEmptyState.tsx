@@ -1,3 +1,5 @@
+import { FolderOpen } from 'lucide-react';
+
 interface RecentProject {
   name: string;
   path: string;
@@ -22,6 +24,9 @@ export function SidebarEmptyState({
 }: SidebarEmptyStateProps) {
   return (
     <div className="sidebar-empty">
+      <div className="sidebar-empty-mark">
+        <FolderOpen size={18} />
+      </div>
       <div className="sidebar-empty-text">{emptyHint}</div>
       {recentProjects.length > 0 && (
         <div className="sidebar-recent-projects">
@@ -42,6 +47,7 @@ export function SidebarEmptyState({
         </div>
       )}
       <button className="sidebar-empty-open-btn" onClick={onOpenFolder}>
+        <FolderOpen size={14} />
         {openFolderLabel}
       </button>
     </div>

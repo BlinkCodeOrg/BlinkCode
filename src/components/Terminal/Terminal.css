@@ -43,6 +43,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+}
+
+.terminal-header-left {
+  flex: 1;
 }
 
 .term-icon {
@@ -61,6 +66,8 @@
   align-items: center;
   gap: 3px;
   padding: 0;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .term-tab {
@@ -147,6 +154,61 @@
 .term-action:hover {
   color: var(--text-tertiary);
   background: var(--surface-base-hover);
+}
+
+.term-status-pill {
+  max-width: 160px;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--bg-input) 72%, transparent);
+  font: 10px 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+
+.term-status-pill span {
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+.term-status-pill-running,
+.term-status-pill-starting {
+  color: #22c55e;
+  border-color: rgba(34, 197, 94, 0.28);
+}
+
+.term-status-pill-running span,
+.term-status-pill-starting span {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.12);
+}
+
+.term-status-pill-failed {
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.term-status-pill-failed span {
+  background: #ef4444;
+}
+
+.term-status-pill-stopped,
+.term-status-pill-exited {
+  color: #f59e0b;
+  border-color: rgba(245, 158, 11, 0.28);
+}
+
+.term-status-pill-stopped span,
+.term-status-pill-exited span {
+  background: #f59e0b;
 }
 
 .terminal-body {

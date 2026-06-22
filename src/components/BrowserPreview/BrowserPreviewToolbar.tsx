@@ -1,6 +1,7 @@
 import type { FormEvent } from 'react';
-import { ArrowLeft, ArrowRight, ExternalLink, Globe, Monitor, RefreshCw, Smartphone, SquareTerminal, Tablet, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ExternalLink, Globe, History, Monitor, RefreshCw, Smartphone, SquareTerminal, Tablet, X } from 'lucide-react';
 import { Input } from '../ui/Input';
+import { Select } from '../ui/Select';
 import { useT } from '../../hooks/useT';
 
 type BrowserPreviewToolbarProps = {
@@ -19,7 +20,9 @@ type BrowserPreviewToolbarProps = {
   consoleOpen: boolean;
   consoleCount: number;
   consoleProblemCount: number;
+  recentUrls: string[];
   onToggleConsole: () => void;
+  onSelectRecentUrl: (url: string) => void;
   device: 'responsive' | 'mobile' | 'tablet';
   onDeviceChange: (device: 'responsive' | 'mobile' | 'tablet') => void;
 };
@@ -40,7 +43,9 @@ export function BrowserPreviewToolbar({
   consoleOpen,
   consoleCount,
   consoleProblemCount,
+  recentUrls,
   onToggleConsole,
+  onSelectRecentUrl,
   device,
   onDeviceChange,
 }: BrowserPreviewToolbarProps) {
@@ -50,6 +55,10 @@ export function BrowserPreviewToolbar({
     tablet: tt('browser.tablet'),
     mobile: tt('browser.mobile'),
   };
+  const recentUrlOptions = [
+    { value: '__recent__', label: tt('browser.recentUrls'), disabled: true },
+    ...recentUrls.map(url => ({ value: url, label: url })),
+  ];
   return (
     <header className="browser-preview-toolbar">
       <div className="browser-preview-toolbar-group">
@@ -76,6 +85,20 @@ export function BrowserPreviewToolbar({
       </form>
 
       <div className="browser-preview-toolbar-group">
+        {recentUrls.length > 0 && (
+          <div className="browser-preview-history" title={tt('browser.recentUrls')}>
+            <History size={14} />
+            <Select
+              ariaLabel={tt('browser.recentUrls')}
+              className="browser-preview-history-select"
+              options={recentUrlOptions}
+              value="__recent__"
+              onChange={value => {
+                if (value !== '__recent__') onSelectRecentUrl(String(value));
+              }}
+            />
+          </div>
+        )}
         <div className="browser-preview-devices" aria-label={tt('browser.previewSize')}>
           {([
             ['responsive', Monitor],

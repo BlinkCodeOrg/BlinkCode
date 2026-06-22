@@ -25,6 +25,8 @@ export function TerminalHeader({
   onReconnect,
 }: TerminalHeaderProps) {
   const tt = useT();
+  const status = activeInstance?.status || 'idle';
+  const statusLabel = tt(`terminal.status.${status}`);
   return (
     <div className="terminal-header">
       <div className="terminal-header-left">
@@ -38,6 +40,12 @@ export function TerminalHeader({
         />
       </div>
       <div className="terminal-header-right">
+        {activeInstance && (
+          <div className={`term-status-pill term-status-pill-${status}`} title={activeInstance.cwd || activeInstance.name}>
+            <span />
+            {statusLabel}
+          </div>
+        )}
         {activeInstance && (
           <button className="term-action" onClick={onReconnect} title={tt('terminal.reconnect')}>
             <TermIcon size={13} />

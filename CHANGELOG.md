@@ -4,6 +4,12 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.3.5] - 2026-06-22
+
+### Changed
+
+- Polished the IDE shell with stronger default contrast, quieter header behavior on narrow windows, clearer empty states, Browser Preview recent URL history, terminal status badges and extra Problems quick actions.
+
 ## [1.1.0] - 2026-06-17
 
 ### Added

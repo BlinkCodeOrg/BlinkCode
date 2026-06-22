@@ -111,7 +111,7 @@ export default function SettingsAppearanceSection({ s, tt, updateSettings }: { s
                         </label>
                         <label className="settings-editor-bg-range">
                           <span>{tt('settings.editorBackground.blur')}</span>
-                          <strong>{s.editorBackgroundBlur}px</strong>
+                          <strong>{s.editorBackgroundBlur} {tt('settings.unit.px')}</strong>
                           <input type="range" min={0} max={16} value={s.editorBackgroundBlur} onChange={event => updateSettings({ editorBackgroundBlur: Number(event.currentTarget.value) })} />
                         </label>
                         <label className="settings-editor-bg-range">

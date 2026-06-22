@@ -23,6 +23,7 @@ import { LARGE_FILE_LIMIT } from '../../features/fileSupport/largeFileLimit';
 import { getOfficialEditorBackgroundSrc } from '../../features/editorSettings/editorBackgrounds';
 import RestClientBar from '../RestClient/RestClientBar';
 import { ExtensionDetailTab } from '../ExtensionsPanel/ExtensionDetailTab';
+import { openWorkspaceFolder } from '../../features/topHeader/openWorkspaceFolder';
 import './CodeEditor.css';
 
 function getEditorBackgroundImage(settings: { editorBackgroundPreset: string; editorBackgroundCustom: string | null }) {
@@ -31,7 +32,7 @@ function getEditorBackgroundImage(settings: { editorBackgroundPreset: string; ed
 }
 
 export default function CodeEditor({ group = 'primary' }: { group?: 'primary' | 'secondary' }) {
-  const { state, updateFileContent, getActiveFile, getSplitActiveFile, registerEditor, dispatch, addToast } = useEditor();
+  const { state, updateFileContent, getActiveFile, getSplitActiveFile, registerEditor, dispatch, addToast, openFolderFromServer } = useEditor();
   const getFileForGroup = group === 'primary' ? getActiveFile : getSplitActiveFile;
   const tt = useT();
   const activeFile = getFileForGroup();
@@ -79,6 +80,15 @@ export default function CodeEditor({ group = 'primary' }: { group?: 'primary' | 
     () => ({ readOnly: isUnsupportedTextFile }),
     [isUnsupportedTextFile],
   );
+  const handleOpenFolder = useCallback(async () => {
+    try {
+      await openWorkspaceFolder({ addToast, dispatch, openFolderFromServer, tt });
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        addToast(tt('toast.openFail') + (err.message || ''), 'error');
+      }
+    }
+  }, [addToast, dispatch, openFolderFromServer, tt]);
 
   if (!activeFile) {
     return (
@@ -90,6 +100,8 @@ export default function CodeEditor({ group = 'primary' }: { group?: 'primary' | 
         tt={tt}
         onDismissOnboarding={onboarding.dismissOnboarding}
         onDontShowAgainChange={onboarding.setDontShowAgain}
+        onOpenFolder={handleOpenFolder}
+        onOpenTemplates={() => window.dispatchEvent(new CustomEvent('blinkcode:openProjectTemplates'))}
       />
     );
   }

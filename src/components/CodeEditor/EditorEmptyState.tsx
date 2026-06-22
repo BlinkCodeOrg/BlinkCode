@@ -1,4 +1,4 @@
-import { Files, FolderOpen, Settings2, Workflow } from 'lucide-react';
+import { Files, FolderOpen, LayoutTemplate, Settings2, Workflow } from 'lucide-react';
 import { getMainShortcuts } from '../../features/editorEmpty/getMainShortcuts';
 import BlinkLogo from '../common/BlinkLogo';
 import DotGrid from '../common/DotGrid';
@@ -13,6 +13,8 @@ type EditorEmptyStateProps = {
   tt: (key: string) => string;
   onDismissOnboarding: () => void;
   onDontShowAgainChange: (value: boolean) => void;
+  onOpenFolder: () => void;
+  onOpenTemplates: () => void;
 };
 
 export function EditorEmptyState({
@@ -23,6 +25,8 @@ export function EditorEmptyState({
   tt,
   onDismissOnboarding,
   onDontShowAgainChange,
+  onOpenFolder,
+  onOpenTemplates,
 }: EditorEmptyStateProps) {
   const mainShortcuts = getMainShortcuts(tt);
 
@@ -52,6 +56,16 @@ export function EditorEmptyState({
             {tt('empty.welcome').replace('BlinkCode', '').replace('blinkcode', '')}
             <span className="blink-blue">Blink</span>Code
           </p>
+          <div className="empty-actions">
+            <button type="button" className="empty-action empty-action-primary" onClick={onOpenFolder}>
+              <FolderOpen size={15} />
+              {tt('openFolder')}
+            </button>
+            <button type="button" className="empty-action" onClick={onOpenTemplates}>
+              <LayoutTemplate size={15} />
+              {tt('project.create')}
+            </button>
+          </div>
         </div>
       )}
 

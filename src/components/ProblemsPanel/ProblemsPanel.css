@@ -279,6 +279,8 @@
 .problems-item-row {
   display: flex;
   align-items: stretch;
+  background: color-mix(in srgb, var(--bg-sidebar) 96%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 45%, transparent);
 }
 
 .problems-item-row .problems-item {
@@ -289,17 +291,31 @@
   background: var(--hover-bg-active);
 }
 
-.problems-quick-fix {
+.problems-quick-fix,
+.problems-copy {
   width: 30px;
   border: 0;
   background: transparent;
   color: var(--text-muted);
   cursor: pointer;
   opacity: 0;
+  display: grid;
+  place-items: center;
 }
 
 .problems-item-row:hover .problems-quick-fix,
-.problems-quick-fix:focus {
+.problems-item-row:hover .problems-copy,
+.problems-quick-fix:focus,
+.problems-copy:focus {
   opacity: 1;
+}
+
+.problems-quick-fix:hover,
+.problems-quick-fix:focus {
   color: #f59e0b;
+}
+
+.problems-copy:hover,
+.problems-copy:focus {
+  color: var(--accent);
 }

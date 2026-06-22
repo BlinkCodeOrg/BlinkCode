@@ -7,6 +7,24 @@ import type { BrowserPreviewConsoleEntry } from './BrowserPreviewBody';
 import { BrowserPreviewToolbar } from './BrowserPreviewToolbar';
 import './BrowserPreview.css';
 
+const PREVIEW_RECENT_URLS_KEY = 'blinkcode-preview-recent-urls';
+const PREVIEW_RECENT_URL_LIMIT = 8;
+
+function readRecentPreviewUrls() {
+  try {
+    const value = JSON.parse(localStorage.getItem(PREVIEW_RECENT_URLS_KEY) || '[]');
+    return Array.isArray(value) ? value.filter(item => typeof item === 'string').slice(0, PREVIEW_RECENT_URL_LIMIT) : [];
+  } catch {
+    return [];
+  }
+}
+
+function rememberPreviewUrl(url: string) {
+  const next = [url, ...readRecentPreviewUrls().filter(item => item !== url)].slice(0, PREVIEW_RECENT_URL_LIMIT);
+  try { localStorage.setItem(PREVIEW_RECENT_URLS_KEY, JSON.stringify(next)); } catch {}
+  return next;
+}
+
 export default function BrowserPreview() {
   const {
     state,
@@ -26,6 +44,7 @@ export default function BrowserPreview() {
   const [consoleEntries, setConsoleEntries] = useState<BrowserPreviewConsoleEntry[]>([]);
   const [consoleOpen, setConsoleOpen] = useState(false);
   const [consoleFilter, setConsoleFilter] = useState<'all' | BrowserPreviewConsoleEntry['level']>('all');
+  const [recentUrls, setRecentUrls] = useState<string[]>(readRecentPreviewUrls);
   const validatedUrl = useMemo(() => normalizeBrowserUrl(state.browserUrl || ''), [state.browserUrl]);
   const isSupportedUrl = Boolean(validatedUrl);
 
@@ -56,6 +75,7 @@ export default function BrowserPreview() {
       setHistory(nextHistory);
       setHistoryIndex(nextHistory.length - 1);
     }
+    setRecentUrls(rememberPreviewUrl(url));
     openBrowserPreview(url);
   };
 
@@ -125,6 +145,7 @@ export default function BrowserPreview() {
       setBrowserLoading(false);
       setBrowserError(null);
       addConsoleEntry('info', `Loaded: ${validatedUrl}`);
+      setRecentUrls(rememberPreviewUrl(validatedUrl));
       setBrowserUrl(validatedUrl);
     };
     const onDidFailLoad = (event: Event) => {
@@ -203,7 +224,9 @@ export default function BrowserPreview() {
         consoleOpen={consoleOpen}
         consoleCount={consoleEntries.length}
         consoleProblemCount={consoleProblemCount}
+        recentUrls={recentUrls}
         onToggleConsole={() => setConsoleOpen(open => !open)}
+        onSelectRecentUrl={url => navigate(url)}
         device={device}
         onDeviceChange={setDevice}
       />

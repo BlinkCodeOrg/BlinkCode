@@ -1,6 +1,6 @@
 .top-header {
   height: 42px;
-  background: color-mix(in srgb, var(--bg-toolbar) 84%, var(--surface-base));
+  background: color-mix(in srgb, var(--bg-toolbar) 90%, var(--surface-base));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -9,7 +9,7 @@
   user-select: none;
   z-index: 100;
   -webkit-app-region: drag;
-  box-shadow: inset 0 -1px 0 var(--border-weaker, var(--border-subtle));
+  box-shadow: inset 0 -1px 0 var(--border-weaker, var(--border-subtle)), 0 1px 0 rgba(255, 255, 255, 0.02);
 }
 
 .top-left, .top-center, .top-right {
@@ -75,7 +75,7 @@
 .header-btn {
   background: none;
   border: none;
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   cursor: pointer;
   min-height: 30px;
   padding: 0 10px;
@@ -103,7 +103,7 @@
 
 .folder-btn {
   color: var(--text-primary);
-  background: var(--surface-raised-base);
+  background: color-mix(in srgb, var(--surface-raised-base) 86%, var(--accent) 8%);
   border: 1px solid var(--border-light);
   padding: 0 12px;
 }
@@ -267,7 +267,7 @@
   align-items: center;
   gap: 6px;
   padding: 0 9px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid color-mix(in srgb, var(--border-subtle) 82%, transparent);
   border-radius: 7px;
   color: var(--text-muted);
   background: color-mix(in srgb, var(--surface-base) 72%, transparent);
@@ -283,6 +283,17 @@
   .header-clock-date,
   .header-btn span { display: none; }
   .header-btn { padding: 0 8px; }
+}
+
+@media (max-width: 980px) {
+  .header-clock,
+  .update-indicator {
+    display: none;
+  }
+
+  .top-center {
+    width: min(420px, 46vw);
+  }
 }
 
 .window-controls {
