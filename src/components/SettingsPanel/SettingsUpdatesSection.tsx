@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import {
   AlertCircle,
   ArrowDownToLine,
@@ -12,6 +11,7 @@ import { Switch } from '../ui/Switch';
 import { useAppUpdates } from '../providers/AppUpdatesProvider';
 import { useEditor } from '../../store/EditorContext';
 import { formatReleaseNotes } from '../../features/updates/formatReleaseNotes';
+import { useAppVersion } from '../../features/appVersion/useAppVersion';
 
 export default function SettingsUpdatesSection({
   tt,
@@ -29,21 +29,7 @@ export default function SettingsUpdatesSection({
     downloadUpdate,
     installUpdate,
   } = useAppUpdates();
-  const [currentVersion, setCurrentVersion] = useState('-');
-  useEffect(() => {
-    let active = true;
-    void window.electronAPI
-      ?.getAppVersion?.()
-      .then((version) => {
-        if (active) setCurrentVersion(version);
-      })
-      .catch(() => {
-        if (active) setCurrentVersion('N/A');
-      });
-    return () => {
-      active = false;
-    };
-  }, []);
+  const currentVersion = useAppVersion();
 
   const downloaded = updateStatus?.updateDownloaded === true;
   const hasUpdate = Boolean(updateStatus?.availableUpdate);

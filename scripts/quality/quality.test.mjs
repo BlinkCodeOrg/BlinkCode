@@ -124,6 +124,7 @@ test('file cursor persistence endpoints and Monaco integration are wired', () =>
   const serverSource = readSource('server/index.js');
   const dbSource = readSource('server/db.js');
   const monacoSource = readSource('src/features/editorMonaco/useMonacoEditorLifecycle.ts');
+  const restoreViewSource = readSource('src/features/editorMonaco/restoreEditorViewState.ts');
   const saveClientSource = readSource('src/features/apiClient/saveFileCursorPosition.ts');
   const fetchClientSource = readSource('src/features/apiClient/fetchFileCursorPosition.ts');
 
@@ -134,7 +135,9 @@ test('file cursor persistence endpoints and Monaco integration are wired', () =>
   assert.match(dbSource, /JSON\.parse\(row\.view_state\)/);
   assert.match(monacoSource, /fetchFileCursorPosition/);
   assert.match(monacoSource, /saveFileCursorPosition/);
-  assert.match(monacoSource, /restoreViewState/);
+  assert.match(monacoSource, /restoreEditorViewState/);
+  assert.match(restoreViewSource, /restoreViewState/);
+  assert.match(restoreViewSource, /revealPositionInCenterIfOutsideViewport/);
   assert.match(monacoSource, /saveViewState/);
   assert.match(monacoSource, /onDidScrollChange/);
   assert.match(saveClientSource, /viewState/);
@@ -229,6 +232,17 @@ test('server and Electron enforce baseline security restrictions', () => {
   assert.match(electronSource, /will-navigate/);
   assert.match(electronSource, /contextIsolation: true/);
   assert.match(electronSource, /nodeIntegration: false/);
+});
+
+test('settings footer reads the installed Electron app version', () => {
+  const mainSource = readSource('electron/main.mjs');
+  const footerSource = readSource('src/components/SettingsPanel/SettingsFooter.tsx');
+  const versionSource = readSource('src/features/appVersion/useAppVersion.ts');
+
+  assert.match(mainSource, /ipcMain\.handle\('app:get-version', \(\) => app\.getVersion\(\)\)/);
+  assert.match(footerSource, /useAppVersion\(\)/);
+  assert.doesNotMatch(footerSource, /v1\.3\.4/);
+  assert.match(versionSource, /getAppVersion/);
 });
 
 test('NPM scripts discovery includes nested packages and ignores dependencies', () => {

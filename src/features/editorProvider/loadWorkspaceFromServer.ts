@@ -35,14 +35,13 @@ export async function loadWorkspaceFromServer(
     } catch {}
 
     if (saved && saved.folderClosed) {
-      if (saved.settings) {
-        dispatch({ type: 'RESTORE_STATE', payload: { settings: saved.settings } });
-      }
       return;
     }
 
     if (saved?.workspaceDir) {
-      try { await openFolderOnServer(saved.workspaceDir); } catch {}
+      try {
+        await openFolderOnServer(saved.workspaceDir);
+      } catch {}
       dispatch({ type: 'SET_WORKSPACE_DIR', payload: saved.workspaceDir });
     }
 
@@ -53,17 +52,28 @@ export async function loadWorkspaceFromServer(
     }
 
     if (saved && Object.keys(saved).length > 0) {
-      dispatch({ type: 'RESTORE_STATE', payload: saved });
+      // Settings have their own authoritative persistence. Restoring the legacy
+      // copy from editor state can overwrite a newly saved custom background.
+      const { settings: _legacySettings, ...savedEditorState } = saved;
+      dispatch({ type: 'RESTORE_STATE', payload: savedEditorState });
 
       if (saved.openTabs && saved.openTabs.length > 0) {
         for (const tabInfo of saved.openTabs) {
-          if (!tabInfo.isBinary && tabInfo.serverPath && !isBinaryBlockedFile(tabInfo.serverPath)) {
+          if (
+            !tabInfo.isBinary &&
+            tabInfo.serverPath &&
+            !isBinaryBlockedFile(tabInfo.serverPath)
+          ) {
             const file = findNodeByPath(files, tabInfo.serverPath);
-            const largeFile = typeof file?.size === 'number' && file.size > LARGE_FILE_LIMIT;
+            const largeFile =
+              typeof file?.size === 'number' && file.size > LARGE_FILE_LIMIT;
             if (file && file.type === 'file' && !largeFile) {
               try {
                 const content = await fetchFileContent(file.serverPath!);
-                dispatch({ type: 'SET_FILE_CONTENT', payload: { fileId: file.id, content } });
+                dispatch({
+                  type: 'SET_FILE_CONTENT',
+                  payload: { fileId: file.id, content },
+                });
               } catch {}
             }
           }
@@ -75,8 +85,17 @@ export async function loadWorkspaceFromServer(
       const recoveryBuffers = await fetchRecoveryBuffers();
       for (const buffer of recoveryBuffers) {
         const file = findNodeByPath(files, buffer.filePath);
-        if (!file || file.type !== 'file' || file.binary || isBinaryBlockedFile(file.name)) continue;
-        dispatch({ type: 'UPDATE_FILE_CONTENT', payload: { fileId: file.id, content: buffer.content } });
+        if (
+          !file ||
+          file.type !== 'file' ||
+          file.binary ||
+          isBinaryBlockedFile(file.name)
+        )
+          continue;
+        dispatch({
+          type: 'UPDATE_FILE_CONTENT',
+          payload: { fileId: file.id, content: buffer.content },
+        });
         dispatch({ type: 'OPEN_FILE', payload: { file } });
       }
     } catch {}

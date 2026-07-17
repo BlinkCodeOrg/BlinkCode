@@ -21,6 +21,7 @@ import { applyEditorConfigToEditor } from './applyEditorConfigToEditor';
 import { AI_QUICK_ACTIONS } from '../ai/aiQuickActions';
 import { t } from '../../utils/i18n';
 import { useExtensionFeature } from '../extensions/ExtensionContext';
+import { restoreEditorViewState } from './restoreEditorViewState';
 
 interface UseMonacoEditorLifecycleParams {
   activeFile: FileNode | null;
@@ -95,14 +96,7 @@ export function useMonacoEditorLifecycle({
     fetchFileCursorPosition(serverPath)
       .then(position => {
         if (cancelled || !position) return;
-        if (position.viewState) {
-          editor.restoreViewState(position.viewState);
-          editor.focus();
-          return;
-        }
-
-        editor.setPosition({ lineNumber: position.line, column: position.column });
-        editor.revealLineInCenterIfOutsideViewport?.(position.line);
+        restoreEditorViewState(editor, position);
       })
       .catch(() => {});
 
@@ -122,93 +116,95 @@ export function useMonacoEditorLifecycle({
   }, [activeFile?.serverPath]);
 
   const handleMount: OnMount = useCallback((editor, monaco) => {
-    editorRef.current = editor;
-    monacoRef.current = monaco;
-    (window as any).monaco = monaco;
+      editorRef.current = editor;
+      monacoRef.current = monaco;
+      (window as any).monaco = monaco;
 
-    const mountedModel = editor.getModel?.();
-    if (mountedModel && activeFile?.name) {
-      monaco.editor.setModelLanguage(mountedModel, getMonacoLanguage(activeFile.name));
-    }
-    if (group === 'primary') registerEditor(editor);
-
-    const currentSettings = settingsRef.current;
-    registerBlinkThemes(monaco, currentSettings.importedTheme);
-    const themeName = getMonacoTheme(currentSettings.theme, currentSettings.colorScheme);
-    monaco.editor.setTheme(themeName);
-    editor.updateOptions(createEditorMountOptions(currentSettings));
-    debugBreakpointsRef.current?.dispose();
-    debugBreakpointsRef.current = attachDebugBreakpoints(
-      monaco,
-      editor,
-      () => activeFileRef.current?.serverPath,
-    );
-    if (currentSettings.tailwindTooling) registerTailwindTooling(monaco);
-    if (currentSettings.aiInlineCompletions) registerAiInlineCompletions(monaco);
-    registerSchemaTooling(monaco);
-    registerEnvTooling(monaco);
-    registerSnippetTooling(monaco, currentSettings.snippets);
-    if (spellCheckerExtension) registerSpellChecker(monaco);
-    editorConfigModelRef.current?.dispose();
-    editorConfigModelRef.current = editor.onDidChangeModel?.(() => {
-      const file = activeFileRef.current;
-      if (file?.serverPath) {
-        applyEditorConfigToEditor(editor, file.serverPath, settingsRef.current).catch(() => {});
+      const mountedModel = editor.getModel?.();
+      if (mountedModel && activeFile?.name) {
+        monaco.editor.setModelLanguage(mountedModel, getMonacoLanguage(activeFile.name));
       }
-    }) || null;
-    if (activeFileRef.current?.serverPath) {
-      applyEditorConfigToEditor(editor, activeFileRef.current.serverPath, currentSettings).catch(() => {});
-    }
-    AI_QUICK_ACTIONS.forEach(action => {
-      editor.addAction({
-        id: `blinkcode.ai.${action.id}`,
-        label: t('ai.contextAction', currentSettings.language, { action: t(action.labelKey, currentSettings.language) }),
-        contextMenuGroupId: 'navigation',
-        contextMenuOrder: 50,
-        run: () => {
-          window.dispatchEvent(new CustomEvent('blinkcode:aiQuickAction', { detail: { action: action.id } }));
-        },
+      if (group === 'primary') registerEditor(editor);
+
+      const currentSettings = settingsRef.current;
+      registerBlinkThemes(monaco, currentSettings.importedTheme);
+      const themeName = getMonacoTheme(currentSettings.theme, currentSettings.colorScheme);
+      monaco.editor.setTheme(themeName);
+      editor.updateOptions(createEditorMountOptions(currentSettings));
+      debugBreakpointsRef.current?.dispose();
+      debugBreakpointsRef.current = attachDebugBreakpoints(
+        monaco,
+        editor,
+        () => activeFileRef.current?.serverPath,
+      );
+      if (currentSettings.tailwindTooling) registerTailwindTooling(monaco);
+      if (currentSettings.aiInlineCompletions) registerAiInlineCompletions(monaco);
+      registerSchemaTooling(monaco);
+      registerEnvTooling(monaco);
+      registerSnippetTooling(monaco, currentSettings.snippets);
+      if (spellCheckerExtension) registerSpellChecker(monaco);
+      editorConfigModelRef.current?.dispose();
+      editorConfigModelRef.current = editor.onDidChangeModel?.(() => {
+          const file = activeFileRef.current;
+          if (file?.serverPath) {
+            applyEditorConfigToEditor(editor, file.serverPath, settingsRef.current).catch(() => {});
+          }
+        }) || null;
+      if (activeFileRef.current?.serverPath) {
+        applyEditorConfigToEditor(editor, activeFileRef.current.serverPath, currentSettings).catch(() => {});
+      }
+      AI_QUICK_ACTIONS.forEach(action => {
+        editor.addAction({
+          id: `blinkcode.ai.${action.id}`,
+          label: t('ai.contextAction', currentSettings.language, { action: t(action.labelKey, currentSettings.language) }),
+          contextMenuGroupId: 'navigation',
+          contextMenuOrder: 50,
+          run: () => {
+            window.dispatchEvent(new CustomEvent('blinkcode:aiQuickAction', { detail: { action: action.id } }));
+          },
+        });
       });
-    });
-    envMaskRef.current?.dispose();
-    envMaskRef.current = attachEnvSecretMasking(monaco, editor, () => settingsRef.current.envMaskSecrets);
-    tailwindSortRef.current?.dispose();
-    tailwindSortRef.current = currentSettings.tailwindClassSorting
-      ? attachTailwindSortAction(monaco, editor)
-      : null;
+      envMaskRef.current?.dispose();
+      envMaskRef.current = attachEnvSecretMasking(monaco, editor, () => settingsRef.current.envMaskSecrets);
+      tailwindSortRef.current?.dispose();
+      tailwindSortRef.current = currentSettings.tailwindClassSorting
+        ? attachTailwindSortAction(monaco, editor)
+        : null;
 
-    editor.onDidChangeCursorPosition((event: any) => {
-      window.dispatchEvent(new CustomEvent('blinkcode:cursorPosition', {
-        detail: { line: event.position.lineNumber, column: event.position.column },
-      }));
-
-      scheduleFileViewStateSave(editor);
-    });
-
-    editor.onDidScrollChange(() => {
-      scheduleFileViewStateSave(editor);
-      const path = activeFileRef.current?.serverPath;
-      if (path && /\.(md|mdx|markdown)$/i.test(path)) {
-        const max = Math.max(1, editor.getScrollHeight() - editor.getLayoutInfo().height);
-        window.dispatchEvent(new CustomEvent('blinkcode:markdownEditorScroll', {
-          detail: { path, ratio: editor.getScrollTop() / max },
+      editor.onDidChangeCursorPosition((event: any) => {
+        window.dispatchEvent(new CustomEvent('blinkcode:cursorPosition', {
+          detail: { line: event.position.lineNumber, column: event.position.column },
         }));
+
+        scheduleFileViewStateSave(editor);
+      });
+
+      editor.onDidScrollChange(() => {
+        scheduleFileViewStateSave(editor);
+        const path = activeFileRef.current?.serverPath;
+        if (path && /\.(md|mdx|markdown)$/i.test(path)) {
+          const max = Math.max(1, editor.getScrollHeight() - editor.getLayoutInfo().height);
+          window.dispatchEvent(new CustomEvent('blinkcode:markdownEditorScroll', {
+            detail: { path, ratio: editor.getScrollTop() / max },
+          }));
+        }
+      });
+
+      function scheduleFileViewStateSave(currentEditor: any) {
+        const serverPath = activeFileRef.current?.serverPath;
+        if (!serverPath || serverPath.startsWith('__')) return;
+        const model = currentEditor.getModel?.();
+        if (cursorSaveTimer.current) clearTimeout(cursorSaveTimer.current);
+        cursorSaveTimer.current = setTimeout(() => {
+          if (currentEditor.getModel?.() !== model) return;
+          const position = currentEditor.getPosition?.();
+          if (!position) return;
+          const viewState = currentEditor.saveViewState?.();
+          saveFileCursorPosition(serverPath, position.lineNumber, position.column, viewState).catch(() => {});
+        }, 500);
       }
-    });
 
-    function scheduleFileViewStateSave(currentEditor: any) {
-      const serverPath = activeFileRef.current?.serverPath;
-      if (!serverPath || serverPath.startsWith('__')) return;
-      if (cursorSaveTimer.current) clearTimeout(cursorSaveTimer.current);
-      cursorSaveTimer.current = setTimeout(() => {
-        const position = currentEditor.getPosition?.();
-        if (!position) return;
-        const viewState = currentEditor.saveViewState?.();
-        saveFileCursorPosition(serverPath, position.lineNumber, position.column, viewState).catch(() => {});
-      }, 500);
-    }
-
-    try { attachLspToEditor(monaco, editor, workspaceDir || ''); } catch {}
+      try { attachLspToEditor(monaco, editor, workspaceDir || ''); } catch {}
   }, [activeFile?.name, group, registerEditor, spellCheckerExtension, workspaceDir]);
 
   return {
