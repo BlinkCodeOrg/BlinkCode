@@ -103,7 +103,8 @@ export const en: Record<string, string> = {
   'dependencies.remove': 'Remove dependency',
   'dependencies.upToDate': 'Dependencies are up to date',
   'dependencies.checkFailed': 'Failed to check dependency updates',
-  'dependencies.packageMissing': 'Some dependencies were not found in the configured package registry',
+  'dependencies.packageMissing':
+    'Some dependencies were not found in the configured package registry',
   'search.run': 'Search',
   'problems.title': 'Problems',
   'problems.all': 'All',
@@ -123,30 +124,50 @@ export const en: Record<string, string> = {
   'search.replaceFailed': 'Replace failed',
   'empty.simpleWelcome': 'Welcome to BlinkCode',
   'onboarding.title': 'Welcome to BlinkCode',
-  'onboarding.description': 'BlinkCode helps you quickly open folders, edit project files and work in a focused development workspace.',
+  'onboarding.description':
+    'BlinkCode helps you quickly open folders, edit project files and work in a focused development workspace.',
   'onboarding.section.start': 'Getting started',
   'onboarding.section.files': 'Files and editing',
   'onboarding.section.interface': 'Interface',
   'onboarding.section.workflow': 'Workflow and convenience',
-  'onboarding.item.startIntro': 'This screen appears when you open BlinkCode for the first time so you can quickly understand how the editor works.',
-  'onboarding.item.openFolder': 'Use Open to load your project folder into the explorer.',
-  'onboarding.item.projectTree': 'After opening a folder, the explorer shows your project structure and lets you navigate through files and folders.',
-  'onboarding.item.editFiles': 'Click any supported file to open and edit it in the code editor.',
-  'onboarding.item.filesIntro': 'BlinkCode is focused on editing project files directly inside one workspace.',
-  'onboarding.item.supportedFiles': 'Supported code, config and text files open normally in the editor with syntax highlighting and editing enabled.',
-  'onboarding.item.unsupported': 'Unsupported files open safely in read-only mode instead of breaking the editor.',
-  'onboarding.item.logs': 'Log files and plain text files can also be opened directly in the editor.',
-  'onboarding.item.tabs': 'Opened files stay in tabs at the top, so you can switch between files without losing your current place.',
-  'onboarding.item.interfaceIntro': 'The interface is organized to keep navigation and editing fast and predictable.',
-  'onboarding.item.sidebar': 'Use the left activity bar to open or hide the explorer at any time.',
-  'onboarding.item.activityBar': 'The activity bar stays visible even when the explorer is collapsed, so the workspace is always one click away.',
-  'onboarding.item.settings': 'Use Settings to configure theme, editor behavior and shortcuts.',
-  'onboarding.item.ai': 'The AI panel can be opened when needed to help analyze or improve code inside the current workspace.',
-  'onboarding.item.workflowIntro': 'BlinkCode also keeps common development actions close to the editor so you can stay focused.',
-  'onboarding.item.autosave': 'Files are saved using the current autosave logic, so edits are preserved without extra manual steps when autosave is enabled.',
-  'onboarding.item.restore': 'Open tabs, workspace state and some layout preferences can be restored between launches.',
-  'onboarding.item.shortcuts': 'Keyboard shortcuts are available for common actions such as save, undo, redo, sidebar toggle and more.',
-  'onboarding.item.themes': 'Themes, color scheme and editor appearance can be adjusted to match your preferred workflow.',
+  'onboarding.item.startIntro':
+    'This screen appears when you open BlinkCode for the first time so you can quickly understand how the editor works.',
+  'onboarding.item.openFolder':
+    'Use Open to load your project folder into the explorer.',
+  'onboarding.item.projectTree':
+    'After opening a folder, the explorer shows your project structure and lets you navigate through files and folders.',
+  'onboarding.item.editFiles':
+    'Click any supported file to open and edit it in the code editor.',
+  'onboarding.item.filesIntro':
+    'BlinkCode is focused on editing project files directly inside one workspace.',
+  'onboarding.item.supportedFiles':
+    'Supported code, config and text files open normally in the editor with syntax highlighting and editing enabled.',
+  'onboarding.item.unsupported':
+    'Unsupported files open safely in read-only mode instead of breaking the editor.',
+  'onboarding.item.logs':
+    'Log files and plain text files can also be opened directly in the editor.',
+  'onboarding.item.tabs':
+    'Opened files stay in tabs at the top, so you can switch between files without losing your current place.',
+  'onboarding.item.interfaceIntro':
+    'The interface is organized to keep navigation and editing fast and predictable.',
+  'onboarding.item.sidebar':
+    'Use the left activity bar to open or hide the explorer at any time.',
+  'onboarding.item.activityBar':
+    'The activity bar stays visible even when the explorer is collapsed, so the workspace is always one click away.',
+  'onboarding.item.settings':
+    'Use Settings to configure theme, editor behavior and shortcuts.',
+  'onboarding.item.ai':
+    'The AI panel can be opened when needed to help analyze or improve code inside the current workspace.',
+  'onboarding.item.workflowIntro':
+    'BlinkCode also keeps common development actions close to the editor so you can stay focused.',
+  'onboarding.item.autosave':
+    'Files are saved using the current autosave logic, so edits are preserved without extra manual steps when autosave is enabled.',
+  'onboarding.item.restore':
+    'Open tabs, workspace state and some layout preferences can be restored between launches.',
+  'onboarding.item.shortcuts':
+    'Keyboard shortcuts are available for common actions such as save, undo, redo, sidebar toggle and more.',
+  'onboarding.item.themes':
+    'Themes, color scheme and editor appearance can be adjusted to match your preferred workflow.',
   'onboarding.dontShowAgain': "Don't show this help again",
   'onboarding.startWorking': 'Start working',
   'onboarding.dismissTitle': 'Close this help screen?',
@@ -220,7 +241,8 @@ export const en: Record<string, string> = {
   'settings.minimap': 'Minimap',
   'settings.minimap.desc': 'Controls whether the minimap is shown',
   'settings.stickyScroll': 'Sticky Scroll',
-  'settings.stickyScroll.desc': 'Keeps parent scopes visible while scrolling code',
+  'settings.stickyScroll.desc':
+    'Keeps parent scopes visible while scrolling code',
   'settings.fontLigatures': 'Font Ligatures',
   'settings.fontLigatures.desc': 'Controls font ligatures rendering',
   'settings.lineNumbers': 'Line Numbers',
@@ -234,28 +256,35 @@ export const en: Record<string, string> = {
   'settings.renderWhitespace': 'Render Whitespace',
   'settings.renderWhitespace.desc': 'Controls whitespace rendering',
   'settings.bracketPairColorization': 'Bracket Pair Colorization',
-  'settings.bracketPairColorization.desc': 'Enables colorization of matching brackets',
+  'settings.bracketPairColorization.desc':
+    'Enables colorization of matching brackets',
   'settings.autoClosingBrackets': 'Auto Closing Brackets',
   'settings.autoClosingBrackets.desc': 'Controls auto closing of brackets',
   'settings.smoothScrolling': 'Smooth Scrolling',
   'settings.smoothScrolling.desc': 'Controls smooth scrolling animation',
   'settings.gitInlineBlame': 'Inline Git Blame',
-  'settings.gitInlineBlame.desc': 'Show Git author and commit summary for the current line',
+  'settings.gitInlineBlame.desc':
+    'Show Git author and commit summary for the current line',
   'settings.trimTrailingWhitespace': 'Trim Trailing Whitespace',
   'settings.trimTrailingWhitespace.desc': 'Trims trailing whitespace on save',
   'settings.insertFinalNewline': 'Insert Final Newline',
-  'settings.insertFinalNewline.desc': 'Ensures text files end with a newline when saved',
+  'settings.insertFinalNewline.desc':
+    'Ensures text files end with a newline when saved',
   'settings.insertSpaces': 'Insert Spaces',
   'settings.insertSpaces.desc': 'Insert spaces when pressing Tab',
   'settings.webWorkflow': 'Web App Center',
-  'settings.webWorkflow.desc': 'Control first-run guidance and local preview behavior.',
-  'settings.webWorkflow.previewBehavior': 'Preview after local server detection',
-  'settings.webWorkflow.previewBehavior.desc': 'Choose what BlinkCode does when a localhost URL is found.',
+  'settings.webWorkflow.desc':
+    'Control first-run guidance and local preview behavior.',
+  'settings.webWorkflow.previewBehavior':
+    'Preview after local server detection',
+  'settings.webWorkflow.previewBehavior.desc':
+    'Choose what BlinkCode does when a localhost URL is found.',
   'settings.webWorkflow.preview.ask': 'Ask first',
   'settings.webWorkflow.preview.auto': 'Auto-open preview',
   'settings.webWorkflow.preview.never': 'Never auto-open',
   'settings.webWorkflow.mode': 'Web App Center mode',
-  'settings.webWorkflow.mode.desc': 'Use guided mode for onboarding or compact mode for daily work.',
+  'settings.webWorkflow.mode.desc':
+    'Use guided mode for onboarding or compact mode for daily work.',
   'settings.webWorkflow.mode.guided': 'Guided',
   'settings.webWorkflow.mode.compact': 'Compact',
 
@@ -266,19 +295,24 @@ export const en: Record<string, string> = {
   'settings.compactMode': 'Compact Mode',
   'settings.compactMode.desc': 'Reduce spacing for denser UI',
   'settings.dotGridColor': 'Dot Grid Color',
-  'settings.dotGridColor.desc': 'Color of the interactive dot grid on the welcome screen',
+  'settings.dotGridColor.desc':
+    'Color of the interactive dot grid on the welcome screen',
   'settings.backgroundStyle': 'Background Style',
-  'settings.backgroundStyle.desc': 'Choose the background style for the empty editor area',
+  'settings.backgroundStyle.desc':
+    'Choose the background style for the empty editor area',
   'backgroundStyle.dotgrid': 'Dot Grid',
   'backgroundStyle.solid': 'Solid',
   'settings.editorBackground': 'Editor Backdrop',
-  'settings.editorBackground.desc': 'Add a subtle branded or custom background behind Monaco editor text',
+  'settings.editorBackground.desc':
+    'Add a subtle branded or custom background behind Monaco editor text',
   'settings.editorBackground.upload': 'Upload',
   'settings.editorBackground.remove': 'Remove',
   'settings.editorBackground.opacity': 'Backdrop opacity',
-  'settings.editorBackground.opacity.desc': 'Keep this low so code stays readable',
+  'settings.editorBackground.opacity.desc':
+    'Keep this low so code stays readable',
   'settings.editorBackground.blur': 'Backdrop blur',
-  'settings.editorBackground.blur.desc': 'Soften image detail behind the editor',
+  'settings.editorBackground.blur.desc':
+    'Soften image detail behind the editor',
   'settings.editorBackground.scale': 'Backdrop scale',
   'settings.editorBackground.brightness': 'Backdrop brightness',
   'editorBackground.none': 'None',
@@ -313,14 +347,17 @@ export const en: Record<string, string> = {
   'settings.files': 'Files',
   'settings.files.desc': 'Configure how files are saved',
   'settings.autoSaveDelay': 'Auto Save Delay',
-  'settings.autoSaveDelay.desc': 'Controls the delay before auto-saving changes',
+  'settings.autoSaveDelay.desc':
+    'Controls the delay before auto-saving changes',
   'settings.autoSaveOnFocusChange': 'Save On Focus Change',
-  'settings.autoSaveOnFocusChange.desc': 'Saves dirty files when the editor or window loses focus',
+  'settings.autoSaveOnFocusChange.desc':
+    'Saves dirty files when the editor or window loses focus',
 
   'settings.appearance': 'Appearance',
   'settings.appearance.desc': 'Customize the look of BlinkCode',
   'settings.colorScheme': 'Color Scheme',
-  'settings.colorScheme.desc': 'Choose whether BlinkCode uses a light or dark theme',
+  'settings.colorScheme.desc':
+    'Choose whether BlinkCode uses a light or dark theme',
   'colorScheme.dark': 'Dark',
   'colorScheme.light': 'Light',
   'colorScheme.system': 'System',
@@ -349,7 +386,8 @@ export const en: Record<string, string> = {
   'theme.amoled': 'AMOLED',
   'theme.amoled.desc': 'Pure black AMOLED theme',
   'theme.imported': 'Imported VS Code theme',
-  'theme.imported.desc': 'Colors from the most recently imported VS Code theme file',
+  'theme.imported.desc':
+    'Colors from the most recently imported VS Code theme file',
   'settings.language': 'Language',
   'settings.language.desc': 'Set the display language for the interface',
 
@@ -368,7 +406,8 @@ export const en: Record<string, string> = {
   'kb.toggleAI': 'Toggle AI Panel',
   'kb.toggleSettings': 'Toggle Settings',
   'kb.newFile': 'New File',
-  'kb.closeTab': 'Close Tab',  'kb.zoomIn': 'Zoom In',
+  'kb.closeTab': 'Close Tab',
+  'kb.zoomIn': 'Zoom In',
   'kb.zoomOut': 'Zoom Out',
   'kb.find': 'Find',
   'kb.replace': 'Find and Replace',
@@ -385,9 +424,9 @@ export const en: Record<string, string> = {
   'kb.closeAllTabs': 'Close All Tabs',
   'kb.formatDocument': 'Format Document',
 
-  'on': 'On',
+  on: 'On',
   'settings.off': 'Off',
-  'off': 'Off',
+  off: 'Off',
 
   'toast.openFolder': 'Use Chrome or Edge to open folders',
   'toast.reading': 'Reading folder...',
@@ -397,32 +436,41 @@ export const en: Record<string, string> = {
   'toast.ai': 'AI: {0}',
   'toast.openFileFirst': 'Open a file first',
   'toast.copied': 'Copied to clipboard',
-  'toast.revealUnavailable': 'Reveal in Explorer is available in the desktop app',
+  'toast.revealUnavailable':
+    'Reveal in Explorer is available in the desktop app',
 
   'preview.cannotDisplay': 'Cannot display image',
   'preview.markdown': 'Markdown Preview',
   'preview.binaryFile': 'Binary file — cannot display',
-  'preview.generatedFile': '{file} is a generated file and is opened in read-only mode.',
-  'preview.largeFile': '{file} is too large for normal editing and is opened in a limited read-only mode.',
+  'preview.generatedFile':
+    '{file} is a generated file and is opened in read-only mode.',
+  'preview.largeFile':
+    '{file} is too large for normal editing and is opened in a limited read-only mode.',
   'preview.readOnlyTextFile': '{file} is available in read-only mode.',
-  'preview.imagePreview': '{file} is shown as a preview instead of an editable text file.',
-  'preview.archiveFile': 'Archive files cannot be opened as text in the editor.',
+  'preview.imagePreview':
+    '{file} is shown as a preview instead of an editable text file.',
+  'preview.archiveFile':
+    'Archive files cannot be opened as text in the editor.',
   'preview.fontFile': 'Font files cannot be opened inside the code editor.',
-  'preview.documentFile': 'Document files are not available for inline editing here.',
+  'preview.documentFile':
+    'Document files are not available for inline editing here.',
   'preview.mediaFile': 'Media files are not editable in the code editor.',
-  'preview.binaryBlocked': 'This binary file cannot be opened as editable text.',
+  'preview.binaryBlocked':
+    'This binary file cannot be opened as editable text.',
   'preview.webOnlyTitle': 'Read-only file',
   'preview.webOnlyMessage': '{file} is available for viewing only.',
-  'preview.webOnlyDescription': 'Unsupported file types can be viewed but not edited.',
+  'preview.webOnlyDescription':
+    'Unsupported file types can be viewed but not edited.',
   'preview.readOnlyBadge': 'Read-only mode',
   'zoom.reset': 'Reset',
 
-  'openFolder': 'Open Folder',
+  openFolder: 'Open Folder',
   'explorer.unsupportedFileHint': 'This file is available for viewing only',
   'common.cancel': 'Cancel',
 
   'sc.title': 'Source Control',
-  'sc.noRepo': 'The folder is not a Git repository. Initialize a repository to use source control.',
+  'sc.noRepo':
+    'The folder is not a Git repository. Initialize a repository to use source control.',
   'sc.noChanges': 'No changes detected in the repository.',
   'sc.stagedChanges': 'Staged Changes',
   'sc.changes': 'Changes',
@@ -431,7 +479,8 @@ export const en: Record<string, string> = {
   'sc.commit': 'Commit',
   'sc.committed': 'Changes committed successfully',
   'sc.commitFailed': 'Commit failed: ',
-  'sc.commitIdentityHint': 'Git author is not configured. Run: git config user.name "Your Name" and git config user.email "you@example.com"',
+  'sc.commitIdentityHint':
+    'Git author is not configured. Run: git config user.name "Your Name" and git config user.email "you@example.com"',
   'sc.stage': 'Stage',
   'sc.stageAll': 'Stage All',
   'sc.unstage': 'Unstage',
@@ -444,17 +493,24 @@ export const en: Record<string, string> = {
   'sc.pushSuccess': 'Pushed commits',
   'sc.pullFailed': 'Pull failed: ',
   'sc.pushFailed': 'Push failed: ',
-  'sc.pullTrackingMissing': 'No tracking branch configured. Set upstream or run pull from origin for current branch.',
-  'sc.pullRemoteBranchMissing': 'Remote branch not found on origin. Check branch name and remote repository.',
-  'sc.pushUpstreamMissing': 'Upstream branch is not configured. Set upstream for the current branch.',
-  'sc.pushNonFastForward': 'Push rejected (non-fast-forward). Run pull first, resolve conflicts if needed, then push again.',
-  'sc.authFailed': 'Authentication failed for remote Git operation. Re-login to Git provider or fix credentials/token.',
+  'sc.pullTrackingMissing':
+    'No tracking branch configured. Set upstream or run pull from origin for current branch.',
+  'sc.pullRemoteBranchMissing':
+    'Remote branch not found on origin. Check branch name and remote repository.',
+  'sc.pushUpstreamMissing':
+    'Upstream branch is not configured. Set upstream for the current branch.',
+  'sc.pushNonFastForward':
+    'Push rejected (non-fast-forward). Run pull first, resolve conflicts if needed, then push again.',
+  'sc.authFailed':
+    'Authentication failed for remote Git operation. Re-login to Git provider or fix credentials/token.',
   'sc.unknownGitError': 'Unknown Git error',
   'sc.stageFailed': 'Stage failed: ',
   'sc.unstageFailed': 'Unstage failed: ',
   'sc.discardConfirmTitle': 'Discard local changes?',
-  'sc.discardConfirmOne': 'This will permanently discard all local changes in this file. This action cannot be undone.',
-  'sc.discardConfirmMany': 'Discard all local changes in {count} files? This cannot be undone.',
+  'sc.discardConfirmOne':
+    'This will permanently discard all local changes in this file. This action cannot be undone.',
+  'sc.discardConfirmMany':
+    'Discard all local changes in {count} files? This cannot be undone.',
   'sc.discardConfirmAction': 'Discard changes',
   'sc.discardFailed': 'Discard failed: ',
   'sc.diffPreview': 'Diff Preview',
@@ -497,7 +553,8 @@ export const en: Record<string, string> = {
   'ai.agent': 'Agent',
   'ai.confirmRun': 'Confirm & run',
   'browser.title': 'Browser preview',
-  'browser.empty': 'Open a link from the terminal or paste a local dev-server URL into the address bar.',
+  'browser.empty':
+    'Open a link from the terminal or paste a local dev-server URL into the address bar.',
   'browser.console': 'Console',
   'browser.consoleHint': 'Preview events and app messages',
   'browser.consoleEmpty': 'No preview events yet',
@@ -508,7 +565,8 @@ export const en: Record<string, string> = {
   'browser.consoleLogs': 'Logs',
   'browser.consoleInfo': 'Info',
   'browser.blockedTitle': 'Blocked URL',
-  'browser.blockedMessage': 'Embedded preview only allows safe http:// and https:// addresses.',
+  'browser.blockedMessage':
+    'Embedded preview only allows safe http:// and https:// addresses.',
   'browser.loadFailed': 'Unable to load page',
   'browser.frameTitle': 'BlinkCode Browser Preview',
   'browser.urlPlaceholder': 'Enter URL (http:// or https://)',
@@ -566,9 +624,11 @@ export const en: Record<string, string> = {
   'debug.watchPlaceholder': 'Expression to watch',
   'debug.watchExpression': 'Watch expression',
   'debug.addExpression': 'Add Expression',
-  'debug.openFileOrConfig': 'Open a JavaScript file or create a BlinkCode debug configuration',
+  'debug.openFileOrConfig':
+    'Open a JavaScript file or create a BlinkCode debug configuration',
   'dirty.title': 'Unsaved changes',
-  'dirty.message': 'Some files still contain changes that have not been written to disk. Save them before closing BlinkCode?',
+  'dirty.message':
+    'Some files still contain changes that have not been written to disk. Save them before closing BlinkCode?',
   'dirty.andMore': 'and {count} more...',
   'dirty.closeWithoutSaving': 'Close without saving',
   'dependency.update': 'Update dependency',
@@ -603,24 +663,35 @@ export const en: Record<string, string> = {
   'project.browse': 'Browse',
   'project.template.web': 'HTML, CSS and JavaScript starter.',
   'project.template.node': 'Minimal Node.js command-line project.',
-  'project.template.typescript': 'Small TypeScript package with build and test scripts.',
-  'project.template.reactVite': 'React, Vite and TypeScript starter for local web apps.',
-  'project.template.reactTailwind': 'React, Vite, TypeScript and Tailwind starter.',
-  'project.template.reactRouter': 'React, Tailwind and Router starter with two routes.',
-  'project.template.landing': 'Responsive landing page starter for product pages and MVPs.',
-  'project.template.apiClient': 'Frontend API client starter with .http requests and env example.',
-  'project.template.fullStack': 'React frontend with a small Express API service.',
-  'project.template.playground': 'Component playground for fast UI state exploration.',
+  'project.template.typescript':
+    'Small TypeScript package with build and test scripts.',
+  'project.template.reactVite':
+    'React, Vite and TypeScript starter for local web apps.',
+  'project.template.reactTailwind':
+    'React, Vite, TypeScript and Tailwind starter.',
+  'project.template.reactRouter':
+    'React, Tailwind and Router starter with two routes.',
+  'project.template.landing':
+    'Responsive landing page starter for product pages and MVPs.',
+  'project.template.apiClient':
+    'Frontend API client starter with .http requests and env example.',
+  'project.template.fullStack':
+    'React frontend with a small Express API service.',
+  'project.template.playground':
+    'Component playground for fast UI state exploration.',
   'rest.addRequest': 'Add a request such as',
   'rest.toggleResponse': 'Toggle response',
   'search.replaceMatch': 'Replace this match',
   'settings.envMask': 'Mask .env values',
-  'settings.envMask.desc': 'Blur secret values while editing environment files.',
+  'settings.envMask.desc':
+    'Blur secret values while editing environment files.',
   'settings.spellChecker': 'Spell checker',
-  'settings.spellChecker.desc': 'Check Markdown and plain-text documentation without scanning code identifiers.',
+  'settings.spellChecker.desc':
+    'Check Markdown and plain-text documentation without scanning code identifiers.',
   'settings.resetDefaults': 'Reset to defaults',
   'settings.snippets': 'Snippets',
-  'settings.snippets.desc': 'Language-specific Monaco snippets with tab stops such as ${1:name}.',
+  'settings.snippets.desc':
+    'Language-specific Monaco snippets with tab stops such as ${1:name}.',
   'settings.snippetName': 'Snippet name',
   'settings.snippetNamePlaceholder': 'Name',
   'settings.snippetPrefix': 'Snippet prefix',
@@ -635,14 +706,18 @@ export const en: Record<string, string> = {
   'settings.deleteSnippet': 'Delete snippet',
   'settings.snippetError.nameRequired': 'Enter a snippet name.',
   'settings.snippetError.prefixRequired': 'Enter a snippet prefix.',
-  'settings.snippetError.languagesRequired': 'Enter at least one Monaco language ID.',
+  'settings.snippetError.languagesRequired':
+    'Enter at least one Monaco language ID.',
   'settings.snippetError.bodyRequired': 'Enter the snippet body.',
-  'settings.snippetError.duplicatePrefix': 'This prefix already exists for one of the selected languages.',
+  'settings.snippetError.duplicatePrefix':
+    'This prefix already exists for one of the selected languages.',
   'settings.importTheme': 'Import VS Code theme',
   'settings.importThemeSuccess': 'Imported theme: {name}',
   'settings.importThemeFailed': 'Theme import failed: {error}',
-  'explorer.dirtyCloseProject': 'Save or discard all changed files before closing the project.',
-  'explorer.dirtyOpenProject': 'Save or discard all changed files before opening another project.',
+  'explorer.dirtyCloseProject':
+    'Save or discard all changed files before closing the project.',
+  'explorer.dirtyOpenProject':
+    'Save or discard all changed files before opening another project.',
   'trash.title': 'Move item to Trash',
   'trash.message': 'Move {type} "{name}" to Trash?',
   'trash.file': 'file',
@@ -663,7 +738,8 @@ export const en: Record<string, string> = {
   'watcher.keepChanges': 'Keep editor changes',
   'watcher.reload': 'Reload from disk',
   'watcher.changedTitle': 'File changed on disk',
-  'watcher.changedMessage': '{name} changed outside BlinkCode while it has unsaved edits.',
+  'watcher.changedMessage':
+    '{name} changed outside BlinkCode while it has unsaved edits.',
   'watcher.keptChanges': 'Kept local edits for {name}',
   'command.appearanceDark': 'Appearance: Use Dark Color Scheme',
   'command.appearanceLight': 'Appearance: Use Light Color Scheme',
@@ -719,21 +795,27 @@ export const en: Record<string, string> = {
   'explorer.dropFailed': 'Could not import {count} files',
   'explorer.addWorkspaceFolder': 'Add Folder to Workspace',
   'explorer.workspaceFolderAdded': 'Added workspace folder {name}',
-  'explorer.multiRootDesktopOnly': 'Adding another local folder requires the BlinkCode desktop app',
+  'explorer.multiRootDesktopOnly':
+    'Adding another local folder requires the BlinkCode desktop app',
   'updates.title': 'Application Updates',
-  'updates.description': 'Check GitHub Releases and install signed BlinkCode updates.',
+  'updates.description':
+    'Check GitHub Releases and install signed BlinkCode updates.',
   'updates.check': 'Check for Updates',
   'updates.downloadAndInstall': 'Download update',
   'updates.updateShort': 'Update',
   'updates.installShort': 'Install',
   'updates.topTitle': 'BlinkCode update',
-  'updates.confirmMessage': 'A new BlinkCode version is available. Download it now? The app will keep your workspace, open tabs, settings and local data.',
-  'updates.manualMessage': 'A new BlinkCode version is available, but automatic update files are not attached yet. Download the installer from GitHub Releases.',
+  'updates.confirmMessage':
+    'A new BlinkCode version is available. Download it now? The app will keep your workspace, open tabs, settings and local data.',
+  'updates.manualMessage':
+    'A new BlinkCode version is available, but automatic update files are not attached yet. Download the installer from GitHub Releases.',
   'updates.downloadingMessage': 'Downloading update... {percent}',
   'updates.downloadingPercent': 'Downloading {percent}%',
-  'updates.readyMessage': 'The update has been downloaded. BlinkCode will close and reopen to finish installation.',
+  'updates.readyMessage':
+    'The update has been downloaded. BlinkCode will close and reopen to finish installation.',
   'updates.errorMessage': 'Could not check or download the update.',
-  'updates.errorMissingFiles': 'Update files are not attached to the latest GitHub release yet.',
+  'updates.errorMissingFiles':
+    'Update files are not attached to the latest GitHub release yet.',
   'updates.errorNetwork': 'Could not reach GitHub to check for updates.',
   'updates.errorUnknown': 'Could not check for updates.',
   'updates.downloadFromGitHub': 'Download from GitHub',
@@ -750,6 +832,24 @@ export const en: Record<string, string> = {
   'updates.status.ready': 'Update is ready to install',
   'updates.status.development': 'Updates are available in packaged builds',
   'updates.status.error': 'Update failed',
+  'updates.bannerTitle': 'New Update Available',
+  'updates.autoUpdate': 'Auto Update',
+  'updates.autoUpdateDescription':
+    'Download updates automatically when they are found.',
+  'updates.currentVersion': 'Current Version: {version}',
+  'updates.downloadFailedVersion': 'Download failed for v{version}',
+  'updates.downloadingVersion': 'Downloading v{version}...',
+  'updates.downloadedVersion': 'Update v{version} downloaded',
+  'updates.availableVersion': 'Update available: v{version}',
+  'updates.upToDate': 'BlinkCode is up to date',
+  'updates.prompt': 'Check for BlinkCode updates',
+  'updates.installing': 'Installing...',
+  'updates.downloading': 'Downloading...',
+  'updates.retry': 'Retry Download',
+  'updates.install': 'Install Update',
+  'updates.download': 'Download Update',
+  'updates.unsupported':
+    'Built-in updates are unavailable in development, portable or unpacked Windows builds, and non-AppImage Linux packages.',
   'ai.action.explain': 'Explain',
   'ai.action.refactor': 'Refactor',
   'ai.action.fix': 'Fix',
@@ -757,14 +857,21 @@ export const en: Record<string, string> = {
   'ai.action.tests': 'Generate tests',
   'ai.action.optimize': 'Optimize',
   'category.ai': 'AI',
-  'ai.prompt.explain': 'Explain the selected code, its intent, data flow and important edge cases.',
-  'ai.prompt.refactor': 'Refactor the selected code for clarity and maintainability. Explain the proposed changes before editing.',
-  'ai.prompt.fix': 'Find and fix defects in the selected code. Describe the root cause and propose a minimal safe patch.',
-  'ai.prompt.document': 'Write concise documentation for the selected code, including parameters, return values and side effects.',
-  'ai.prompt.tests': 'Generate focused tests for the selected code, covering success, failure and edge cases.',
-  'ai.prompt.optimize': 'Optimize the selected code without changing behavior. Explain measurable tradeoffs.',
+  'ai.prompt.explain':
+    'Explain the selected code, its intent, data flow and important edge cases.',
+  'ai.prompt.refactor':
+    'Refactor the selected code for clarity and maintainability. Explain the proposed changes before editing.',
+  'ai.prompt.fix':
+    'Find and fix defects in the selected code. Describe the root cause and propose a minimal safe patch.',
+  'ai.prompt.document':
+    'Write concise documentation for the selected code, including parameters, return values and side effects.',
+  'ai.prompt.tests':
+    'Generate focused tests for the selected code, covering success, failure and edge cases.',
+  'ai.prompt.optimize':
+    'Optimize the selected code without changing behavior. Explain measurable tradeoffs.',
   'ai.confirmToolTitle': 'Approve AI action',
-  'ai.confirmToolMessage': 'Review and approve the AI tool “{tool}”. Nothing will run before confirmation.',
+  'ai.confirmToolMessage':
+    'Review and approve the AI tool “{tool}”. Nothing will run before confirmation.',
   'ai.contextAction': 'Blink AI: {action}',
   'file.createFailed': 'Could not create {name}: {error}',
   'file.renameFailed': 'Could not rename {name}: {error}',
@@ -811,9 +918,12 @@ export const en: Record<string, string> = {
   'ai.connectedModels': 'Connected · {count} models',
   'ai.providerUnavailable': 'Provider is unavailable',
   'ai.explainPrompt': 'Explain the selected code and its role in this project.',
-  'ai.reviewPrompt': 'Review the active file for bugs and propose focused fixes.',
-  'ai.contextHint': 'Chat includes the active file, selection, open files, project tree and relevant search results.',
-  'ai.connectHint': 'Connect an OpenAI-compatible provider in Provider settings before sending messages.',
+  'ai.reviewPrompt':
+    'Review the active file for bugs and propose focused fixes.',
+  'ai.contextHint':
+    'Chat includes the active file, selection, open files, project tree and relevant search results.',
+  'ai.connectHint':
+    'Connect an OpenAI-compatible provider in Provider settings before sending messages.',
   'ai.you': 'You',
   'ai.sending': 'Sending',
   'ai.send': 'Send',
@@ -824,21 +934,26 @@ export const en: Record<string, string> = {
   'tab.pin': 'Pin tab',
   'tab.unpin': 'Unpin tab',
   'settings.uiDensity': 'Interface density',
-  'settings.uiDensity.desc': 'Adjust spacing across tabs, panels and navigation.',
+  'settings.uiDensity.desc':
+    'Adjust spacing across tabs, panels and navigation.',
   'settings.uiScale': 'Interface scale',
-  'settings.uiScale.desc': 'Scale the workbench independently from editor text.',
+  'settings.uiScale.desc':
+    'Scale the workbench independently from editor text.',
   'settings.explorerRowHeight': 'Explorer row height',
   'settings.explorerRowHeight.desc': 'Choose a compact or spacious file tree.',
   'settings.bottomPanelPosition': 'Panel position',
-  'settings.bottomPanelPosition.desc': 'Place the shared panel at the bottom or right.',
+  'settings.bottomPanelPosition.desc':
+    'Place the shared panel at the bottom or right.',
   'density.compact': 'Compact',
   'density.default': 'Default',
   'density.comfortable': 'Comfortable',
   'panelPosition.bottom': 'Bottom',
   'panelPosition.right': 'Right',
   'bottomPanel.output': 'Output',
-  'bottomPanel.noOutput': 'Output will appear here when tools and extensions report activity.',
-  'bottomPanel.debugConsoleHint': 'Start or attach a debug session from Run and Debug to evaluate expressions.',
+  'bottomPanel.noOutput':
+    'Output will appear here when tools and extensions report activity.',
+  'bottomPanel.debugConsoleHint':
+    'Start or attach a debug session from Run and Debug to evaluate expressions.',
   'bottomPanel.openDebugger': 'Open Run and Debug',
   'bottomPanel.maximize': 'Maximize panel',
   'common.retry': 'Retry',
@@ -877,8 +992,10 @@ export const en: Record<string, string> = {
   'tailwind.utility': 'Tailwind CSS utility',
   'tailwind.unknownUtility': 'Unknown Tailwind utility "{name}"',
   'tailwind.sortClasses': 'Tailwind: Sort classes',
-  'schema.launch.version': 'BlinkCode debug configuration format version. Use 1.0.',
-  'schema.launch.configurations': 'Launch and attach configurations shown in BlinkCode Debug.',
+  'schema.launch.version':
+    'BlinkCode debug configuration format version. Use 1.0.',
+  'schema.launch.configurations':
+    'Launch and attach configurations shown in BlinkCode Debug.',
   'schema.launch.compounds': 'Named groups of configurations started together.',
   'schema.package.name': 'Package name used by npm and workspace tooling.',
   'schema.package.scripts': 'Named package-manager commands.',

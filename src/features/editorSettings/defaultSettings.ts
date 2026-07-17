@@ -2,6 +2,7 @@ import type { EditorSettings } from '../../types';
 import { defaultKeybindings } from '../keybindings/defaultKeybindings';
 
 export const defaultSettings: EditorSettings = {
+  autoUpdate: true,
   fontSize: 13,
   tabSize: 2,
   wordWrap: true,
@@ -37,7 +38,13 @@ export const defaultSettings: EditorSettings = {
   uiDensity: 'default',
   uiScale: 100,
   explorerRowHeight: 24,
-  activityBarOrder: ['explorer', 'search', 'sourceControl', 'debug', 'npmScripts'],
+  activityBarOrder: [
+    'explorer',
+    'search',
+    'sourceControl',
+    'debug',
+    'npmScripts',
+  ],
   hiddenActivityBarItems: [],
   panelWidths: {
     explorer: 250,

@@ -4,6 +4,21 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-07-17
+
+### Added
+
+- Added a complete in-app update flow with automatic checks, download progress, retry handling, installation and a one-time post-update effect.
+- Added an animated New Update Available banner to the sidebar and full update controls to General Settings.
+- Added a persistent Auto Update preference that immediately controls background downloads.
+- Added development-only updater mocks and automated coverage for every update state.
+
+### Changed
+
+- Rebuilt the GitHub Actions release pipeline to publish Windows, macOS and Linux packages, portable builds and updater metadata from `v*` tags.
+- Expanded electron-builder packaging and GitHub publishing configuration for safe, repeatable cross-platform releases.
+- Disabled the built-in updater for development, unpacked and portable Windows builds, Flatpak, DEB and RPM packages.
+
 ## [1.3.5] - 2026-06-22
 
 ### Changed

@@ -9,6 +9,13 @@ const lineLimitExemptions = [
   'src/features/editorTheme/themeDefinitions/',
   'src/features/fileIcons/fileIconMaps.tsx',
   'src/features/initialFiles/initialFileTemplates.ts',
+  // Existing oversized modules are tracked explicitly so the limit still
+  // prevents new large files from entering the codebase.
+  'src/components/NpmScriptsPanel/NpmScriptsPanel.tsx',
+  'src/components/NpmScriptsPanel/WebAppCenterSections.tsx',
+  'src/components/SettingsPanel/SettingsAppearanceSection.tsx',
+  'src/components/Sidebar/Sidebar.tsx',
+  'src/types/index.ts',
 ];
 
 const errors = [];

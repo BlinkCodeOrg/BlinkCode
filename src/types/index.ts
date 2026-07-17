@@ -14,7 +14,13 @@ export interface FileNode {
   settingsFilePath?: string;
   diffOriginalContent?: string;
   diffModifiedContent?: string;
-  diffHunks?: Array<{ oldStart: number; oldLines: number; newStart: number; newLines: number; type: 'added' | 'deleted' | 'modified' }>;
+  diffHunks?: Array<{
+    oldStart: number;
+    oldLines: number;
+    newStart: number;
+    newLines: number;
+    type: 'added' | 'deleted' | 'modified';
+  }>;
   markdownPreviewContent?: string;
   markdownPreviewSourcePath?: string;
   largePreviewContent?: string;
@@ -38,7 +44,12 @@ export interface FileNode {
     publishedAt: string | null;
     lastUpdatedAt: string | null;
     lastReleasedAt: string | null;
-    resources: Partial<Record<'repository' | 'issues' | 'license' | 'marketplace' | 'publisher', string>>;
+    resources: Partial<
+      Record<
+        'repository' | 'issues' | 'license' | 'marketplace' | 'publisher',
+        string
+      >
+    >;
   };
 }
 export interface Tab {
@@ -48,9 +59,19 @@ export interface Tab {
   language?: string;
   pinned?: boolean;
 }
-export type ActivityBarItemId = 'explorer' | 'search' | 'sourceControl' | 'debug' | 'extensions' | 'npmScripts';
+export type ActivityBarItemId =
+  | 'explorer'
+  | 'search'
+  | 'sourceControl'
+  | 'debug'
+  | 'extensions'
+  | 'npmScripts';
 export type WorkbenchPanelId = ActivityBarItemId;
-export interface ToastItem { id: string; message: string; type: 'success' | 'error' | 'info'; }
+export interface ToastItem {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'info';
+}
 export interface TerminalLine {
   id: string;
   text: string;
@@ -99,6 +120,7 @@ export type EditorBackgroundPreset =
   | 'blink-bg-6'
   | 'custom';
 export interface EditorSettings {
+  autoUpdate: boolean;
   fontSize: number;
   tabSize: number;
   wordWrap: boolean;
@@ -117,7 +139,8 @@ export interface EditorSettings {
   smoothScrolling: boolean;
   tailwindTooling: boolean;
   tailwindClassSorting: boolean;
-  webWorkflowPreviewBehavior: 'auto-open' | 'ask' | 'never'; webWorkflowMode: 'guided' | 'compact';
+  webWorkflowPreviewBehavior: 'auto-open' | 'ask' | 'never';
+  webWorkflowMode: 'guided' | 'compact';
   aiInlineCompletions: boolean;
   gitInlineBlame: boolean;
   envMaskSecrets: boolean;
@@ -149,7 +172,19 @@ export interface EditorSettings {
   keybindings: Keybinding[];
   language: 'en' | 'ru';
   colorScheme: 'dark' | 'light' | 'system';
-  theme: 'tokyonight' | 'everforest' | 'ayu' | 'catppuccin' | 'catppuccin-macchiato' | 'gruvbox' | 'kanagawa' | 'nord' | 'matrix' | 'one-dark' | 'amoled' | 'imported';
+  theme:
+    | 'tokyonight'
+    | 'everforest'
+    | 'ayu'
+    | 'catppuccin'
+    | 'catppuccin-macchiato'
+    | 'gruvbox'
+    | 'kanagawa'
+    | 'nord'
+    | 'matrix'
+    | 'one-dark'
+    | 'amoled'
+    | 'imported';
 }
 export interface EditorState {
   files: FileNode[];
@@ -187,7 +222,13 @@ export interface EditorState {
   workspaceDir: string;
 }
 export interface SavedEditorState {
-  openTabs?: Array<{ serverPath: string; name: string; language: string; isBinary?: boolean; pinned?: boolean }>;
+  openTabs?: Array<{
+    serverPath: string;
+    name: string;
+    language: string;
+    isBinary?: boolean;
+    pinned?: boolean;
+  }>;
   activeTabServerPath?: string | null;
   splitActiveTabServerPath?: string | null;
   sidebarWidth?: number;
@@ -211,18 +252,43 @@ export type EditorAction =
   | { type: 'OPEN_FILE'; payload: { file: FileNode } }
   | { type: 'CLOSE_TAB'; payload: { tabId: string } }
   | { type: 'SET_ACTIVE_TAB'; payload: { tabId: string } }
-  | { type: 'UPDATE_FILE_CONTENT'; payload: { fileId: string; content: string } }
+  | {
+      type: 'UPDATE_FILE_CONTENT';
+      payload: { fileId: string; content: string };
+    }
   | { type: 'TOGGLE_FOLDER'; payload: { folderId: string } }
-  | { type: 'ADD_FILE'; payload: { parentId: string | null; name: string; type: 'file' | 'folder'; serverPath?: string } }
+  | {
+      type: 'ADD_FILE';
+      payload: {
+        parentId: string | null;
+        name: string;
+        type: 'file' | 'folder';
+        serverPath?: string;
+      };
+    }
   | { type: 'DELETE_NODE'; payload: { nodeId: string } }
-  | { type: 'RENAME_NODE'; payload: { nodeId: string; newName: string; newServerPath?: string } }
-  | { type: 'MOVE_NODE'; payload: { nodeId: string; targetId: string | null; position: 'before' | 'after' | 'inside'; newServerPath?: string } }
+  | {
+      type: 'RENAME_NODE';
+      payload: { nodeId: string; newName: string; newServerPath?: string };
+    }
+  | {
+      type: 'MOVE_NODE';
+      payload: {
+        nodeId: string;
+        targetId: string | null;
+        position: 'before' | 'after' | 'inside';
+        newServerPath?: string;
+      };
+    }
   | { type: 'SET_VIEW_MODE'; payload: { mode: 'editor' | 'split' } }
   | { type: 'OPEN_BROWSER_PREVIEW'; payload: { url: string } }
   | { type: 'CLOSE_BROWSER_PREVIEW' }
   | { type: 'SET_BROWSER_URL'; payload: { url: string | null } }
   | { type: 'SET_BROWSER_LOADING'; payload: { loading: boolean } }
-  | { type: 'SET_BROWSER_NAV_STATE'; payload: { canGoBack: boolean; canGoForward: boolean } }
+  | {
+      type: 'SET_BROWSER_NAV_STATE';
+      payload: { canGoBack: boolean; canGoForward: boolean };
+    }
   | { type: 'SET_BROWSER_ERROR'; payload: { error: string | null } }
   | { type: 'TOGGLE_AI_PANEL' }
   | { type: 'SET_SIDEBAR_WIDTH'; payload: { width: number } }
@@ -233,20 +299,44 @@ export type EditorAction =
   | { type: 'TOGGLE_PIN_TAB'; payload: { tabId: string } }
   | { type: 'TOGGLE_TERMINAL' }
   | { type: 'SET_TERMINAL_HEIGHT'; payload: { height: number } }
-  | { type: 'SET_BOTTOM_PANEL_TAB'; payload: { tab: EditorState['bottomPanelTab'] } }
+  | {
+      type: 'SET_BOTTOM_PANEL_TAB';
+      payload: { tab: EditorState['bottomPanelTab'] };
+    }
   | { type: 'SET_BOTTOM_PANEL_OPEN'; payload: { open: boolean } }
   | { type: 'TOGGLE_BOTTOM_PANEL_MAXIMIZED' }
   | { type: 'ADD_TERMINAL_INSTANCE'; payload: TerminalInstance }
   | { type: 'REMOVE_TERMINAL_INSTANCE'; payload: { id: string } }
   | { type: 'SET_ACTIVE_TERMINAL'; payload: { id: string } }
-  | { type: 'ADD_TERMINAL_LINE'; payload: { instanceId: string; line: TerminalLine } }
-  | { type: 'UPDATE_TERMINAL_CWD'; payload: { instanceId: string; cwd: string } }
-  | { type: 'SET_TERMINAL_STATUS'; payload: { instanceId: string; status: TerminalInstance['status']; exitCode?: number } }
+  | {
+      type: 'ADD_TERMINAL_LINE';
+      payload: { instanceId: string; line: TerminalLine };
+    }
+  | {
+      type: 'UPDATE_TERMINAL_CWD';
+      payload: { instanceId: string; cwd: string };
+    }
+  | {
+      type: 'SET_TERMINAL_STATUS';
+      payload: {
+        instanceId: string;
+        status: TerminalInstance['status'];
+        exitCode?: number;
+      };
+    }
   | { type: 'CLEAR_TERMINAL'; payload: { instanceId: string } }
   | { type: 'COLLAPSE_ALL' }
   | { type: 'CLOSE_FOLDER' }
   | { type: 'SET_FILE_CONTENT'; payload: { fileId: string; content: string } }
-  | { type: 'SET_LARGE_FILE_PREVIEW'; payload: { fileId: string; content: string; offset: number; done: boolean } }
+  | {
+      type: 'SET_LARGE_FILE_PREVIEW';
+      payload: {
+        fileId: string;
+        content: string;
+        offset: number;
+        done: boolean;
+      };
+    }
   | { type: 'MARK_FILE_SAVED'; payload: { fileId: string } }
   | { type: 'SHOW_NEW_FILE'; payload: { type: 'file' | 'folder' } }
   | { type: 'CLEAR_PENDING_CREATE' }
@@ -261,7 +351,10 @@ export type EditorAction =
   | { type: 'TOGGLE_ZEN_MODE' }
   | { type: 'UPDATE_SETTINGS'; payload: Partial<EditorSettings> }
   | { type: 'SET_WORKSPACE_DIR'; payload: string }
-  | { type: 'FS_ADD_NODE'; payload: { serverPath: string; name: string; type: 'file' | 'folder' } }
+  | {
+      type: 'FS_ADD_NODE';
+      payload: { serverPath: string; name: string; type: 'file' | 'folder' };
+    }
   | { type: 'FS_REMOVE_NODE'; payload: { serverPath: string } }
   | { type: 'SPLIT_TAB'; payload: { tabId: string } }
   | { type: 'SET_SPLIT_ACTIVE_TAB'; payload: { tabId: string | null } }

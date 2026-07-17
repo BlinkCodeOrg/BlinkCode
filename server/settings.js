@@ -15,6 +15,7 @@ const GLOBAL_SETTINGS_PATH = path.join(settingsDirectory, 'settings.json');
 fs.mkdirSync(settingsDirectory, { recursive: true });
 
 const defaultSettings = {
+  autoUpdate: true,
   fontSize: 13,
   tabSize: 2,
   wordWrap: true,

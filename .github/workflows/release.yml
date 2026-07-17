@@ -1,88 +1,133 @@
-name: Release
+name: Build & Release App
+
+permissions:
+  contents: write
 
 on:
   push:
     tags:
       - 'v*'
+  release:
+    types: [published]
   workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing v* tag to build and publish
+        required: true
+        type: string
 
-permissions:
-  contents: write
+run-name: Release ${{ inputs.tag || github.event.release.tag_name || github.ref_name }}
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check out Git repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
+          ref: ${{ inputs.tag || github.event.release.tag_name || github.ref }}
           submodules: recursive
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Install Node.js and npm
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
-
       - name: Install dependencies
         run: npm ci
-
       - name: Install Playwright Chromium
         run: npx playwright install --with-deps chromium
-
       - name: Validate release
         run: npm run release:check
 
   release:
     needs: validate
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         include:
           - os: windows-latest
-            build: npm run dist:win
-            files: |
-              release/BlinkCode-Setup-*.exe
-              release/BlinkCode-Setup-*.exe.blockmap
-              release/BlinkCode-Portable-*.exe
-              release/latest.yml
+            command: npm run dist:win
           - os: macos-latest
-            build: npm run dist:mac
-            files: |
-              release/BlinkCode-*.dmg
-              release/BlinkCode-*.zip
-              release/latest-mac.yml
+            command: npm run dist:mac
           - os: ubuntu-latest
-            build: npm run dist:linux
-            files: |
-              release/BlinkCode-*.AppImage
-              release/BlinkCode-*.deb
-              release/latest-linux.yml
-    runs-on: ${{ matrix.os }}
+            command: npm run dist:linux
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Check out Git repository
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
+          ref: ${{ inputs.tag || github.event.release.tag_name || github.ref }}
           submodules: recursive
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Install Node.js and npm
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: 22
           cache: npm
 
+      - name: Install Linux packaging dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rpm fakeroot
+
       - name: Install dependencies
         run: npm ci
 
-      - name: Validate release metadata
-        run: node scripts/release/validate-release.mjs
+      - name: Prepare Apple API key
+        if: runner.os == 'macOS' && env.APPLE_API_KEY_DATA != ''
+        shell: bash
+        run: |
+          key_path="$RUNNER_TEMP/AuthKey_${APPLE_API_KEY_ID}.p8"
+          printf '%s' "$APPLE_API_KEY_DATA" | base64 --decode > "$key_path"
+          echo "APPLE_API_KEY=$key_path" >> "$GITHUB_ENV"
+        env:
+          APPLE_API_KEY_DATA: ${{ secrets.APPLE_API_KEY_DATA }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
 
       - name: Build desktop packages
-        run: ${{ matrix.build }}
+        run: ${{ matrix.command }}
+        env:
+          CSC_LINK: ${{ runner.os == 'Windows' && secrets.WIN_CSC_LINK || runner.os == 'macOS' && secrets.MAC_CSC_LINK || '' }}
+          CSC_KEY_PASSWORD: ${{ runner.os == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || runner.os == 'macOS' && secrets.MAC_CSC_KEY_PASSWORD || '' }}
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
 
-      - name: Publish GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Upload Release assets
+        # Replaces softprops/action-gh-release@v2 so reruns can use gh --clobber safely.
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          release_tag="${{ inputs.tag || github.event.release.tag_name || github.ref_name }}"
+          gh release view "$release_tag" >/dev/null 2>&1 || \
+            gh release create "$release_tag" --title "BlinkCode ${release_tag}" --generate-notes || \
+            gh release view "$release_tag" >/dev/null
+          files=(
+            release/BlinkCode-Setup-*.exe release/BlinkCode-Portable-*.exe
+            release/*.zip release/*.dmg release/*.AppImage
+            release/*.deb release/*.rpm release/*.tar.gz release/*.yml release/*.blockmap
+          )
+          if [ "${#files[@]}" -gt 0 ]; then
+            gh release upload "$release_tag" "${files[@]}" --clobber
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          generate_release_notes: true
-          fail_on_unmatched_files: true
-          files: ${{ matrix.files }}
+          name: BlinkCode-${{ matrix.os }}
+          if-no-files-found: error
+          path: |
+            release/BlinkCode-Setup-*.exe
+            release/BlinkCode-Portable-*.exe
+            release/*.zip
+            release/*.dmg
+            release/*.AppImage
+            release/*.deb
+            release/*.rpm
+            release/*.tar.gz
+            release/*.yml
+            release/*.blockmap

@@ -69,7 +69,8 @@ export const ru: Record<string, string> = {
   'webCenter.untracked': 'новые',
   'webCenter.conflicts': 'конфликты',
   'webCenter.lastRequest': 'последний запрос',
-  'webCenter.noLocalUrl': 'Сначала запустите локальный сервер, потом откройте preview.',
+  'webCenter.noLocalUrl':
+    'Сначала запустите локальный сервер, потом откройте preview.',
   'webCenter.detectedLocalUrl': 'Локальный preview готов',
   'webCenter.created': 'Создано',
   'webCenter.httpCreateFailed': 'Не удалось создать .http файл',
@@ -103,7 +104,8 @@ export const ru: Record<string, string> = {
   'dependencies.remove': 'Удалить зависимость',
   'dependencies.upToDate': 'Зависимости актуальны',
   'dependencies.checkFailed': 'Не удалось проверить обновления',
-  'dependencies.packageMissing': 'Некоторые зависимости не найдены в настроенном реестре пакетов',
+  'dependencies.packageMissing':
+    'Некоторые зависимости не найдены в настроенном реестре пакетов',
   'search.run': 'Найти',
   'problems.title': 'Проблемы',
   'problems.all': 'Все',
@@ -123,30 +125,50 @@ export const ru: Record<string, string> = {
   'search.replaceFailed': 'Ошибка замены',
   'empty.simpleWelcome': 'Добро пожаловать в BlinkCode',
   'onboarding.title': 'Добро пожаловать в BlinkCode',
-  'onboarding.description': 'BlinkCode помогает быстро открывать папки, редактировать файлы проекта и работать в удобном пространстве разработки.',
+  'onboarding.description':
+    'BlinkCode помогает быстро открывать папки, редактировать файлы проекта и работать в удобном пространстве разработки.',
   'onboarding.section.start': 'Быстрый старт',
   'onboarding.section.files': 'Файлы и редактирование',
   'onboarding.section.interface': 'Интерфейс',
   'onboarding.section.workflow': 'Рабочий процесс и удобство',
-  'onboarding.item.startIntro': 'Этот экран показывается при первом запуске BlinkCode, чтобы сразу объяснить, как устроен редактор и с чего начать.',
-  'onboarding.item.openFolder': 'Используйте Открыть, чтобы загрузить папку проекта в проводник.',
-  'onboarding.item.projectTree': 'После открытия папки проводник показывает структуру проекта и позволяет быстро перемещаться по файлам и каталогам.',
-  'onboarding.item.editFiles': 'Нажмите на любой поддерживаемый файл, чтобы открыть и редактировать его в редакторе кода.',
-  'onboarding.item.filesIntro': 'BlinkCode ориентирован на работу с файлами проекта прямо внутри одного рабочего пространства.',
-  'onboarding.item.supportedFiles': 'Поддерживаемые файлы кода, конфигов и обычного текста открываются в редакторе с подсветкой синтаксиса и возможностью редактирования.',
-  'onboarding.item.unsupported': 'Неподдерживаемые файлы открываются безопасно в режиме только для чтения и не ломают редактор.',
-  'onboarding.item.logs': 'Файлы логов и обычные текстовые файлы тоже можно открывать прямо в редакторе.',
-  'onboarding.item.tabs': 'Открытые файлы остаются во вкладках сверху, поэтому можно быстро переключаться между ними и не терять текущее место.',
-  'onboarding.item.interfaceIntro': 'Интерфейс организован так, чтобы навигация и работа с кодом были быстрыми и предсказуемыми.',
-  'onboarding.item.sidebar': 'Используйте левый activity bar, чтобы в любой момент открыть или скрыть проводник.',
-  'onboarding.item.activityBar': 'Activity bar остаётся видимым даже когда проводник скрыт, поэтому доступ к структуре проекта всегда находится в один клик.',
-  'onboarding.item.settings': 'Используйте Настройки, чтобы менять тему, поведение редактора и горячие клавиши.',
-  'onboarding.item.ai': 'При необходимости можно открыть AI-панель для помощи с анализом или улучшением кода внутри текущего проекта.',
-  'onboarding.item.workflowIntro': 'BlinkCode также держит рядом с редактором основные действия разработки, чтобы работа оставалась непрерывной.',
-  'onboarding.item.autosave': 'Файлы сохраняются по текущей логике автосохранения, поэтому при включённом autosave изменения не теряются без лишних действий.',
-  'onboarding.item.restore': 'Открытые вкладки, состояние рабочего пространства и часть настроек интерфейса могут восстанавливаться между запусками.',
-  'onboarding.item.shortcuts': 'Для основных действий доступны горячие клавиши: сохранение, отмена, повтор, переключение панели и другие команды.',
-  'onboarding.item.themes': 'Темы, цветовая схема и внешний вид редактора можно настроить под свой рабочий стиль.',
+  'onboarding.item.startIntro':
+    'Этот экран показывается при первом запуске BlinkCode, чтобы сразу объяснить, как устроен редактор и с чего начать.',
+  'onboarding.item.openFolder':
+    'Используйте Открыть, чтобы загрузить папку проекта в проводник.',
+  'onboarding.item.projectTree':
+    'После открытия папки проводник показывает структуру проекта и позволяет быстро перемещаться по файлам и каталогам.',
+  'onboarding.item.editFiles':
+    'Нажмите на любой поддерживаемый файл, чтобы открыть и редактировать его в редакторе кода.',
+  'onboarding.item.filesIntro':
+    'BlinkCode ориентирован на работу с файлами проекта прямо внутри одного рабочего пространства.',
+  'onboarding.item.supportedFiles':
+    'Поддерживаемые файлы кода, конфигов и обычного текста открываются в редакторе с подсветкой синтаксиса и возможностью редактирования.',
+  'onboarding.item.unsupported':
+    'Неподдерживаемые файлы открываются безопасно в режиме только для чтения и не ломают редактор.',
+  'onboarding.item.logs':
+    'Файлы логов и обычные текстовые файлы тоже можно открывать прямо в редакторе.',
+  'onboarding.item.tabs':
+    'Открытые файлы остаются во вкладках сверху, поэтому можно быстро переключаться между ними и не терять текущее место.',
+  'onboarding.item.interfaceIntro':
+    'Интерфейс организован так, чтобы навигация и работа с кодом были быстрыми и предсказуемыми.',
+  'onboarding.item.sidebar':
+    'Используйте левый activity bar, чтобы в любой момент открыть или скрыть проводник.',
+  'onboarding.item.activityBar':
+    'Activity bar остаётся видимым даже когда проводник скрыт, поэтому доступ к структуре проекта всегда находится в один клик.',
+  'onboarding.item.settings':
+    'Используйте Настройки, чтобы менять тему, поведение редактора и горячие клавиши.',
+  'onboarding.item.ai':
+    'При необходимости можно открыть AI-панель для помощи с анализом или улучшением кода внутри текущего проекта.',
+  'onboarding.item.workflowIntro':
+    'BlinkCode также держит рядом с редактором основные действия разработки, чтобы работа оставалась непрерывной.',
+  'onboarding.item.autosave':
+    'Файлы сохраняются по текущей логике автосохранения, поэтому при включённом autosave изменения не теряются без лишних действий.',
+  'onboarding.item.restore':
+    'Открытые вкладки, состояние рабочего пространства и часть настроек интерфейса могут восстанавливаться между запусками.',
+  'onboarding.item.shortcuts':
+    'Для основных действий доступны горячие клавиши: сохранение, отмена, повтор, переключение панели и другие команды.',
+  'onboarding.item.themes':
+    'Темы, цветовая схема и внешний вид редактора можно настроить под свой рабочий стиль.',
   'onboarding.dontShowAgain': 'Больше не показывать эту справку',
   'onboarding.startWorking': 'Начать работу',
   'onboarding.dismissTitle': 'Закрыть этот экран справки?',
@@ -220,7 +242,8 @@ export const ru: Record<string, string> = {
   'settings.minimap': 'Миникарта',
   'settings.minimap.desc': 'Управляет отображением миникарты',
   'settings.stickyScroll': 'Закрепленная прокрутка',
-  'settings.stickyScroll.desc': 'Показывает родительские блоки при прокрутке кода',
+  'settings.stickyScroll.desc':
+    'Показывает родительские блоки при прокрутке кода',
   'settings.fontLigatures': 'Лигатуры шрифта',
   'settings.fontLigatures.desc': 'Управляет отображением лигатур шрифта',
   'settings.lineNumbers': 'Номера строк',
@@ -240,45 +263,58 @@ export const ru: Record<string, string> = {
   'settings.smoothScrolling': 'Плавная прокрутка',
   'settings.smoothScrolling.desc': 'Управляет плавной анимацией прокрутки',
   'settings.gitInlineBlame': 'Inline Git Blame',
-  'settings.gitInlineBlame.desc': 'Показывать автора Git и сообщение коммита для текущей строки',
+  'settings.gitInlineBlame.desc':
+    'Показывать автора Git и сообщение коммита для текущей строки',
   'settings.trimTrailingWhitespace': 'Удаление конечных пробелов',
-  'settings.trimTrailingWhitespace.desc': 'Удаляет конечные пробелы при сохранении',
+  'settings.trimTrailingWhitespace.desc':
+    'Удаляет конечные пробелы при сохранении',
   'settings.insertFinalNewline': 'Финальная новая строка',
-  'settings.insertFinalNewline.desc': 'Добавляет перевод строки в конце текстовых файлов при сохранении',
+  'settings.insertFinalNewline.desc':
+    'Добавляет перевод строки в конце текстовых файлов при сохранении',
   'settings.insertSpaces': 'Вставка пробелов',
   'settings.insertSpaces.desc': 'Вставлять пробелы при нажатии Tab',
   'settings.webWorkflow': 'Web App Center',
-  'settings.webWorkflow.desc': 'Настройте первый запуск и поведение локального preview.',
-  'settings.webWorkflow.previewBehavior': 'Preview после запуска локального сервера',
-  'settings.webWorkflow.previewBehavior.desc': 'Что BlinkCode делает, когда найден localhost URL.',
+  'settings.webWorkflow.desc':
+    'Настройте первый запуск и поведение локального preview.',
+  'settings.webWorkflow.previewBehavior':
+    'Preview после запуска локального сервера',
+  'settings.webWorkflow.previewBehavior.desc':
+    'Что BlinkCode делает, когда найден localhost URL.',
   'settings.webWorkflow.preview.ask': 'Спросить',
   'settings.webWorkflow.preview.auto': 'Открывать preview',
   'settings.webWorkflow.preview.never': 'Никогда',
   'settings.webWorkflow.mode': 'Режим Web App Center',
-  'settings.webWorkflow.mode.desc': 'Подробный режим для первого запуска или компактный режим для ежедневной работы.',
+  'settings.webWorkflow.mode.desc':
+    'Подробный режим для первого запуска или компактный режим для ежедневной работы.',
   'settings.webWorkflow.mode.guided': 'Подробный',
   'settings.webWorkflow.mode.compact': 'Компактный',
 
   'settings.animations': 'Анимации',
   'settings.animations.desc': 'Включить анимации переходов в интерфейсе',
   'settings.showFileIcons': 'Иконки файлов',
-  'settings.showFileIcons.desc': 'Показывать иконки типов файлов в боковой панели',
+  'settings.showFileIcons.desc':
+    'Показывать иконки типов файлов в боковой панели',
   'settings.compactMode': 'Компактный режим',
   'settings.compactMode.desc': 'Уменьшить отступы для плотного интерфейса',
   'settings.dotGridColor': 'Цвет точек',
-  'settings.dotGridColor.desc': 'Цвет интерактивной сетки точек на экране приветствия',
+  'settings.dotGridColor.desc':
+    'Цвет интерактивной сетки точек на экране приветствия',
   'settings.backgroundStyle': 'Стиль фона',
-  'settings.backgroundStyle.desc': 'Выберите стиль фона для пустой области редактора',
+  'settings.backgroundStyle.desc':
+    'Выберите стиль фона для пустой области редактора',
   'backgroundStyle.dotgrid': 'Сетка точек',
   'backgroundStyle.solid': 'Сплошной',
   'settings.editorBackground': 'Фон редактора',
-  'settings.editorBackground.desc': 'Добавьте мягкий фирменный или свой фон позади текста Monaco',
+  'settings.editorBackground.desc':
+    'Добавьте мягкий фирменный или свой фон позади текста Monaco',
   'settings.editorBackground.upload': 'Загрузить',
   'settings.editorBackground.remove': 'Удалить',
   'settings.editorBackground.opacity': 'Прозрачность фона',
-  'settings.editorBackground.opacity.desc': 'Лучше держать низкой, чтобы код оставался читаемым',
+  'settings.editorBackground.opacity.desc':
+    'Лучше держать низкой, чтобы код оставался читаемым',
   'settings.editorBackground.blur': 'Размытие фона',
-  'settings.editorBackground.blur.desc': 'Смягчает детали изображения позади редактора',
+  'settings.editorBackground.blur.desc':
+    'Смягчает детали изображения позади редактора',
   'settings.editorBackground.scale': 'Масштаб фона',
   'settings.editorBackground.brightness': 'Яркость фона',
   'editorBackground.none': 'Без фона',
@@ -315,13 +351,15 @@ export const ru: Record<string, string> = {
   'settings.autoSaveDelay': 'Задержка автосохранения',
   'settings.autoSaveDelay.desc': 'Управляет задержкой перед автосохранением',
   'settings.autoSaveOnFocusChange': 'Сохранять при потере фокуса',
-  'settings.autoSaveOnFocusChange.desc': 'Сохраняет измененные файлы, когда редактор или окно теряет фокус',
+  'settings.autoSaveOnFocusChange.desc':
+    'Сохраняет измененные файлы, когда редактор или окно теряет фокус',
   'settings.off': 'Выкл',
 
   'settings.appearance': 'Внешний вид',
   'settings.appearance.desc': 'Настройте оформление BlinkCode',
   'settings.colorScheme': 'Цветовая схема',
-  'settings.colorScheme.desc': 'Выберите, следует ли BlinkCode использовать светлую или тёмную тему',
+  'settings.colorScheme.desc':
+    'Выберите, следует ли BlinkCode использовать светлую или тёмную тему',
   'colorScheme.dark': 'Тёмная',
   'colorScheme.light': 'Светлая',
   'colorScheme.system': 'Системная',
@@ -350,7 +388,8 @@ export const ru: Record<string, string> = {
   'theme.amoled': 'AMOLED',
   'theme.amoled.desc': 'Чисто чёрная AMOLED тема',
   'theme.imported': 'Импортированная тема VS Code',
-  'theme.imported.desc': 'Цвета из последнего импортированного файла темы VS Code',
+  'theme.imported.desc':
+    'Цвета из последнего импортированного файла темы VS Code',
   'settings.language': 'Язык',
   'settings.language.desc': 'Установите язык интерфейса',
 
@@ -369,7 +408,8 @@ export const ru: Record<string, string> = {
   'kb.toggleAI': 'Панель ИИ',
   'kb.toggleSettings': 'Настройки',
   'kb.newFile': 'Новый файл',
-  'kb.closeTab': 'Закрыть вкладку',  'kb.zoomIn': 'Увеличить',
+  'kb.closeTab': 'Закрыть вкладку',
+  'kb.zoomIn': 'Увеличить',
   'kb.zoomOut': 'Уменьшить',
   'kb.find': 'Найти',
   'kb.replace': 'Найти и заменить',
@@ -386,8 +426,8 @@ export const ru: Record<string, string> = {
   'kb.closeAllTabs': 'Закрыть все вкладки',
   'kb.formatDocument': 'Форматировать документ',
 
-  'on': 'Вкл',
-  'off': 'Выкл',
+  on: 'Вкл',
+  off: 'Выкл',
 
   'toast.openFolder': 'Используйте Chrome или Edge',
   'toast.reading': 'Чтение папки...',
@@ -402,22 +442,28 @@ export const ru: Record<string, string> = {
   'preview.cannotDisplay': 'Невозможно отобразить',
   'preview.markdown': 'Предпросмотр Markdown',
   'preview.binaryFile': 'Бинарный файл — нельзя отобразить',
-  'preview.generatedFile': '{file} — это сгенерированный файл, поэтому он открыт в режиме только для чтения.',
-  'preview.largeFile': '{file} слишком большой для обычного редактирования и открыт в ограниченном режиме только для чтения.',
+  'preview.generatedFile':
+    '{file} — это сгенерированный файл, поэтому он открыт в режиме только для чтения.',
+  'preview.largeFile':
+    '{file} слишком большой для обычного редактирования и открыт в ограниченном режиме только для чтения.',
   'preview.readOnlyTextFile': '{file} открыт в режиме только для чтения.',
-  'preview.imagePreview': '{file} показывается как preview, а не как редактируемый текстовый файл.',
+  'preview.imagePreview':
+    '{file} показывается как preview, а не как редактируемый текстовый файл.',
   'preview.archiveFile': 'Архивные файлы нельзя открыть как текст в редакторе.',
   'preview.fontFile': 'Файлы шрифтов нельзя открыть внутри кодового редактора.',
-  'preview.documentFile': 'Файлы документов недоступны для встроенного редактирования здесь.',
+  'preview.documentFile':
+    'Файлы документов недоступны для встроенного редактирования здесь.',
   'preview.mediaFile': 'Медиафайлы нельзя редактировать в кодовом редакторе.',
-  'preview.binaryBlocked': 'Этот бинарный файл нельзя открыть как редактируемый текст.',
+  'preview.binaryBlocked':
+    'Этот бинарный файл нельзя открыть как редактируемый текст.',
   'preview.webOnlyTitle': 'Файл только для чтения',
   'preview.webOnlyMessage': '{file} доступен только для просмотра.',
-  'preview.webOnlyDescription': 'Неподдерживаемые типы файлов можно просматривать, но нельзя редактировать.',
+  'preview.webOnlyDescription':
+    'Неподдерживаемые типы файлов можно просматривать, но нельзя редактировать.',
   'preview.readOnlyBadge': 'Режим чтения',
   'zoom.reset': 'Сброс',
 
-  'openFolder': 'Открыть папку',
+  openFolder: 'Открыть папку',
   'explorer.unsupportedFileHint': 'Этот файл доступен только для просмотра',
   'common.cancel': 'Отмена',
 
@@ -434,7 +480,8 @@ export const ru: Record<string, string> = {
   'tab.noChanges': 'Без изменений',
 
   'sc.title': 'Контроль версий',
-  'sc.noRepo': 'Папка не является Git-репозиторием. Инициализируйте репозиторий для использования контроля версий.',
+  'sc.noRepo':
+    'Папка не является Git-репозиторием. Инициализируйте репозиторий для использования контроля версий.',
   'sc.noChanges': 'Изменений в репозитории не обнаружено.',
   'sc.stagedChanges': 'Индексированные изменения',
   'sc.changes': 'Изменения',
@@ -443,7 +490,8 @@ export const ru: Record<string, string> = {
   'sc.commit': 'Закоммитить',
   'sc.committed': 'Изменения успешно закоммичены',
   'sc.commitFailed': 'Ошибка коммита: ',
-  'sc.commitIdentityHint': 'Не настроен автор Git. Выполните: git config user.name "Ваше Имя" и git config user.email "you@example.com"',
+  'sc.commitIdentityHint':
+    'Не настроен автор Git. Выполните: git config user.name "Ваше Имя" и git config user.email "you@example.com"',
   'sc.stage': 'Индексировать',
   'sc.stageAll': 'Индексировать все',
   'sc.unstage': 'Убрать из индекса',
@@ -456,17 +504,24 @@ export const ru: Record<string, string> = {
   'sc.pushSuccess': 'Коммиты отправлены',
   'sc.pullFailed': 'Ошибка получения изменений: ',
   'sc.pushFailed': 'Ошибка отправки изменений: ',
-  'sc.pullTrackingMissing': 'Для текущей ветки не настроен tracking. Настройте upstream или выполните pull из origin для текущей ветки.',
-  'sc.pullRemoteBranchMissing': 'Удалённая ветка не найдена в origin. Проверьте имя ветки и удалённый репозиторий.',
-  'sc.pushUpstreamMissing': 'Для текущей ветки не настроен upstream. Настройте upstream для этой ветки.',
-  'sc.pushNonFastForward': 'Push отклонён (non-fast-forward). Сначала выполните pull, решите конфликты при необходимости и повторите push.',
-  'sc.authFailed': 'Ошибка аутентификации при удалённой Git-операции. Повторите вход в Git-провайдер или исправьте credentials/token.',
+  'sc.pullTrackingMissing':
+    'Для текущей ветки не настроен tracking. Настройте upstream или выполните pull из origin для текущей ветки.',
+  'sc.pullRemoteBranchMissing':
+    'Удалённая ветка не найдена в origin. Проверьте имя ветки и удалённый репозиторий.',
+  'sc.pushUpstreamMissing':
+    'Для текущей ветки не настроен upstream. Настройте upstream для этой ветки.',
+  'sc.pushNonFastForward':
+    'Push отклонён (non-fast-forward). Сначала выполните pull, решите конфликты при необходимости и повторите push.',
+  'sc.authFailed':
+    'Ошибка аутентификации при удалённой Git-операции. Повторите вход в Git-провайдер или исправьте credentials/token.',
   'sc.unknownGitError': 'Неизвестная ошибка Git',
   'sc.stageFailed': 'Ошибка индексации: ',
   'sc.unstageFailed': 'Ошибка убирания из индекса: ',
   'sc.discardConfirmTitle': 'Отменить локальные изменения?',
-  'sc.discardConfirmOne': 'Все локальные изменения в этом файле будут безвозвратно отменены. Это действие нельзя отменить.',
-  'sc.discardConfirmMany': 'Отменить все локальные изменения в {count} файлах? Это действие нельзя отменить.',
+  'sc.discardConfirmOne':
+    'Все локальные изменения в этом файле будут безвозвратно отменены. Это действие нельзя отменить.',
+  'sc.discardConfirmMany':
+    'Отменить все локальные изменения в {count} файлах? Это действие нельзя отменить.',
   'sc.discardConfirmAction': 'Отменить изменения',
   'sc.discardFailed': 'Ошибка отмены изменений: ',
   'sc.diffPreview': 'Предпросмотр изменений',
@@ -497,7 +552,8 @@ export const ru: Record<string, string> = {
   'ai.agent': 'Агент',
   'ai.confirmRun': 'Подтвердить и запустить',
   'browser.title': 'Предпросмотр в браузере',
-  'browser.empty': 'Откройте ссылку из терминала или вставьте URL локального dev-сервера в адресную строку.',
+  'browser.empty':
+    'Откройте ссылку из терминала или вставьте URL локального dev-сервера в адресную строку.',
   'browser.console': 'Консоль',
   'browser.consoleHint': 'События preview и сообщения приложения',
   'browser.consoleEmpty': 'Событий preview пока нет',
@@ -508,7 +564,8 @@ export const ru: Record<string, string> = {
   'browser.consoleLogs': 'Логи',
   'browser.consoleInfo': 'Инфо',
   'browser.blockedTitle': 'URL заблокирован',
-  'browser.blockedMessage': 'Встроенный просмотр разрешает только безопасные адреса http:// и https://.',
+  'browser.blockedMessage':
+    'Встроенный просмотр разрешает только безопасные адреса http:// и https://.',
   'browser.loadFailed': 'Не удалось загрузить страницу',
   'browser.frameTitle': 'Предпросмотр BlinkCode',
   'browser.urlPlaceholder': 'Введите URL (http:// или https://)',
@@ -540,7 +597,8 @@ export const ru: Record<string, string> = {
   'debug.start': 'Начать отладку',
   'debug.variables': 'Переменные',
   'debug.noVariables': 'Нет переменных',
-  'debug.pauseHint': 'Остановитесь на точке останова, чтобы посмотреть переменные.',
+  'debug.pauseHint':
+    'Остановитесь на точке останова, чтобы посмотреть переменные.',
   'debug.watch': 'Наблюдение',
   'debug.callStack': 'Стек вызовов',
   'debug.noCallStack': 'Стек вызовов недоступен.',
@@ -566,9 +624,11 @@ export const ru: Record<string, string> = {
   'debug.watchPlaceholder': 'Выражение для наблюдения',
   'debug.watchExpression': 'Выражение наблюдения',
   'debug.addExpression': 'Добавить выражение',
-  'debug.openFileOrConfig': 'Откройте JavaScript-файл или создайте конфигурацию отладки BlinkCode',
+  'debug.openFileOrConfig':
+    'Откройте JavaScript-файл или создайте конфигурацию отладки BlinkCode',
   'dirty.title': 'Несохранённые изменения',
-  'dirty.message': 'В некоторых файлах есть изменения, которые ещё не записаны на диск. Сохранить их перед закрытием BlinkCode?',
+  'dirty.message':
+    'В некоторых файлах есть изменения, которые ещё не записаны на диск. Сохранить их перед закрытием BlinkCode?',
   'dirty.andMore': 'и ещё {count}...',
   'dirty.closeWithoutSaving': 'Закрыть без сохранения',
   'dependency.update': 'Обновить зависимость',
@@ -603,24 +663,34 @@ export const ru: Record<string, string> = {
   'project.browse': 'Обзор',
   'project.template.web': 'Стартовый проект HTML, CSS и JavaScript.',
   'project.template.node': 'Минимальный консольный проект Node.js.',
-  'project.template.typescript': 'Небольшой TypeScript-пакет со сборкой и тестами.',
-  'project.template.reactVite': 'Стартовый проект React, Vite и TypeScript для локальной web-разработки.',
-  'project.template.reactTailwind': 'Стартовый проект React, Vite, TypeScript и Tailwind.',
-  'project.template.reactRouter': 'React, Tailwind и Router с двумя готовыми маршрутами.',
-  'project.template.landing': 'Адаптивный landing page для MVP и продуктовых страниц.',
-  'project.template.apiClient': 'Frontend API client с .http-запросами и примером env.',
+  'project.template.typescript':
+    'Небольшой TypeScript-пакет со сборкой и тестами.',
+  'project.template.reactVite':
+    'Стартовый проект React, Vite и TypeScript для локальной web-разработки.',
+  'project.template.reactTailwind':
+    'Стартовый проект React, Vite, TypeScript и Tailwind.',
+  'project.template.reactRouter':
+    'React, Tailwind и Router с двумя готовыми маршрутами.',
+  'project.template.landing':
+    'Адаптивный landing page для MVP и продуктовых страниц.',
+  'project.template.apiClient':
+    'Frontend API client с .http-запросами и примером env.',
   'project.template.fullStack': 'React frontend с небольшим Express API.',
-  'project.template.playground': 'Песочница компонентов для быстрой проверки UI-состояний.',
+  'project.template.playground':
+    'Песочница компонентов для быстрой проверки UI-состояний.',
   'rest.addRequest': 'Добавьте запрос, например',
   'rest.toggleResponse': 'Показать или скрыть ответ',
   'search.replaceMatch': 'Заменить это совпадение',
   'settings.envMask': 'Скрывать значения .env',
-  'settings.envMask.desc': 'Размывать секретные значения при редактировании файлов окружения.',
+  'settings.envMask.desc':
+    'Размывать секретные значения при редактировании файлов окружения.',
   'settings.spellChecker': 'Проверка орфографии',
-  'settings.spellChecker.desc': 'Проверять Markdown и текстовую документацию, не затрагивая идентификаторы кода.',
+  'settings.spellChecker.desc':
+    'Проверять Markdown и текстовую документацию, не затрагивая идентификаторы кода.',
   'settings.resetDefaults': 'Сбросить настройки',
   'settings.snippets': 'Сниппеты',
-  'settings.snippets.desc': 'Сниппеты Monaco для выбранных языков с позициями табуляции, например ${1:name}.',
+  'settings.snippets.desc':
+    'Сниппеты Monaco для выбранных языков с позициями табуляции, например ${1:name}.',
   'settings.snippetName': 'Название сниппета',
   'settings.snippetNamePlaceholder': 'Название',
   'settings.snippetPrefix': 'Префикс сниппета',
@@ -635,14 +705,18 @@ export const ru: Record<string, string> = {
   'settings.deleteSnippet': 'Удалить сниппет',
   'settings.snippetError.nameRequired': 'Введите название сниппета.',
   'settings.snippetError.prefixRequired': 'Введите префикс сниппета.',
-  'settings.snippetError.languagesRequired': 'Укажите хотя бы один идентификатор языка Monaco.',
+  'settings.snippetError.languagesRequired':
+    'Укажите хотя бы один идентификатор языка Monaco.',
   'settings.snippetError.bodyRequired': 'Введите тело сниппета.',
-  'settings.snippetError.duplicatePrefix': 'Этот префикс уже используется для одного из выбранных языков.',
+  'settings.snippetError.duplicatePrefix':
+    'Этот префикс уже используется для одного из выбранных языков.',
   'settings.importTheme': 'Импортировать тему VS Code',
   'settings.importThemeSuccess': 'Тема импортирована: {name}',
   'settings.importThemeFailed': 'Не удалось импортировать тему: {error}',
-  'explorer.dirtyCloseProject': 'Сохраните или отмените изменения во всех файлах перед закрытием проекта.',
-  'explorer.dirtyOpenProject': 'Сохраните или отмените изменения во всех файлах перед открытием другого проекта.',
+  'explorer.dirtyCloseProject':
+    'Сохраните или отмените изменения во всех файлах перед закрытием проекта.',
+  'explorer.dirtyOpenProject':
+    'Сохраните или отмените изменения во всех файлах перед открытием другого проекта.',
   'trash.title': 'Переместить в корзину',
   'trash.message': 'Переместить {type} «{name}» в корзину?',
   'trash.file': 'файл',
@@ -663,8 +737,10 @@ export const ru: Record<string, string> = {
   'watcher.keepChanges': 'Оставить изменения редактора',
   'watcher.reload': 'Перезагрузить с диска',
   'watcher.changedTitle': 'Файл изменён на диске',
-  'watcher.changedMessage': 'Файл {name} изменён вне BlinkCode, пока в редакторе есть несохранённые правки.',
-  'watcher.keptChanges': 'Локальные изменения файла {name} сохранены в редакторе',
+  'watcher.changedMessage':
+    'Файл {name} изменён вне BlinkCode, пока в редакторе есть несохранённые правки.',
+  'watcher.keptChanges':
+    'Локальные изменения файла {name} сохранены в редакторе',
   'command.appearanceDark': 'Оформление: тёмная цветовая схема',
   'command.appearanceLight': 'Оформление: светлая цветовая схема',
   'command.appearanceSystem': 'Оформление: системная цветовая схема',
@@ -692,8 +768,10 @@ export const ru: Record<string, string> = {
   'command.collapseFolders': 'Вид: свернуть все папки проводника',
   'diagnostic.envExpected': 'Ожидается KEY=value',
   'diagnostic.jsonRoot': 'Корнем конфигурации должен быть JSON-объект.',
-  'diagnostic.yamlTabs': 'Для отступов YAML нужно использовать пробелы, а не табуляцию.',
-  'diagnostic.yamlIndent': 'Используйте одинаковые отступы YAML по два пробела.',
+  'diagnostic.yamlTabs':
+    'Для отступов YAML нужно использовать пробелы, а не табуляцию.',
+  'diagnostic.yamlIndent':
+    'Используйте одинаковые отступы YAML по два пробела.',
   'tailwind.sortClasses': 'Tailwind: отсортировать классы',
   'common.loading': 'Загрузка...',
   'common.saving': 'Сохранение...',
@@ -720,22 +798,29 @@ export const ru: Record<string, string> = {
   'explorer.dropFailed': 'Не удалось добавить файлов: {count}',
   'explorer.addWorkspaceFolder': 'Добавить папку в рабочую область',
   'explorer.workspaceFolderAdded': 'Добавлена папка рабочей области {name}',
-  'explorer.multiRootDesktopOnly': 'Добавление второй локальной папки доступно в настольном BlinkCode',
+  'explorer.multiRootDesktopOnly':
+    'Добавление второй локальной папки доступно в настольном BlinkCode',
   'updates.title': 'Обновления приложения',
-  'updates.description': 'Проверка GitHub Releases и установка подписанных обновлений BlinkCode.',
+  'updates.description':
+    'Проверка GitHub Releases и установка подписанных обновлений BlinkCode.',
   'updates.check': 'Проверить обновления',
   'updates.downloadAndInstall': 'Скачать обновление',
   'updates.updateShort': 'Обновление',
   'updates.installShort': 'Установить',
   'updates.topTitle': 'Обновление BlinkCode',
-  'updates.confirmMessage': 'Доступна новая версия BlinkCode. Скачать ее сейчас? Рабочая область, открытые вкладки, настройки и локальные данные сохранятся.',
-  'updates.manualMessage': 'Доступна новая версия BlinkCode, но файлы автообновления еще не прикреплены к релизу. Скачайте установщик из GitHub Releases.',
+  'updates.confirmMessage':
+    'Доступна новая версия BlinkCode. Скачать ее сейчас? Рабочая область, открытые вкладки, настройки и локальные данные сохранятся.',
+  'updates.manualMessage':
+    'Доступна новая версия BlinkCode, но файлы автообновления еще не прикреплены к релизу. Скачайте установщик из GitHub Releases.',
   'updates.downloadingMessage': 'Загрузка обновления... {percent}',
   'updates.downloadingPercent': 'Загрузка {percent}%',
-  'updates.readyMessage': 'Обновление скачано. BlinkCode закроется и откроется заново для завершения установки.',
+  'updates.readyMessage':
+    'Обновление скачано. BlinkCode закроется и откроется заново для завершения установки.',
   'updates.errorMessage': 'Не удалось проверить или скачать обновление.',
-  'updates.errorMissingFiles': 'Файлы обновления еще не прикреплены к последнему релизу GitHub.',
-  'updates.errorNetwork': 'Не удалось подключиться к GitHub для проверки обновлений.',
+  'updates.errorMissingFiles':
+    'Файлы обновления еще не прикреплены к последнему релизу GitHub.',
+  'updates.errorNetwork':
+    'Не удалось подключиться к GitHub для проверки обновлений.',
   'updates.errorUnknown': 'Не удалось проверить обновления.',
   'updates.downloadFromGitHub': 'Скачать с GitHub',
   'updates.openRelease': 'Открыть релиз',
@@ -751,6 +836,24 @@ export const ru: Record<string, string> = {
   'updates.status.ready': 'Обновление готово к установке',
   'updates.status.development': 'Обновления доступны в собранной версии',
   'updates.status.error': 'Ошибка обновления',
+  'updates.bannerTitle': 'Доступно новое обновление',
+  'updates.autoUpdate': 'Автообновление',
+  'updates.autoUpdateDescription':
+    'Автоматически скачивать найденные обновления.',
+  'updates.currentVersion': 'Текущая версия: {version}',
+  'updates.downloadFailedVersion': 'Не удалось скачать v{version}',
+  'updates.downloadingVersion': 'Скачивание v{version}...',
+  'updates.downloadedVersion': 'Обновление v{version} скачано',
+  'updates.availableVersion': 'Доступно обновление v{version}',
+  'updates.upToDate': 'Установлена актуальная версия BlinkCode',
+  'updates.prompt': 'Проверить обновления BlinkCode',
+  'updates.installing': 'Установка...',
+  'updates.downloading': 'Скачивание...',
+  'updates.retry': 'Повторить скачивание',
+  'updates.install': 'Установить обновление',
+  'updates.download': 'Скачать обновление',
+  'updates.unsupported':
+    'Встроенные обновления недоступны в режиме разработки, portable и распакованных Windows-сборках, а также Linux-пакетах кроме AppImage.',
   'ai.action.explain': 'Объяснить',
   'ai.action.refactor': 'Рефакторинг',
   'ai.action.fix': 'Исправить',
@@ -758,25 +861,34 @@ export const ru: Record<string, string> = {
   'ai.action.tests': 'Создать тесты',
   'ai.action.optimize': 'Оптимизировать',
   'category.ai': 'ИИ',
-  'ai.prompt.explain': 'Объясни выбранный код, его назначение, поток данных и важные крайние случаи.',
-  'ai.prompt.refactor': 'Отрефактори выбранный код для ясности и поддержки. Сначала объясни предлагаемые изменения.',
-  'ai.prompt.fix': 'Найди и исправь дефекты в выбранном коде. Опиши причину и предложи минимальное безопасное изменение.',
-  'ai.prompt.document': 'Напиши краткую документацию для выбранного кода: параметры, результат и побочные эффекты.',
-  'ai.prompt.tests': 'Создай сфокусированные тесты выбранного кода для успешных, ошибочных и крайних сценариев.',
-  'ai.prompt.optimize': 'Оптимизируй выбранный код без изменения поведения. Объясни измеримые компромиссы.',
+  'ai.prompt.explain':
+    'Объясни выбранный код, его назначение, поток данных и важные крайние случаи.',
+  'ai.prompt.refactor':
+    'Отрефактори выбранный код для ясности и поддержки. Сначала объясни предлагаемые изменения.',
+  'ai.prompt.fix':
+    'Найди и исправь дефекты в выбранном коде. Опиши причину и предложи минимальное безопасное изменение.',
+  'ai.prompt.document':
+    'Напиши краткую документацию для выбранного кода: параметры, результат и побочные эффекты.',
+  'ai.prompt.tests':
+    'Создай сфокусированные тесты выбранного кода для успешных, ошибочных и крайних сценариев.',
+  'ai.prompt.optimize':
+    'Оптимизируй выбранный код без изменения поведения. Объясни измеримые компромиссы.',
   'ai.confirmToolTitle': 'Подтверждение действия ИИ',
-  'ai.confirmToolMessage': 'Проверьте и подтвердите инструмент ИИ «{tool}». До подтверждения ничего не будет запущено.',
+  'ai.confirmToolMessage':
+    'Проверьте и подтвердите инструмент ИИ «{tool}». До подтверждения ничего не будет запущено.',
   'ai.contextAction': 'Blink AI: {action}',
   'file.createFailed': 'Не удалось создать {name}: {error}',
   'file.renameFailed': 'Не удалось переименовать {name}: {error}',
   'file.moveFailed': 'Не удалось переместить {name}: {error}',
   'project.openFailed': 'Не удалось открыть проект: {error}',
-  'debug.loadConfigFailed': 'Не удалось загрузить конфигурацию отладки BlinkCode',
+  'debug.loadConfigFailed':
+    'Не удалось загрузить конфигурацию отладки BlinkCode',
   'debug.startFailed': 'Не удалось запустить отладчик',
   'debug.commandFailed': 'Не удалось выполнить команду отладчика',
   'debug.attachFailed': 'Не удалось подключить отладчик',
   'debug.createdConfig': 'Создан файл {path}',
-  'debug.createConfigFailed': 'Не удалось создать конфигурацию отладки BlinkCode',
+  'debug.createConfigFailed':
+    'Не удалось создать конфигурацию отладки BlinkCode',
   'debug.fileUnavailable': 'Файл недоступен в проводнике: {path}',
   'debug.currentFile': 'Текущий файл',
   'debug.noConfigurations': 'Нет конфигураций',
@@ -812,9 +924,12 @@ export const ru: Record<string, string> = {
   'ai.connectedModels': 'Подключено · моделей: {count}',
   'ai.providerUnavailable': 'Провайдер недоступен',
   'ai.explainPrompt': 'Объясни выделенный код и его роль в этом проекте.',
-  'ai.reviewPrompt': 'Проверь активный файл на ошибки и предложи точечные исправления.',
-  'ai.contextHint': 'В чат передаются активный файл, выделение, открытые файлы, дерево проекта и подходящие результаты поиска.',
-  'ai.connectHint': 'Перед отправкой сообщений подключите OpenAI-совместимого провайдера в настройках.',
+  'ai.reviewPrompt':
+    'Проверь активный файл на ошибки и предложи точечные исправления.',
+  'ai.contextHint':
+    'В чат передаются активный файл, выделение, открытые файлы, дерево проекта и подходящие результаты поиска.',
+  'ai.connectHint':
+    'Перед отправкой сообщений подключите OpenAI-совместимого провайдера в настройках.',
   'ai.you': 'Вы',
   'ai.sending': 'Отправка',
   'ai.send': 'Отправить',
@@ -827,11 +942,13 @@ export const ru: Record<string, string> = {
   'settings.uiDensity': 'Плотность интерфейса',
   'settings.uiDensity.desc': 'Настройка отступов вкладок, панелей и навигации.',
   'settings.uiScale': 'Масштаб интерфейса',
-  'settings.uiScale.desc': 'Масштаб рабочей области отдельно от текста редактора.',
+  'settings.uiScale.desc':
+    'Масштаб рабочей области отдельно от текста редактора.',
   'settings.explorerRowHeight': 'Высота строк Проводника',
   'settings.explorerRowHeight.desc': 'Компактное или просторное дерево файлов.',
   'settings.bottomPanelPosition': 'Положение панели',
-  'settings.bottomPanelPosition.desc': 'Размещать общую панель снизу или справа.',
+  'settings.bottomPanelPosition.desc':
+    'Размещать общую панель снизу или справа.',
   'density.compact': 'Компактная',
   'density.default': 'Обычная',
   'density.comfortable': 'Комфортная',
@@ -839,7 +956,8 @@ export const ru: Record<string, string> = {
   'panelPosition.right': 'Справа',
   'bottomPanel.output': 'Вывод',
   'bottomPanel.noOutput': 'Здесь появится вывод инструментов и расширений.',
-  'bottomPanel.debugConsoleHint': 'Запустите или подключите отладку в разделе «Запуск и отладка», чтобы вычислять выражения.',
+  'bottomPanel.debugConsoleHint':
+    'Запустите или подключите отладку в разделе «Запуск и отладка», чтобы вычислять выражения.',
   'bottomPanel.openDebugger': 'Открыть запуск и отладку',
   'bottomPanel.maximize': 'Развернуть панель',
   'common.retry': 'Повторить',
@@ -858,7 +976,8 @@ export const ru: Record<string, string> = {
   'command.wordWrapDisable': 'Вид: отключить перенос строк',
   'command.compactEnable': 'Вид: включить компактный режим',
   'command.compactDisable': 'Вид: отключить компактный режим',
-  'workspace.desktopOnly': 'Выбор папки доступен только в настольном приложении',
+  'workspace.desktopOnly':
+    'Выбор папки доступен только в настольном приложении',
   'workspace.loading': 'Загрузка папки...',
   'workspace.openFailed': 'Не удалось открыть папку: {error}',
   'file.saveFailed': 'Не удалось сохранить {name}: {error}',
@@ -867,7 +986,8 @@ export const ru: Record<string, string> = {
   'diagnostic.envDuplicate': 'Повторяющаяся переменная окружения: {name}',
   'diagnostic.missingProperty': 'Отсутствует обязательное свойство "{name}".',
   'diagnostic.yamlDuplicate': 'Повторяющийся ключ YAML "{name}".',
-  'diagnostic.yamlMissingTopLevel': 'Отсутствует обязательный ключ верхнего уровня "{name}".',
+  'diagnostic.yamlMissingTopLevel':
+    'Отсутствует обязательный ключ верхнего уровня "{name}".',
   'diagnostic.schemaProperty': 'Свойство схемы конфигурации',
   'sc.resolveFailed': 'Не удалось разрешить конфликт: {error}',
   'status.lsp': 'LSP: {status}',
@@ -877,21 +997,26 @@ export const ru: Record<string, string> = {
   'status.lsp.offline': 'не в сети',
   'tailwind.utility': 'Утилита Tailwind CSS',
   'tailwind.unknownUtility': 'Неизвестная утилита Tailwind "{name}"',
-  'schema.launch.version': 'Версия формата конфигурации отладки BlinkCode. Используйте 1.0.',
-  'schema.launch.configurations': 'Конфигурации запуска и подключения, показанные в отладке BlinkCode.',
-  'schema.launch.compounds': 'Именованные группы конфигураций, запускаемые вместе.',
+  'schema.launch.version':
+    'Версия формата конфигурации отладки BlinkCode. Используйте 1.0.',
+  'schema.launch.configurations':
+    'Конфигурации запуска и подключения, показанные в отладке BlinkCode.',
+  'schema.launch.compounds':
+    'Именованные группы конфигураций, запускаемые вместе.',
   'schema.package.name': 'Имя пакета для npm и инструментов рабочей области.',
   'schema.package.scripts': 'Именованные команды менеджера пакетов.',
   'schema.package.dependencies': 'Зависимости пакета времени выполнения.',
   'schema.package.devDependencies': 'Зависимости только для разработки.',
   'schema.package.engines': 'Поддерживаемые версии среды выполнения.',
-  'schema.tsconfig.extends': 'Базовая конфигурация TypeScript для наследования.',
+  'schema.tsconfig.extends':
+    'Базовая конфигурация TypeScript для наследования.',
   'schema.tsconfig.compilerOptions': 'Параметры компилятора TypeScript.',
   'schema.tsconfig.include': 'Шаблоны файлов, включённых в проект.',
   'schema.tsconfig.references': 'Ссылки на другие проекты TypeScript.',
   'schema.eslint.extends': 'Общие конфигурации ESLint.',
   'schema.eslint.rules': 'Уровни важности и параметры правил.',
-  'schema.eslint.overrides': 'Конфигурация ESLint для отдельных шаблонов файлов.',
+  'schema.eslint.overrides':
+    'Конфигурация ESLint для отдельных шаблонов файлов.',
   'schema.deploy.buildCommand': 'Команда сборки проекта.',
   'schema.deploy.outputDirectory': 'Каталог с артефактами развёртывания.',
   'schema.deploy.redirects': 'Правила перенаправления HTTP.',

@@ -7,6 +7,58 @@
   background: var(--bg-base);
 }
 
+.browser-update-animation {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  --sheen-a: rgba(255, 255, 255, 0.55);
+  --sheen-b: rgba(255, 255, 255, 0.15);
+  background-image: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--sheen-b) 28%,
+    var(--sheen-a) 50%,
+    var(--sheen-b) 72%,
+    transparent 100%
+  );
+  opacity: 0;
+  transform: translate3d(0, -50%, 0);
+  will-change: transform, opacity;
+  isolation: isolate;
+}
+.browser-update-animation-border {
+  position: fixed;
+  inset: 0;
+  z-index: 10001;
+  pointer-events: none;
+  border-radius: 8px;
+}
+.browser-update-animation-border::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  --ring: 2px;
+  --top: var(--background-top, 30%);
+  padding: var(--ring);
+  background: radial-gradient(
+    120% 70% at 50% var(--top),
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 255, 255, 0.35) 55%,
+    transparent 78%
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  opacity: 0.95;
+}
+
 .app.reduce-motion *,
 .app.reduce-motion *::before,
 .app.reduce-motion *::after {
@@ -20,7 +72,11 @@
   flex: 1;
   overflow: hidden;
   position: relative;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-base) 94%, transparent), var(--bg-base));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-base) 94%, transparent),
+    var(--bg-base)
+  );
 }
 
 .editor-area {
@@ -44,7 +100,11 @@
   min-width: 0;
   min-height: 0;
   height: 100%;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--bg-editor) 92%, var(--bg-panel)), var(--bg-editor));
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-editor) 92%, var(--bg-panel)),
+    var(--bg-editor)
+  );
 }
 
 .editor-split {

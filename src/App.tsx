@@ -1,4 +1,10 @@
-import { lazy, Suspense, useEffect, type CSSProperties, type ReactNode } from 'react';
+import {
+  lazy,
+  Suspense,
+  useEffect,
+  type CSSProperties,
+  type ReactNode,
+} from 'react';
 import { EditorProvider } from './store/EditorContext';
 import TopHeader from './components/TopHeader/TopHeader';
 import ActivityBar from './components/ActivityBar/ActivityBar';
@@ -12,19 +18,32 @@ import { useT } from './hooks/useT';
 import { useEditor } from './store/EditorContext';
 import { ConfirmDialogHost } from './components/ui/ConfirmDialogHost';
 import { ExtensionProvider } from './features/extensions/ExtensionContext';
+import { AppUpdatesProvider } from './components/providers/AppUpdatesProvider';
+import { ConditionalUpdateEffect } from './components/UpdateEffect';
 import './App.css';
 
 const AIPanel = lazy(() => import('./components/AIPanel/AIPanel'));
-const BrowserPreview = lazy(() => import('./components/BrowserPreview/BrowserPreview'));
-const CommandPalette = lazy(() => import('./components/CommandPalette/CommandPalette'));
-const NpmScriptsPanel = lazy(() => import('./components/NpmScriptsPanel/NpmScriptsPanel'));
+const BrowserPreview = lazy(
+  () => import('./components/BrowserPreview/BrowserPreview'),
+);
+const CommandPalette = lazy(
+  () => import('./components/CommandPalette/CommandPalette'),
+);
+const NpmScriptsPanel = lazy(
+  () => import('./components/NpmScriptsPanel/NpmScriptsPanel'),
+);
 const DebugPanel = lazy(() => import('./components/DebugPanel/DebugPanel'));
 const QuickOpen = lazy(() => import('./components/QuickOpen/QuickOpen'));
 const SearchPanel = lazy(() => import('./components/SearchPanel/SearchPanel'));
+// prettier-ignore
 const SettingsPanel = lazy(() => import('./components/SettingsPanel/SettingsPanel'));
 const Sidebar = lazy(() => import('./components/Sidebar/Sidebar'));
-const SourceControl = lazy(() => import('./components/SourceControl/SourceControl'));
-const DirtyCloseDialog = lazy(() => import('./components/DirtyCloseDialog/DirtyCloseDialog'));
+const SourceControl = lazy(
+  () => import('./components/SourceControl/SourceControl'),
+);
+const DirtyCloseDialog = lazy(
+  () => import('./components/DirtyCloseDialog/DirtyCloseDialog'),
+);
 const BottomPanel = lazy(() => import('./components/BottomPanel/BottomPanel'));
 
 function LazyBoundary({ children }: { children: ReactNode }) {
@@ -32,13 +51,34 @@ function LazyBoundary({ children }: { children: ReactNode }) {
 }
 
 function EditorLayout() {
-  const { state, getActiveFile, setActiveTab, setSplitActiveTab, toggleZenMode, toggleSettings, addToast } = useEditor();
+  const {
+    state,
+    getActiveFile,
+    setActiveTab,
+    setSplitActiveTab,
+    toggleZenMode,
+    toggleSettings,
+    addToast,
+  } = useEditor();
   const tt = useT();
   const isExtensionDetail = Boolean(getActiveFile()?.extensionDetail);
-  const splitTab = state.openTabs.find(tab => tab.id === state.splitActiveTabId);
-  const splitFile = splitTab ? state.files.find(node => node.id === splitTab.fileId) : null;
-  const isSplit = !!state.splitActiveTabId && !state.browserOpen && !isExtensionDetail && !splitFile?.extensionDetail;
-  const densityScale = state.settings.uiDensity === 'compact' ? 0.88 : state.settings.uiDensity === 'comfortable' ? 1.12 : 1;
+  const splitTab = state.openTabs.find(
+    (tab) => tab.id === state.splitActiveTabId,
+  );
+  const splitFile = splitTab
+    ? state.files.find((node) => node.id === splitTab.fileId)
+    : null;
+  const isSplit =
+    !!state.splitActiveTabId &&
+    !state.browserOpen &&
+    !isExtensionDetail &&
+    !splitFile?.extensionDetail;
+  const densityScale =
+    state.settings.uiDensity === 'compact'
+      ? 0.88
+      : state.settings.uiDensity === 'comfortable'
+        ? 1.12
+        : 1;
   const appStyle = {
     '--ui-density-scale': densityScale,
     '--explorer-row-height': `${state.settings.explorerRowHeight}px`,
@@ -54,7 +94,8 @@ function EditorLayout() {
     const openSettings = () => {
       if (!state.showSettings) toggleSettings();
     };
-    const showMessage = (event: Event) => addToast(String((event as CustomEvent).detail || ''), 'info');
+    const showMessage = (event: Event) =>
+      addToast(String((event as CustomEvent).detail || ''), 'info');
     window.addEventListener('blinkcode:openSettings', openSettings);
     window.addEventListener('blinkcode:extensionMessage', showMessage);
     return () => {
@@ -62,10 +103,15 @@ function EditorLayout() {
       window.removeEventListener('blinkcode:extensionMessage', showMessage);
     };
   }, [addToast, state.showSettings, toggleSettings]);
-  const acceptTabDrop = (event: React.DragEvent<HTMLDivElement>, group: 'primary' | 'secondary') => {
+  const acceptTabDrop = (
+    event: React.DragEvent<HTMLDivElement>,
+    group: 'primary' | 'secondary',
+  ) => {
     const tabId = event.dataTransfer.getData('application/x-blinkcode-tab');
-    const tab = state.openTabs.find(item => item.id === tabId);
-    const file = tab ? state.files.find(node => node.id === tab.fileId) : null;
+    const tab = state.openTabs.find((item) => item.id === tabId);
+    const file = tab
+      ? state.files.find((node) => node.id === tab.fileId)
+      : null;
     if (!tab || file?.extensionDetail) return;
     event.preventDefault();
     if (group === 'secondary') setSplitActiveTab(tabId);
@@ -73,12 +119,20 @@ function EditorLayout() {
   };
 
   return (
-    <div className={`app density-${state.settings.uiDensity}${state.settings.animations ? '' : ' reduce-motion'}${state.zenMode ? ' zen-mode' : ''}`} style={appStyle}>
+    <div
+      className={`app density-${state.settings.uiDensity}${state.settings.animations ? '' : ' reduce-motion'}${state.zenMode ? ' zen-mode' : ''}`}
+      style={appStyle}
+    >
       {!state.zenMode && <TopHeader />}
       <div className="main-area">
         {!state.zenMode && <ActivityBar />}
         <LazyBoundary>
-          {!state.zenMode && state.sidebarVisible && !state.showSearchPanel && !state.showSourceControl && !state.showNpmScripts && !state.showDebugPanel && <Sidebar />}
+          {!state.zenMode &&
+            state.sidebarVisible &&
+            !state.showSearchPanel &&
+            !state.showSourceControl &&
+            !state.showNpmScripts &&
+            !state.showDebugPanel && <Sidebar />}
           {!state.zenMode && state.showSearchPanel && <SearchPanel />}
           {!state.zenMode && state.showSourceControl && <SourceControl />}
           {!state.zenMode && state.showNpmScripts && <NpmScriptsPanel />}
@@ -93,14 +147,24 @@ function EditorLayout() {
           )}
           <div className={`editor-content${isSplit ? ' editor-split' : ''}`}>
             {state.browserOpen ? (
-              <LazyBoundary><BrowserPreview /></LazyBoundary>
+              <LazyBoundary>
+                <BrowserPreview />
+              </LazyBoundary>
             ) : isSplit ? (
               <>
-                <div className="editor-pane editor-pane-primary" onDragOver={event => event.preventDefault()} onDrop={event => acceptTabDrop(event, 'primary')}>
+                <div
+                  className="editor-pane editor-pane-primary"
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => acceptTabDrop(event, 'primary')}
+                >
                   <CodeEditor group="primary" />
                 </div>
                 <div className="editor-split-divider" />
-                <div className="editor-pane editor-pane-secondary" onDragOver={event => event.preventDefault()} onDrop={event => acceptTabDrop(event, 'secondary')}>
+                <div
+                  className="editor-pane editor-pane-secondary"
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={(event) => acceptTabDrop(event, 'secondary')}
+                >
                   <CodeEditor group="secondary" />
                 </div>
               </>
@@ -108,14 +172,18 @@ function EditorLayout() {
               <CodeEditor group="primary" />
             )}
           </div>
-          <LazyBoundary>
-            {!state.zenMode && <BottomPanel />}
-          </LazyBoundary>
+          <LazyBoundary>{!state.zenMode && <BottomPanel />}</LazyBoundary>
           {!state.zenMode && <StatusBar />}
         </div>
-        <LazyBoundary>{!state.zenMode && state.showAIPanel && <AIPanel />}</LazyBoundary>
+        <LazyBoundary>
+          {!state.zenMode && state.showAIPanel && <AIPanel />}
+        </LazyBoundary>
       </div>
-      {state.zenMode && <button className="zen-exit" type="button" onClick={toggleZenMode}>{tt('zen.exit')}</button>}
+      {state.zenMode && (
+        <button className="zen-exit" type="button" onClick={toggleZenMode}>
+          {tt('zen.exit')}
+        </button>
+      )}
       <Toast />
       <ConfirmDialogHost />
       <LazyBoundary>
@@ -125,6 +193,7 @@ function EditorLayout() {
         <DirtyCloseDialog />
       </LazyBoundary>
       <ProjectTemplatesModal />
+      <ConditionalUpdateEffect />
     </div>
   );
 }
@@ -133,7 +202,9 @@ export default function App() {
   return (
     <ExtensionProvider>
       <EditorProvider>
-        <EditorLayout />
+        <AppUpdatesProvider>
+          <EditorLayout />
+        </AppUpdatesProvider>
       </EditorProvider>
     </ExtensionProvider>
   );

@@ -26,15 +26,37 @@ import { useExplorerGitDecorations } from '../../features/sidebar/useExplorerGit
 import { getDirtyFiles } from '../../features/dirtyFiles/getDirtyFiles';
 import { addWorkspaceRootFromPicker } from '../../features/sidebar/addWorkspaceRootFromPicker';
 import { getExplorerGitDecoration } from '../../features/sidebar/getExplorerGitDecoration';
+import { UpdateBanner } from './UpdateBanner';
 import './Sidebar.css';
 
 export default function Sidebar() {
-  const { state, openFile, toggleFolder, addFile, deleteNode, renameNode, moveNode, updateSettings, loadFromServer, addToast, dispatch, openFolderFromServer } = useEditor();
+  const {
+    state,
+    openFile,
+    toggleFolder,
+    addFile,
+    deleteNode,
+    renameNode,
+    moveNode,
+    updateSettings,
+    loadFromServer,
+    addToast,
+    dispatch,
+    openFolderFromServer,
+  } = useEditor();
   const tt = useT();
-  const recentProjects = useRecentProjects(state.workspaceDir, state.files.length);
+  const recentProjects = useRecentProjects(
+    state.workspaceDir,
+    state.files.length,
+  );
   const gitDecorations = useExplorerGitDecorations(state.workspaceDir);
   const handleOpenFolder = useCallback(async () => {
-    await openFolderFromPicker({ addToast, dispatch, openFolderFromServer, tt });
+    await openFolderFromPicker({
+      addToast,
+      dispatch,
+      openFolderFromServer,
+      tt,
+    });
   }, [addToast, dispatch, openFolderFromServer, tt]);
   const handleCloseFolder = useCallback(async () => {
     if (getDirtyFiles(state.files).length > 0) {
@@ -42,7 +64,9 @@ export default function Sidebar() {
       return;
     }
     dispatch({ type: 'CLOSE_FOLDER' });
-    try { await closeWorkspace(); } catch {}
+    try {
+      await closeWorkspace();
+    } catch {}
   }, [addToast, dispatch, state.files, tt]);
   const handleAddRoot = useCallback(async () => {
     await addWorkspaceRootFromPicker({ addToast, loadFromServer, tt });
@@ -56,7 +80,11 @@ export default function Sidebar() {
   const renameRef = useRef<HTMLInputElement>(null);
   const filterRef = useRef<HTMLInputElement>(null);
   const itemEls = useRef<Map<string, HTMLDivElement>>(new Map());
-  const sidebarDrag = useSidebarDragAndDrop({ files: state.files, itemEls, moveNode });
+  const sidebarDrag = useSidebarDragAndDrop({
+    files: state.files,
+    itemEls,
+    moveNode,
+  });
   const sidebarCtx = useSidebarContextActions({
     addToast,
     deleteNode,
@@ -68,22 +96,43 @@ export default function Sidebar() {
     tt,
     workspaceDir: state.workspaceDir,
   });
-  const visibleFiles = state.files.filter(node => filterSidebarNode(node, filter));
-  const activeFileId = state.activeTabId ? state.openTabs.find(t => t.id === state.activeTabId)?.fileId : null;
+  const visibleFiles = state.files.filter((node) =>
+    filterSidebarNode(node, filter),
+  );
+  const activeFileId = state.activeTabId
+    ? state.openTabs.find((t) => t.id === state.activeTabId)?.fileId
+    : null;
 
-  useEffect(() => { if (inline) inlineRef.current?.focus(); }, [inline]);
+  useEffect(() => {
+    if (inline) inlineRef.current?.focus();
+  }, [inline]);
   useEffect(() => {
     if (state.pendingCreate) {
       setInline({ parentId: null, type: state.pendingCreate.type, value: '' });
       dispatch({ type: 'CLEAR_PENDING_CREATE' });
     }
   }, [dispatch, state.pendingCreate]);
-  useEffect(() => { if (renamingId) { renameRef.current?.focus(); renameRef.current?.select(); } }, [renamingId]);
-  useEffect(() => { if (showFilter) filterRef.current?.focus(); }, [showFilter]);
-  useEffect(() => { const h = () => sidebarCtx.closeCtx(); window.addEventListener('click', h); return () => window.removeEventListener('click', h); }, [sidebarCtx]);
+  useEffect(() => {
+    if (renamingId) {
+      renameRef.current?.focus();
+      renameRef.current?.select();
+    }
+  }, [renamingId]);
+  useEffect(() => {
+    if (showFilter) filterRef.current?.focus();
+  }, [showFilter]);
+  useEffect(() => {
+    const h = () => sidebarCtx.closeCtx();
+    window.addEventListener('click', h);
+    return () => window.removeEventListener('click', h);
+  }, [sidebarCtx]);
 
   const panelWidth = state.settings.panelWidths.explorer;
-  const resizerRef = useHorizontalResize(panelWidth, width => updateSettings({ panelWidths: { ...state.settings.panelWidths, explorer: width } }));
+  const resizerRef = useHorizontalResize(panelWidth, (width) =>
+    updateSettings({
+      panelWidths: { ...state.settings.panelWidths, explorer: width },
+    }),
+  );
 
   const submitInline = () => {
     if (!inline) return;
@@ -92,14 +141,20 @@ export default function Sidebar() {
     setInline(null);
   };
   const submitRename = () => {
-    if (renamingId && renameVal.trim()) renameNode(renamingId, renameVal.trim());
+    if (renamingId && renameVal.trim())
+      renameNode(renamingId, renameVal.trim());
     setRenamingId(null);
     setRenameVal('');
   };
   const renderTree = (nodes: FileNode[], depth: number): React.ReactNode => {
-    const sorted = sortNodes(nodes.filter(node => filterSidebarNode(node, filter)));
+    const sorted = sortNodes(
+      nodes.filter((node) => filterSidebarNode(node, filter)),
+    );
     return sorted.map((node) => {
-      const hasVisibleChildren = node.type === 'folder' && !!node.isExpanded && (node.children || []).some(c => filterSidebarNode(c, filter));
+      const hasVisibleChildren =
+        node.type === 'folder' &&
+        !!node.isExpanded &&
+        (node.children || []).some((c) => filterSidebarNode(c, filter));
 
       return (
         <SidebarTreeNode
@@ -109,7 +164,11 @@ export default function Sidebar() {
           drag={sidebarDrag.drag}
           draggingId={sidebarDrag.draggingId}
           hasVisibleChildren={hasVisibleChildren}
-          gitDecoration={node.serverPath ? getExplorerGitDecoration(node.serverPath, gitDecorations) : undefined}
+          gitDecoration={
+            node.serverPath
+              ? getExplorerGitDecoration(node.serverPath, gitDecorations)
+              : undefined
+          }
           inline={inline}
           inlineRef={inlineRef}
           itemEls={itemEls}
@@ -123,7 +182,10 @@ export default function Sidebar() {
           onInlineCancel={() => setInline(null)}
           onInlineChange={setInline}
           onOpenFile={openFile}
-          onRenameCancel={() => { setRenamingId(null); setRenameVal(''); }}
+          onRenameCancel={() => {
+            setRenamingId(null);
+            setRenameVal('');
+          }}
           onRenameChange={setRenameVal}
           onSubmitInline={submitInline}
           onSubmitRename={submitRename}
@@ -153,40 +215,71 @@ export default function Sidebar() {
     setDropActive(false);
   }, []);
 
-  const handleDrop = useCallback(async (e: React.DragEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setDropActive(false);
-    const folderPath = getDroppedFolderPath(e.dataTransfer);
-    if (folderPath) {
-      await openFolderFromServer(folderPath);
-      addToast(tt('explorer.openedFolder', { name: folderPath.split(/[\\/]/).pop() || folderPath }), 'success');
-      return;
-    }
-    const files = Array.from(e.dataTransfer.files);
-    if (files.length === 0) return;
-    const { failed, uploaded } = await uploadDroppedFiles(files);
-    const tree = await fetchTree();
-    dispatch({ type: 'SET_FILES', payload: tree.files });
-    for (const serverPath of uploaded) {
-      const file = findNodeByPath(tree.files, serverPath);
-      if (file) await openFile(file);
-    }
-    if (failed.length > 0) {
-      addToast(uploaded.length > 0
-        ? tt('explorer.dropPartial', { failed: failed.length, uploaded: uploaded.length })
-        : tt('explorer.dropFailed', { count: failed.length }), 'error');
-      return;
-    }
-    addToast(uploaded.length === 1
-      ? tt('explorer.droppedFile', { name: uploaded[0] })
-      : tt('explorer.droppedFiles', { count: uploaded.length }), 'success');
-  }, [addToast, dispatch, openFile, openFolderFromServer, tt]);
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setDropActive(false);
+      const folderPath = getDroppedFolderPath(e.dataTransfer);
+      if (folderPath) {
+        await openFolderFromServer(folderPath);
+        addToast(
+          tt('explorer.openedFolder', {
+            name: folderPath.split(/[\\/]/).pop() || folderPath,
+          }),
+          'success',
+        );
+        return;
+      }
+      const files = Array.from(e.dataTransfer.files);
+      if (files.length === 0) return;
+      const { failed, uploaded } = await uploadDroppedFiles(files);
+      const tree = await fetchTree();
+      dispatch({ type: 'SET_FILES', payload: tree.files });
+      for (const serverPath of uploaded) {
+        const file = findNodeByPath(tree.files, serverPath);
+        if (file) await openFile(file);
+      }
+      if (failed.length > 0) {
+        addToast(
+          uploaded.length > 0
+            ? tt('explorer.dropPartial', {
+                failed: failed.length,
+                uploaded: uploaded.length,
+              })
+            : tt('explorer.dropFailed', { count: failed.length }),
+          'error',
+        );
+        return;
+      }
+      addToast(
+        uploaded.length === 1
+          ? tt('explorer.droppedFile', { name: uploaded[0] })
+          : tt('explorer.droppedFiles', { count: uploaded.length }),
+        'success',
+      );
+    },
+    [addToast, dispatch, openFile, openFolderFromServer, tt],
+  );
 
-  if (!state.sidebarVisible || state.showSearchPanel || state.showSourceControl || state.showNpmScripts || state.showDebugPanel) return null;
+  if (
+    !state.sidebarVisible ||
+    state.showSearchPanel ||
+    state.showSourceControl ||
+    state.showNpmScripts ||
+    state.showDebugPanel
+  )
+    return null;
 
   return (
-    <SidebarPanel className={`sidebar${dropActive ? ' drop-active' : ''}`} width={panelWidth} onContextMenu={e => sidebarCtx.onCtx(e, null, null)} onDragOver={handleDragOver} onDragLeave={handleDragLeave} onDrop={handleDrop}>
+    <SidebarPanel
+      className={`sidebar${dropActive ? ' drop-active' : ''}`}
+      width={panelWidth}
+      onContextMenu={(e) => sidebarCtx.onCtx(e, null, null)}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <SidebarHeader
         closeFolderTitle={tt('explorer.closeFolder')}
         fileCount={visibleFiles.length}
@@ -206,12 +299,18 @@ export default function Sidebar() {
           onClear={() => setFilter('')}
         />
       )}
-      <div className="sidebar-tree" onDragOver={e => { e.preventDefault(); }} onDrop={e => {
-        e.preventDefault();
-        if (sidebarDrag.hasDraggedNode()) {
-          sidebarDrag.moveDraggedToRoot();
-        }
-      }}>
+      <div
+        className="sidebar-tree"
+        onDragOver={(e) => {
+          e.preventDefault();
+        }}
+        onDrop={(e) => {
+          e.preventDefault();
+          if (sidebarDrag.hasDraggedNode()) {
+            sidebarDrag.moveDraggedToRoot();
+          }
+        }}
+      >
         {visibleFiles.length === 0 && !inline ? (
           <SidebarEmptyState
             emptyHint={tt('empty.hint')}
@@ -224,21 +323,22 @@ export default function Sidebar() {
         ) : (
           <>
             {renderTree(visibleFiles, 0)}
-        {inline && inline.parentId === null && (
-          <SidebarInlineInput
-            inputRef={inlineRef}
-            type={inline.type}
-            value={inline.value}
-            paddingLeft={10}
-            tt={tt}
-            onChange={value => setInline({ ...inline, value })}
-            onSubmit={submitInline}
-            onCancel={() => setInline(null)}
-          />
-        )}
+            {inline && inline.parentId === null && (
+              <SidebarInlineInput
+                inputRef={inlineRef}
+                type={inline.type}
+                value={inline.value}
+                paddingLeft={10}
+                tt={tt}
+                onChange={(value) => setInline({ ...inline, value })}
+                onSubmit={submitInline}
+                onCancel={() => setInline(null)}
+              />
+            )}
           </>
         )}
       </div>
+      <UpdateBanner />
       <div className="sidebar-resizer ui-sidebar-resizer" ref={resizerRef} />
 
       {sidebarCtx.ctx && (

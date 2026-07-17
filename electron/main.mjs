@@ -9,7 +9,8 @@ import { registerUpdaterIpc } from './registerUpdaterIpc.mjs';
 // system-Node process so Electron must NOT load the native better-sqlite3
 // module (different ABI). In packaged mode we start it in-process.
 
-const { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, shell } = electron;
+const { app, BrowserWindow, dialog, ipcMain, Menu, safeStorage, shell } =
+  electron;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -18,6 +19,7 @@ let mainWindow = null;
 let allowWindowClose = false;
 let appIsQuitting = false;
 let activeBackendPort = null;
+let disposeUpdater = null;
 const approvedProjectParentPaths = new Set();
 
 function isSafeHttpUrl(rawUrl) {
@@ -49,6 +51,7 @@ function registerIpc() {
   ipcMain.removeHandler?.('shell:openExternal');
   ipcMain.removeHandler?.('shell:revealInFolder');
   ipcMain.removeHandler?.('shell:trashItem');
+  ipcMain.removeHandler?.('app:get-version');
 
   ipcMain.handle('dialog:openFolder', async () => {
     const result = await dialog.showOpenDialog({
@@ -63,8 +66,13 @@ function registerIpc() {
 
   ipcMain.handle('project:createFromTemplate', async (_event, request) => {
     const parentPath = path.resolve(String(request?.parentPath || ''));
-    if (!approvedProjectParentPaths.has(parentPath)) throw new Error('Choose the destination folder again');
-    return createProjectFromTemplate(parentPath, request?.projectName, request?.files);
+    if (!approvedProjectParentPaths.has(parentPath))
+      throw new Error('Choose the destination folder again');
+    return createProjectFromTemplate(
+      parentPath,
+      request?.projectName,
+      request?.files,
+    );
   });
 
   ipcMain.handle('window:minimize', () => {
@@ -101,35 +109,46 @@ function registerIpc() {
   });
 
   ipcMain.handle('shell:revealInFolder', async (_event, filePath) => {
-    if (typeof filePath !== 'string' || !path.isAbsolute(filePath)) return false;
+    if (typeof filePath !== 'string' || !path.isAbsolute(filePath))
+      return false;
     shell.showItemInFolder(filePath);
     return true;
   });
 
   ipcMain.handle('shell:trashItem', async (_event, filePath) => {
-    if (typeof filePath !== 'string' || !path.isAbsolute(filePath)) return false;
+    if (typeof filePath !== 'string' || !path.isAbsolute(filePath))
+      return false;
     try {
-      const backendPort = activeBackendPort || process.env.PORT || (app.isPackaged ? '3210' : '3001');
+      const backendPort =
+        activeBackendPort ||
+        process.env.PORT ||
+        (app.isPackaged ? '3210' : '3001');
       const response = await fetch(`http://127.0.0.1:${backendPort}/api/tree`);
       const data = await response.json();
       const workspacePath = path.resolve(String(data.workspacePath || ''));
       const targetPath = path.resolve(filePath);
       const relative = path.relative(workspacePath, targetPath);
-      if (!workspacePath || relative.startsWith('..') || path.isAbsolute(relative)) return false;
+      if (
+        !workspacePath ||
+        relative.startsWith('..') ||
+        path.isAbsolute(relative)
+      )
+        return false;
       await shell.trashItem(targetPath);
       return true;
     } catch {
       return false;
     }
   });
+  ipcMain.handle('app:get-version', () => app.getVersion());
 }
 
 function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function canUsePort(port) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     const tester = net.createServer();
 
     tester.once('error', () => {
@@ -168,7 +187,8 @@ async function waitForServer(url, attempts = 60) {
 
 async function createWindow() {
   allowWindowClose = false;
-  const configuredBackendPort = process.env.PORT || (app.isPackaged ? '3210' : '3001');
+  const configuredBackendPort =
+    process.env.PORT || (app.isPackaged ? '3210' : '3001');
   const backendPort = app.isPackaged
     ? await findAvailablePort(configuredBackendPort)
     : configuredBackendPort;
@@ -176,7 +196,7 @@ async function createWindow() {
   const backendUrl = `http://127.0.0.1:${backendPort}`;
   const rendererUrl = app.isPackaged
     ? backendUrl
-    : (process.env.BLINKCODE_RENDERER_URL || backendUrl);
+    : process.env.BLINKCODE_RENDERER_URL || backendUrl;
 
   if (app.isPackaged) {
     const { startBlinkCodeServer } = await import('../server/index.js');
@@ -205,23 +225,28 @@ async function createWindow() {
     },
   });
 
-  mainWindow.webContents.on('will-attach-webview', (event, webPreferences, params) => {
-    delete webPreferences.preload;
-    webPreferences.nodeIntegration = false;
-    webPreferences.contextIsolation = true;
-    webPreferences.sandbox = true;
-    webPreferences.webSecurity = true;
-    webPreferences.allowRunningInsecureContent = false;
-    webPreferences.enableBlinkFeatures = '';
+  mainWindow.webContents.on(
+    'will-attach-webview',
+    (event, webPreferences, params) => {
+      delete webPreferences.preload;
+      webPreferences.nodeIntegration = false;
+      webPreferences.contextIsolation = true;
+      webPreferences.sandbox = true;
+      webPreferences.webSecurity = true;
+      webPreferences.allowRunningInsecureContent = false;
+      webPreferences.enableBlinkFeatures = '';
 
-    if (!isSafeHttpUrl(params.src)) {
-      event.preventDefault();
-    }
-  });
+      if (!isSafeHttpUrl(params.src)) {
+        event.preventDefault();
+      }
+    },
+  );
 
-  mainWindow.webContents.session.setPermissionRequestHandler((_webContents, _permission, callback) => {
-    callback(false);
-  });
+  mainWindow.webContents.session.setPermissionRequestHandler(
+    (_webContents, _permission, callback) => {
+      callback(false);
+    },
+  );
 
   mainWindow.webContents.on('will-navigate', (event, navigationUrl) => {
     const currentUrl = mainWindow?.webContents.getURL();
@@ -254,7 +279,8 @@ async function createWindow() {
   mainWindow.webContents.on('before-input-event', (event, input) => {
     if (input.type !== 'keyDown') return;
     const isF12 = input.key === 'F12';
-    const isCtrlShiftI = input.control && input.shift && (input.key === 'I' || input.key === 'i');
+    const isCtrlShiftI =
+      input.control && input.shift && (input.key === 'I' || input.key === 'i');
     if (isF12 || isCtrlShiftI) {
       mainWindow?.webContents.toggleDevTools();
       event.preventDefault();
@@ -264,25 +290,27 @@ async function createWindow() {
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-  mainWindow.on('close', event => {
+  mainWindow.on('close', (event) => {
     if (allowWindowClose || appIsQuitting) return;
     event.preventDefault();
     mainWindow?.webContents.send('window:close-requested');
   });
 }
 
-app.whenReady()
+app
+  .whenReady()
   .then(async () => {
     Menu.setApplicationMenu(null);
     registerIpc();
-    await registerUpdaterIpc({
+    disposeUpdater = await registerUpdaterIpc({
       app,
       ipcMain,
-      send: (channel, payload) => mainWindow?.webContents.send(channel, payload),
+      send: (channel, payload) =>
+        mainWindow?.webContents.send(channel, payload),
     });
     await createWindow();
   })
-  .catch(error => {
+  .catch((error) => {
     console.error('BlinkCode failed to start', error);
     dialog.showErrorBox(
       'BlinkCode could not start',
@@ -293,7 +321,7 @@ app.whenReady()
 
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow().catch(err => {
+    createWindow().catch((err) => {
       console.error('Failed to create window', err);
       app.quit();
     });
@@ -306,5 +334,7 @@ app.on('window-all-closed', () => {
 
 app.on('before-quit', () => {
   appIsQuitting = true;
+  disposeUpdater?.();
+  disposeUpdater = null;
   mainWindow = null;
 });

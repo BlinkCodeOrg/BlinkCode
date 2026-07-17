@@ -3,7 +3,7 @@
   "description": "Desktop code editor for web and app project workflows.",
   "main": "electron/main.mjs",
   "private": true,
-  "version": "1.3.5",
+  "version": "1.4.0",
   "author": "BlinkCode",
   "homepage": "https://github.com/BlinkCodeOrg/BlinkCode",
   "repository": {
@@ -12,19 +12,22 @@
   },
   "type": "module",
   "scripts": {
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "dev": "concurrently -n server,vite -c blue,green \"node server/index.js\" \"vite\"",
     "server": "node server/index.js",
     "build": "tsc -b && vite build",
     "electron": "electron .",
     "electron:dev": "concurrently -n server,vite,electron -c blue,green,magenta \"node server/index.js\" \"vite\" \"wait-on http://127.0.0.1:5173 && set BLINKCODE_RENDERER_URL=http://127.0.0.1:5173&& electron .\"",
+    "electron:mock-updates": "set BLINKCODE_UPDATE_MOCK=1&& npm run electron:dev",
     "dev:electron": "npm run electron:dev",
     "desktop": "npm run build && electron .",
     "rebuild:electron-native": "node scripts/release/verifyElectronNative.mjs",
     "dist:win": "npm run build && npm run rebuild:electron-native && npm run dist:win:setup && npm run dist:win:portable",
-    "dist:win:setup": "electron-builder --win nsis --x64 -c.artifactName=BlinkCode-Setup-${version}-${arch}.${ext}",
-    "dist:win:portable": "electron-builder --win portable --x64 -c.artifactName=BlinkCode-Portable-${version}-${arch}.${ext}",
-    "dist:mac": "npm run build && npm run rebuild:electron-native && electron-builder --mac dmg zip --x64 --arm64",
-    "dist:linux": "npm run build && npm run rebuild:electron-native && electron-builder --linux AppImage deb --x64 --arm64",
+    "dist:win:setup": "electron-builder -c electron-builder.mjs --win nsis --x64 --publish never -c.artifactName=BlinkCode-Setup-${version}-${arch}.${ext}",
+    "dist:win:portable": "electron-builder -c electron-builder.mjs --win portable --x64 --publish never -c.artifactName=BlinkCode-Portable-${version}-${arch}.${ext}",
+    "dist:mac": "npm run build && npm run rebuild:electron-native && electron-builder -c electron-builder.mjs --mac dmg zip --x64 --arm64 --publish never",
+    "dist:linux": "npm run build && npm run rebuild:electron-native && electron-builder -c electron-builder.mjs --linux AppImage deb rpm --x64 --arm64 --publish never",
     "dev:desktop": "concurrently -n server,vite -c blue,green \"set PORT=3210 && node server/index.js\" \"vite --port 5174\"",
     "lint": "eslint .",
     "test": "npm run test:quality && npm run test:unit",
@@ -87,13 +90,13 @@
     "publish": {
       "provider": "github",
       "owner": "BlinkCodeOrg",
-      "repo": "BlinkCode"
+      "repo": "BlinkCode",
+      "releaseType": "release"
     },
     "win": {
       "icon": "build/icon.ico",
       "legalTrademarks": "BlinkCode",
       "requestedExecutionLevel": "asInvoker",
-      "signAndEditExecutable": false,
       "target": [
         "nsis",
         "portable"
@@ -122,7 +125,8 @@
       "category": "Development",
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "rpm"
       ],
       "artifactName": "BlinkCode-${version}-${arch}.${ext}"
     }
@@ -139,6 +143,7 @@
     "express": "^5.2.1",
     "lucide-react": "^1.8.0",
     "monaco-editor": "^0.52.2",
+    "motion": "^12.38.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-icons": "^5.6.0",
@@ -172,6 +177,7 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
+    "prettier": "^3.8.3",
     "tsx": "^4.20.6",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.0",
