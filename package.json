@@ -111,7 +111,7 @@
       "installerHeaderIcon": "build/icon.ico"
     },
     "mac": {
-      "icon": "build/icon.png",
+      "icon": "build/BlinkCode-logo-square.png",
       "category": "public.app-category.developer-tools",
       "target": [
         "dmg",
@@ -122,7 +122,7 @@
       "gatekeeperAssess": false
     },
     "linux": {
-      "icon": "build/icon.png",
+      "icon": "build/BlinkCode-logo-square.png",
       "category": "Development",
       "target": [
         "AppImage",
