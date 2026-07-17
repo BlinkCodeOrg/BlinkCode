@@ -324,7 +324,9 @@ export async function registerUpdaterIpc({ app, ipcMain, send }) {
     if (mockEnabled) return true;
     try {
       marker.mark();
-      autoUpdater.quitAndInstall(false, true);
+      // Updates should replace the current per-user installation silently,
+      // without reopening the full first-install NSIS wizard.
+      autoUpdater.quitAndInstall(true, true);
       return true;
     } catch (error) {
       installing = false;

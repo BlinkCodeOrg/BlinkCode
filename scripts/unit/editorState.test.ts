@@ -125,6 +125,28 @@ test('content updates distinguish dirty edits from server loads and save complet
   assert.equal(saved.pendingCreate, null);
 });
 
+test('binary payloads never overwrite adjacent text files', () => {
+  const current = state();
+  const next = reducer(current, {
+    type: 'SET_FILE_CONTENT',
+    payload: { fileId: 'a', content: 'base64:iVBORw0KGgoAAAANSUhEUg==' },
+  });
+
+  const encodedFile = findNodeByPath(next.files, 'src/a.ts');
+  const adjacentFile = findNodeByPath(next.files, 'src/b.js');
+  assert.equal(encodedFile?.binary, true);
+  assert.equal(encodedFile?.content, '');
+  assert.equal(encodedFile?.dirty, false);
+  assert.equal(adjacentFile?.content, 'b');
+
+  const ignoredEdit = reducer(next, {
+    type: 'UPDATE_FILE_CONTENT',
+    payload: { fileId: 'a', content: 'must not become editable' },
+  });
+  assert.equal(findNodeByPath(ignoredEdit.files, 'src/a.ts')?.content, '');
+  assert.equal(findNodeByPath(ignoredEdit.files, 'src/b.js')?.content, 'b');
+});
+
 test('closing the active tab selects a neighbour and clears its split assignment', () => {
   const current = state({
     openTabs: [
@@ -258,6 +280,22 @@ test('watcher add is idempotent and watcher remove closes the matching tab', () 
   assert.equal(findNodeByPath(removed.files, 'src/new.ts'), null);
   assert.equal(removed.openTabs.length, 0);
   assert.equal(removed.activeTabId, null);
+});
+
+test('watcher classifies newly generated binary file names before opening them', () => {
+  const next = reducer(state(), {
+    type: 'FS_ADD_NODE',
+    payload: {
+      serverPath: 'src/generated.archive.zip',
+      name: 'generated.archive.zip',
+      type: 'file',
+    },
+  });
+
+  assert.equal(
+    findNodeByPath(next.files, 'src/generated.archive.zip')?.binary,
+    true,
+  );
 });
 
 test('watcher removal preserves a dirty open file', () => {
