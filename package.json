@@ -123,6 +123,7 @@
     },
     "linux": {
       "icon": "build/BlinkCode-logo-square.png",
+      "maintainer": "BlinkCodeOrg <BlinkCodeOrg@users.noreply.github.com>",
       "category": "Development",
       "target": [
         "AppImage",
