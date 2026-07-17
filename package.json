@@ -43,6 +43,7 @@
     "quality": "npm run typecheck && npm run lint && npm run test && npm run quality:architecture && npm run build",
     "quality:full": "npm run quality && npm run e2e",
     "release:check": "npm run quality:full && node scripts/release/validate-release.mjs",
+    "release:ci-check": "npm run typecheck && npm run lint && npm run quality:architecture && npm run build && node scripts/release/validate-release.mjs",
     "preview": "vite preview"
   },
   "build": {
