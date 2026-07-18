@@ -99,22 +99,17 @@ test(
     try {
       await session.start('sample.js', [3]);
       // Fresh Windows CI runners can spend several seconds starting the Node
-      // inspector. Wait for the actual breakpoint instead of racing startup.
+      // inspector. CDP may also resolve the breakpoint to the next executable
+      // line, so wait for the reported pause rather than an exact source line.
       const deadline = Date.now() + 20_000;
-      while (
-        Date.now() < deadline &&
-        !(
-          session.snapshot().status === 'paused' &&
-          session.snapshot().callFrames[0]?.line === 3
-        )
-      ) {
+      while (Date.now() < deadline && session.snapshot().status !== 'paused') {
         await new Promise((resolve) => setTimeout(resolve, 50));
       }
 
       const frame = session.snapshot().callFrames[0];
       assert.equal(session.snapshot().status, 'paused');
       assert.equal(frame.path, 'sample.js');
-      assert.equal(frame.line, 3);
+      assert.equal([3, 4].includes(frame.line), true);
       const localScope = frame.scopes.find((scope) => scope.type === 'local');
       const variables = await session.variables(localScope?.objectId);
       assert.equal(
@@ -166,6 +161,45 @@ test(
     }
   },
 );
+
+test('Node debugger accepts CDP-resolved breakpoint locations', () => {
+  const workspace = join(tmpdir(), 'blinkcode-resolved-breakpoint');
+  const session = new NodeDebugSession(workspace);
+  session.stopOnEntry = false;
+  session.initialPauseHandled = false;
+  session.state.breakpointDetails = [
+    {
+      enabled: true,
+      path: 'sample.js',
+      line: 3,
+      inspectorId: 'breakpoint-1',
+    },
+  ];
+
+  session.handleInspectorEvent(
+    JSON.stringify({
+      method: 'Debugger.paused',
+      params: {
+        reason: 'other',
+        hitBreakpoints: ['breakpoint-1'],
+        callFrames: [
+          {
+            callFrameId: 'frame-1',
+            functionName: 'run',
+            url: new URL(
+              `file:///${join(workspace, 'sample.js').replace(/\\/g, '/')}`,
+            ).href,
+            location: { lineNumber: 3, columnNumber: 0 },
+            scopeChain: [],
+          },
+        ],
+      },
+    }),
+  );
+
+  assert.equal(session.snapshot().status, 'paused');
+  assert.equal(session.snapshot().callFrames[0].line, 4);
+});
 
 test(
   'launch configuration passes arguments and environment and can restart',

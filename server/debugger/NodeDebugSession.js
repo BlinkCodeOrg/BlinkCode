@@ -190,8 +190,12 @@ export class NodeDebugSession extends EventEmitter {
       const firstFrame = formattedFrames[0];
       if (!this.initialPauseHandled) {
         this.initialPauseHandled = true;
+        const hitBreakpoints = new Set(message.params?.hitBreakpoints || []);
         const hasBreakpoint = this.state.breakpointDetails.some(item => (
-          item.enabled && item.path === firstFrame?.path && item.line === firstFrame?.line
+          item.enabled && (
+            (item.inspectorId && hitBreakpoints.has(item.inspectorId))
+            || (item.path === firstFrame?.path && item.line === firstFrame?.line)
+          )
         ));
         if (!this.stopOnEntry && !hasBreakpoint) {
           this.inspector?.request('Debugger.resume').catch(error => this.fail(error));
