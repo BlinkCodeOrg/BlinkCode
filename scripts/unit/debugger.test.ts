@@ -97,7 +97,7 @@ test(
     const session = new NodeDebugSession(workspace);
 
     try {
-      await session.start('sample.js', [3]);
+      await session.start('sample.js', [4]);
       // Fresh Windows CI runners can spend several seconds starting the Node
       // inspector. CDP may also resolve the breakpoint to the next executable
       // line, so wait for the reported pause rather than an exact source line.
@@ -109,7 +109,7 @@ test(
       const frame = session.snapshot().callFrames[0];
       assert.equal(session.snapshot().status, 'paused');
       assert.equal(frame.path, 'sample.js');
-      assert.equal([3, 4].includes(frame.line), true);
+      assert.equal(frame.line, 4);
       const localScope = frame.scopes.find((scope) => scope.type === 'local');
       const variables = await session.variables(localScope?.objectId);
       assert.equal(
