@@ -6,6 +6,7 @@ export {
   fetchFileContent,
   fetchFileCursorPosition,
   fetchLargeFilePreview,
+  fetchRawFileBlob,
   moveOnServer,
   renameOnServer,
   saveFile,

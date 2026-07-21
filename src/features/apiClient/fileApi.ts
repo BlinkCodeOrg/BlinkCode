@@ -1,4 +1,5 @@
 import { API } from './apiBase';
+import { authenticatedFetch } from './apiSession';
 import { request } from './request';
 
 export interface FileCursorPosition {
@@ -26,6 +27,15 @@ export async function fetchFileContent(serverPath: string, binary?: boolean): Pr
   if (binary) return '';
   const data = await request(`${API}/file?path=${encodeURIComponent(serverPath)}`);
   return data.content || '';
+}
+
+export async function fetchRawFileBlob(serverPath: string, signal?: AbortSignal): Promise<Blob> {
+  const response = await authenticatedFetch(
+    `${API}/raw?path=${encodeURIComponent(serverPath)}`,
+    { cache: 'no-store', signal },
+  );
+  if (!response.ok) throw new Error(`Cannot load file preview (${response.status})`);
+  return response.blob();
 }
 
 export async function fetchFileCursorPosition(serverPath: string): Promise<FileCursorPosition | null> {

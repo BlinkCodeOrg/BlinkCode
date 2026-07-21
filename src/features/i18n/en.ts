@@ -185,6 +185,7 @@ export const en: Record<string, string> = {
   'explorer.refresh': 'Refresh',
   'explorer.newFile': 'New File',
   'explorer.newFolder': 'New Folder',
+  'explorer.emptyFolder': 'This folder is empty. Create a file or folder to start the project.',
   'sidebar.recentProjects': 'Recent projects',
 
   'ctx.open': 'Open',

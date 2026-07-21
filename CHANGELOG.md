@@ -4,6 +4,19 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.4.5] - 2026-07-21
+
+### Changed
+
+- Kept the top-bar update notification accessible as a compact icon control in narrow windows.
+- Added clear New File and New Folder actions when an opened project directory is empty.
+
+### Fixed
+
+- Preserved empty directories as open workspaces across reloads instead of returning to the recent-project screen.
+- Restored authenticated previews for workspace images, including PNG, JPG, WebP, SVG and ICO files.
+- Restored local workspace images embedded in Markdown previews.
+
 ## [1.4.4] - 2026-07-21
 
 ### Changed

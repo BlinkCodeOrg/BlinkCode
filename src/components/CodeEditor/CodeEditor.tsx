@@ -1,6 +1,6 @@
 import Editor from '@monaco-editor/react';
 import { useEditor } from '../../store/EditorContext';
-import { isImageFile, getRawFileUrl } from '../../utils/api';
+import { isImageFile } from '../../utils/api';
 import { FileWarning } from 'lucide-react';
 import { useT } from '../../hooks/useT';
 import {
@@ -11,7 +11,6 @@ import {
 import DiffPreview from './DiffPreview';
 import { getMonacoTheme } from '../../features/editorTheme/getMonacoTheme';
 import { useGitInlineDecorations } from '../../features/gitInline/useGitInlineDecorations';
-import { useImagePreviewState } from '../../features/imagePreview/useImagePreviewState';
 import { isSettingsFile } from '../../features/editorFiles/isSettingsFile';
 import { isUnsupportedTextFile as getIsUnsupportedTextFile } from '../../features/editorFiles/isUnsupportedTextFile';
 import { useGitInlineBlame } from '../../features/editorBlame/useGitInlineBlame';
@@ -20,7 +19,7 @@ import { useMonacoEditorLifecycle } from '../../features/editorMonaco/useMonacoE
 import { useSafeEditorChange } from '../../features/editorMonaco/useSafeEditorChange';
 import { EditorBlame } from './EditorBlame';
 import { EditorEmptyState } from './EditorEmptyState';
-import { ImagePreview } from './ImagePreview';
+import { WorkspaceImagePreview } from './WorkspaceImagePreview';
 import { MarkdownPreviewTab } from './MarkdownPreviewTab';
 import { LargeFilePreview } from './LargeFilePreview';
 import { LARGE_FILE_LIMIT } from '../../features/fileSupport/largeFileLimit';
@@ -68,7 +67,6 @@ export default function CodeEditor({
     state.settings.gitInlineBlame,
   );
   const onboarding = useEditorOnboarding({ activeFile, dispatch });
-  const imagePreview = useImagePreviewState(activeFile?.id);
   const monacoLifecycle = useMonacoEditorLifecycle({
     activeFile,
     group,
@@ -116,24 +114,11 @@ export default function CodeEditor({
     isImageFile(activeFile.name) &&
     activeFile.serverPath
   ) {
-    const src = getRawFileUrl(activeFile.serverPath);
-
     return (
-      <ImagePreview
-        previewRef={imagePreview.previewRef}
-        src={src}
-        zoom={imagePreview.zoom}
-        pan={imagePreview.pan}
-        isPanning={imagePreview.isPanning}
-        imgError={imagePreview.imgError}
+      <WorkspaceImagePreview
+        fileId={activeFile.id}
+        serverPath={activeFile.serverPath}
         tt={tt}
-        onMouseDown={imagePreview.onMouseDown}
-        onMouseMove={imagePreview.onMouseMove}
-        onMouseUp={imagePreview.onMouseUp}
-        onZoomIn={imagePreview.zoomIn}
-        onZoomOut={imagePreview.zoomOut}
-        onResetView={imagePreview.resetView}
-        onImageError={imagePreview.onImageError}
       />
     );
   }

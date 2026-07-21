@@ -41,7 +41,7 @@ export function getSaveableState(state: EditorState): SavedEditorState {
     showAIPanel: state.showAIPanel,
     zenMode: state.zenMode,
     expandedFolders: getExpandedFolders(state.files),
-    folderClosed: state.files.length === 0,
+    folderClosed: !state.workspaceDir && state.files.length === 0,
     workspaceDir: state.workspaceDir,
   };
 }

@@ -37,10 +37,7 @@ export default function Sidebar() {
     openFolderFromServer,
   } = useEditor();
   const tt = useT();
-  const recentProjects = useRecentProjects(
-    state.workspaceDir,
-    state.files.length,
-  );
+  const recentProjects = useRecentProjects(state.workspaceDir, state.files.length);
   const gitDecorations = useExplorerGitDecorations(state.workspaceDir);
   const handleOpenFolder = useCallback(async () => {
     await openFolderFromPicker({
@@ -188,14 +185,17 @@ export default function Sidebar() {
           }
         }}
       >
-        {visibleFiles.length === 0 && !inline ? (
+        {state.files.length === 0 && !inline ? (
           <SidebarEmptyState
             emptyHint={tt('empty.hint')}
             onOpenFolder={handleOpenFolder}
             onOpenRecentProject={openFolderFromServer}
+            onCreate={(type) => setInline({ parentId: null, type, value: '' })}
             openFolderLabel={tt('openFolder')}
             recentProjects={recentProjects}
             recentProjectsTitle={tt('sidebar.recentProjects')}
+            workspaceOpen={Boolean(state.workspaceDir)}
+            tt={tt}
           />
         ) : (
           <>
