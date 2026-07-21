@@ -103,6 +103,31 @@ test('OPEN_FILE creates one tab and reuses it on repeated open', () => {
   assert.equal(repeated.activeTabId, opened.openTabs[0].id);
 });
 
+test('OPEN_WORKSPACE replaces the project atomically and clears stale editor state', () => {
+  const nextFiles = [structuredClone(files[1])];
+  const current = state({
+    openTabs: [{ id: 'tab-a', fileId: 'a', name: 'a.ts' }],
+    activeTabId: 'tab-a',
+    splitActiveTabId: 'tab-a',
+    pendingCreate: { type: 'file' },
+    viewMode: 'split',
+  });
+
+  const next = reducer(current, {
+    type: 'OPEN_WORKSPACE',
+    payload: { files: nextFiles, workspaceDir: 'C:/next-workspace' },
+  });
+
+  assert.equal(next.files.length, 1);
+  assert.equal(next.files[0].serverPath, 'README.md');
+  assert.equal(next.workspaceDir, 'C:/next-workspace');
+  assert.deepEqual(next.openTabs, []);
+  assert.equal(next.activeTabId, null);
+  assert.equal(next.splitActiveTabId, null);
+  assert.equal(next.pendingCreate, null);
+  assert.equal(next.viewMode, 'editor');
+});
+
 test('content updates distinguish dirty edits from server loads and save completion', () => {
   const dirty = reducer(state(), {
     type: 'UPDATE_FILE_CONTENT',

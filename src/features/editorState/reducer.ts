@@ -22,6 +22,17 @@ import { findNodeById } from '../workspaceTree/findNodeById';
 export function reducer(state: EditorState, action: EditorAction): EditorState {
   switch (action.type) {
     case 'SET_FILES': return { ...state, files: sortTree(action.payload) };
+    case 'OPEN_WORKSPACE':
+      return {
+        ...state,
+        files: sortTree(action.payload.files),
+        workspaceDir: action.payload.workspaceDir,
+        openTabs: [],
+        activeTabId: null,
+        splitActiveTabId: null,
+        pendingCreate: null,
+        viewMode: 'editor',
+      };
     case 'CLOSE_FOLDER': return { ...state, files: [], openTabs: [], activeTabId: null, workspaceDir: '' };
 
     case 'OPEN_FILE': return openFileInState(state, action.payload.file);

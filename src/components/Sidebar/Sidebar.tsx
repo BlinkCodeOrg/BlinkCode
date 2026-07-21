@@ -18,7 +18,6 @@ import { SidebarPanel } from '../ui/SidebarPanel';
 import { useExplorerGitDecorations } from '../../features/sidebar/useExplorerGitDecorations';
 import { getDirtyFiles } from '../../features/dirtyFiles/getDirtyFiles';
 import { addWorkspaceRootFromPicker } from '../../features/sidebar/addWorkspaceRootFromPicker';
-import { UpdateBanner } from './UpdateBanner';
 import { useSidebarExternalDrop } from '../../features/sidebar/useSidebarExternalDrop';
 import { SidebarTree } from './SidebarTree';
 import './Sidebar.css';
@@ -238,7 +237,6 @@ export default function Sidebar() {
           </>
         )}
       </div>
-      <UpdateBanner />
       <div className="sidebar-resizer ui-sidebar-resizer" ref={resizerRef} />
 
       {sidebarCtx.ctx && (

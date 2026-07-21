@@ -218,8 +218,10 @@ export function EditorProvider({ children }: { children: ReactNode }) {
     }
     try {
       const { files } = await openFolderOnServer(dirPath);
-      dispatch({ type: 'SET_FILES', payload: files });
-      dispatch({ type: 'SET_WORKSPACE_DIR', payload: dirPath });
+      dispatch({
+        type: 'OPEN_WORKSPACE',
+        payload: { files, workspaceDir: dirPath },
+      });
     } catch (error) {
       addToast(tt('project.openFailed', { error: error instanceof Error ? error.message : tt('common.unknownError') }), 'error');
     }

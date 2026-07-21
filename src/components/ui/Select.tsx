@@ -21,7 +21,8 @@ interface SelectProps {
 
 export function Select({ ariaLabel, className = '', disabled, options, testId, value, onChange }: SelectProps) {
   const [open, setOpen] = useState(false);
-  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const [placement, setPlacement] = useState<'top' | 'bottom'>('bottom');
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({ visibility: 'hidden' });
   const ref = useRef<HTMLDivElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const current = options.find(option => option.value === value);
@@ -32,8 +33,15 @@ export function Select({ ariaLabel, className = '', disabled, options, testId, v
       const target = event.target as Node;
       if (!ref.current?.contains(target) && !menuRef.current?.contains(target)) setOpen(false);
     };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
     document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
+    document.addEventListener('keydown', closeOnEscape);
+    return () => {
+      document.removeEventListener('mousedown', close);
+      document.removeEventListener('keydown', closeOnEscape);
+    };
   }, [open]);
 
   useLayoutEffect(() => {
@@ -43,18 +51,20 @@ export function Select({ ariaLabel, className = '', disabled, options, testId, v
       const menu = menuRef.current;
       if (!trigger || !menu) return;
       const margin = 8;
-      const width = Math.max(trigger.width, Math.min(280, menu.scrollWidth));
-      const centeredLeft = trigger.left + trigger.width / 2 - width / 2;
-      const left = Math.min(window.innerWidth - width - margin, Math.max(margin, centeredLeft));
+      const width = Math.max(trigger.width, Math.min(260, menu.scrollWidth));
+      const preferredLeft = trigger.left;
+      const left = Math.min(window.innerWidth - width - margin, Math.max(margin, preferredLeft));
       const below = trigger.bottom + 4;
       const availableBelow = window.innerHeight - below - margin;
       const openAbove = availableBelow < Math.min(210, menu.scrollHeight) && trigger.top > availableBelow;
+      setPlacement(openAbove ? 'top' : 'bottom');
       setMenuStyle({
         left,
         top: openAbove ? undefined : below,
         bottom: openAbove ? window.innerHeight - trigger.top + 4 : undefined,
         width,
         maxHeight: Math.max(90, Math.min(210, openAbove ? trigger.top - margin : availableBelow)),
+        visibility: 'visible',
       });
     };
     updatePosition();
@@ -76,13 +86,16 @@ export function Select({ ariaLabel, className = '', disabled, options, testId, v
         className="ui-select-trigger"
         data-testid={testId}
         disabled={disabled}
-        onClick={() => setOpen(currentOpen => !currentOpen)}
+        onClick={() => {
+          setMenuStyle({ visibility: 'hidden' });
+          setOpen(currentOpen => !currentOpen);
+        }}
       >
         <span>{current?.label || String(value)}</span>
         <ChevronDown size={13} className={`ui-select-arrow ${open ? 'open' : ''}`} />
       </button>
       {open && createPortal(
-        <div className="ui-select-menu ui-select-menu-portal" role="listbox" ref={menuRef} style={menuStyle}>
+        <div className="ui-select-menu ui-select-menu-portal" data-placement={placement} role="listbox" ref={menuRef} style={menuStyle}>
           {options.map(option => (
             <button
               type="button"
