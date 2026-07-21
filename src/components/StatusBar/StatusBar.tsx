@@ -3,6 +3,7 @@ import { useEditor } from '../../store/EditorContext';
 import { AlertTriangle, CircleAlert, GitBranch, RotateCcw, Server, FolderOpen } from 'lucide-react';
 import { restartAllLspSessions } from '../../lsp/session';
 import { useT } from '../../hooks/useT';
+import { request } from '../../features/apiClient/request';
 import './StatusBar.css';
 
 export default function StatusBar() {
@@ -44,8 +45,7 @@ export default function StatusBar() {
     let cancelled = false;
     const fetchBranch = async () => {
       try {
-        const res = await fetch('/api/git-branch');
-        const data = await res.json();
+        const data = await request('/api/git-branch');
         if (!cancelled) setBranch(data.branch || null);
       } catch {
         if (!cancelled) setBranch(null);

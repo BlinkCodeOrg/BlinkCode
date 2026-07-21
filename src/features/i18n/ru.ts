@@ -1069,4 +1069,5 @@ export const ru: Record<string, string> = {
   'extensions.issues': 'Задачи',
   'extensions.license': 'Лицензия',
   'extensions.publisher': 'Издатель',
+  'diagnostics.recoverable': '{area}: {message}',
 };

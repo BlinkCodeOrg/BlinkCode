@@ -14,61 +14,17 @@ import { useEditor } from '../../store/EditorContext';
 import { joinWorkspacePath } from '../../shared/path/joinWorkspacePath';
 import { SidebarPanel } from '../ui/SidebarPanel';
 import { DependencyManager } from './DependencyManager';
-import { OverviewSection, TemplatesSection } from './WebAppCenterSections';
+import { OverviewSection } from './WebAppCenterSections';
+import { TemplatesSection } from './WebAppCenterTemplatesSection';
 import { PreviewSection } from './WebAppCenterPreviewSection';
 import { RestActions } from './WebAppCenterRestActions';
 import { ScriptsTab } from './WebAppCenterScriptsTab';
 import { useWebAppFirstRunChecklist } from './useWebAppFirstRunChecklist';
 import './NpmScriptsPanel.css';
 import { useHorizontalResize } from '../../hooks/useHorizontalResize';
+import { choosePrimaryPackage, filterNpmPackages, findLocalUrls, readStoredPreviewUrl, uniqueLocalUrls, writeStoredPreviewUrl } from '../../features/npmScripts/webAppCenterUrls';
 
 type CenterTab = 'overview' | 'scripts' | 'preview' | 'templates' | 'dependencies';
-
-const LOCAL_URL_PATTERN = /https?:\/\/(?:localhost|127\.0\.0\.1|\[::1\])(?::\d+)?(?:\/[^\s'"<>]*)?/gi;
-const LAST_PREVIEW_URL_KEY = 'blinkcode-web-app-center-preview-url';
-
-function workspaceKey(workspaceDir: string) {
-  return workspaceDir || '__empty_workspace__';
-}
-
-function readStoredPreviewUrl(workspaceDir: string) {
-  try {
-    const store = JSON.parse(localStorage.getItem(LAST_PREVIEW_URL_KEY) || '{}');
-    return typeof store[workspaceKey(workspaceDir)] === 'string' ? store[workspaceKey(workspaceDir)] : null;
-  } catch {
-    return null;
-  }
-}
-
-function writeStoredPreviewUrl(workspaceDir: string, url: string) {
-  try {
-    const store = JSON.parse(localStorage.getItem(LAST_PREVIEW_URL_KEY) || '{}');
-    store[workspaceKey(workspaceDir)] = url;
-    localStorage.setItem(LAST_PREVIEW_URL_KEY, JSON.stringify(store));
-  } catch {}
-}
-
-function uniqueLocalUrls(urls: Array<string | null | undefined>) {
-  const seen = new Set<string>();
-  return urls.filter((url): url is string => {
-    if (!url || seen.has(url)) return false;
-    seen.add(url);
-    return true;
-  });
-}
-
-function choosePrimaryPackage(packages: NpmScriptPackage[], workflow: WebWorkflowAnalysis | null) {
-  const workflowPackages = workflow?.packages || [];
-  return (
-    packages.find(item => item.directory === '.')
-    || workflowPackages.find(item => item.directory === '.')
-    || packages.find(item => item.packageManager === 'npm')
-    || workflowPackages.find(item => item.packageManager === 'npm')
-    || packages[0]
-    || workflowPackages[0]
-    || null
-  );
-}
 
 export default function NpmScriptsPanel() {
   const { state, addTerminalInstance, addToast, loadFromServer, openBrowserPreview, openDiffPreview, openFile, setActiveTerminal, toggleProblemsPanel, toggleSourceControl, toggleTerminal, updateSettings } = useEditor();
@@ -146,7 +102,7 @@ export default function NpmScriptsPanel() {
   }, [refreshProblems]);
 
   useEffect(() => {
-    const terminalTitleUrls = state.terminalInstances.flatMap(terminal => `${terminal.title || ''} ${terminal.name || ''}`.match(LOCAL_URL_PATTERN) || []);
+    const terminalTitleUrls = state.terminalInstances.flatMap(terminal => findLocalUrls(`${terminal.title || ''} ${terminal.name || ''}`));
     const links = uniqueLocalUrls([state.browserUrl, ...terminalLocalUrls, ...terminalTitleUrls, lastPreviewUrl]);
     setSuggestedUrl(links[0] || null);
   }, [lastPreviewUrl, state.browserUrl, state.terminalInstances, terminalLocalUrls]);
@@ -182,11 +138,7 @@ export default function NpmScriptsPanel() {
     workspaceDir: state.workspaceDir,
   });
   const filteredPackages = useMemo(() => {
-    const normalized = query.trim().toLowerCase();
-    if (!normalized) return packages;
-    return packages
-      .map(npmPackage => ({ ...npmPackage, scripts: npmPackage.scripts.filter(script => script.name.toLowerCase().includes(normalized) || script.command.toLowerCase().includes(normalized) || npmPackage.name.toLowerCase().includes(normalized)) }))
-      .filter(npmPackage => npmPackage.scripts.length > 0);
+    return filterNpmPackages(packages, query);
   }, [packages, query]);
 
   const focusTerminal = (terminalId: string) => {

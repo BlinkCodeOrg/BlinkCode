@@ -11,6 +11,7 @@ import { defaultSettings } from '../editorSettings/defaultSettings';
 import { isBinaryBlockedFile } from '../fileSupport/isBinaryBlockedFile';
 import { LARGE_FILE_LIMIT } from '../fileSupport/largeFileLimit';
 import { findNodeByPath } from '../workspaceTree/findNodeByPath';
+import { reportRecoverableError } from '../../shared/diagnostics/reportRecoverableError';
 
 export async function loadWorkspaceFromServer(
   dispatch: React.Dispatch<EditorAction>,
@@ -27,12 +28,16 @@ export async function loadWorkspaceFromServer(
         }
         dispatch({ type: 'UPDATE_SETTINGS', payload: merged });
       }
-    } catch {}
+    } catch (error) {
+      reportRecoverableError('workspace.settings', error);
+    }
 
     let saved: SavedEditorState | null = null;
     try {
       saved = await fetchState();
-    } catch {}
+    } catch (error) {
+      reportRecoverableError('workspace.state', error);
+    }
 
     if (saved && saved.folderClosed) {
       return;
@@ -41,7 +46,11 @@ export async function loadWorkspaceFromServer(
     if (saved?.workspaceDir) {
       try {
         await openFolderOnServer(saved.workspaceDir);
-      } catch {}
+      } catch (error) {
+        reportRecoverableError('workspace.restore-folder', error, {
+          workspaceDir: saved.workspaceDir,
+        });
+      }
       dispatch({ type: 'SET_WORKSPACE_DIR', payload: saved.workspaceDir });
     }
 
@@ -74,7 +83,11 @@ export async function loadWorkspaceFromServer(
                   type: 'SET_FILE_CONTENT',
                   payload: { fileId: file.id, content },
                 });
-              } catch {}
+              } catch (error) {
+                reportRecoverableError('workspace.restore-tab', error, {
+                  serverPath: tabInfo.serverPath,
+                });
+              }
             }
           }
         }
@@ -98,6 +111,10 @@ export async function loadWorkspaceFromServer(
         });
         dispatch({ type: 'OPEN_FILE', payload: { file } });
       }
-    } catch {}
-  } catch {}
+    } catch (error) {
+      reportRecoverableError('workspace.recovery', error);
+    }
+  } catch (error) {
+    reportRecoverableError('workspace.load', error);
+  }
 }

@@ -1,20 +1,12 @@
 import type React from 'react';
-import { AlertTriangle, Bot, CheckCircle2, GitBranch, Globe, LayoutTemplate, MonitorPlay, Play, Square, TerminalSquare } from 'lucide-react';
+import { AlertTriangle, Bot, CheckCircle2, GitBranch, Globe, MonitorPlay, Play, Square, TerminalSquare } from 'lucide-react';
 import type { TerminalInstance } from '../../types';
 import type { DiagnosticItem } from '../../features/problems/problemTypes';
-import { PROJECT_TEMPLATES } from '../../features/projectTemplates/projectTemplates';
 import type { GitFileEntry, GitStatusResponse, NpmScriptPackage, RestClientHistoryEntry, WebWorkflowAnalysis } from '../../utils/api';
 import type { WebAppFirstRunChecklistState } from './useWebAppFirstRunChecklist';
+import { findScriptTerminal, isTerminalRunning } from '../../features/npmScripts/webAppTerminalState';
 
 type TFn = (key: string) => string;
-
-function isRunning(terminal?: TerminalInstance | null) {
-  return terminal?.status === 'starting' || terminal?.status === 'running';
-}
-
-function findTerminal(terminals: TerminalInstance[], packageDirectory: string, scriptName: string) {
-  return terminals.find(item => item.scriptKey === `${packageDirectory}:${scriptName}`) || null;
-}
 
 export function OverviewSection({
   tt,
@@ -131,8 +123,8 @@ function DevServerSummary({ tt, workflow, packages, terminals, onOpenPreview, on
       <SummaryBlock title={tt('webCenter.devServers')} action={tt('common.open')} onAction={onOpenPreview}>
       {workflow?.devServerScripts.slice(0, 4).map(script => {
         const npmPackage = packages.find(item => item.directory === script.packageDirectory);
-        const terminal = findTerminal(terminals, script.packageDirectory, script.scriptName);
-        const running = isRunning(terminal);
+        const terminal = findScriptTerminal(terminals, script.packageDirectory, script.scriptName);
+        const running = isTerminalRunning(terminal);
         return (
           <div className={`web-center-action-row web-center-script-row ${running ? 'is-running' : ''}`} key={`${script.packageDirectory}:${script.scriptName}`}>
             <div>
@@ -147,24 +139,6 @@ function DevServerSummary({ tt, workflow, packages, terminals, onOpenPreview, on
       })}
       {!workflow?.devServerScripts.length && <p className="web-center-muted">{tt('webCenter.noDevScripts')}</p>}
     </SummaryBlock>
-  );
-}
-
-export function TemplatesSection({ tt, onOpenTemplates }: { tt: TFn; onOpenTemplates: (templateId?: string) => void }) {
-  return (
-    <div className="web-center-scroll">
-      <SummaryBlock title={tt('webCenter.templates')} action={tt('common.create')} onAction={onOpenTemplates} icon={<LayoutTemplate size={13} />}>
-        <div className="web-center-template-grid">
-          {PROJECT_TEMPLATES.map(template => (
-            <button key={template.id} className="web-center-template-card" onClick={() => onOpenTemplates(template.id)}>
-              <LayoutTemplate size={16} />
-              <strong>{template.name}</strong>
-              <span>{tt(template.descriptionKey)}</span>
-            </button>
-          ))}
-        </div>
-      </SummaryBlock>
-    </div>
   );
 }
 

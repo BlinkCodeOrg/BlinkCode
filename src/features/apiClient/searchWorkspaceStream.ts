@@ -1,11 +1,12 @@
 import { API } from './apiBase';
 import type { WorkspaceSearchFileResult, WorkspaceSearchOptions, WorkspaceSearchResponse } from './workspaceSearchTypes';
+import { authenticatedFetch } from './apiSession';
 
 export async function searchWorkspaceStream(
   options: WorkspaceSearchOptions,
   onFile: (file: WorkspaceSearchFileResult) => void,
 ): Promise<WorkspaceSearchResponse> {
-  const response = await fetch(`${API}/search/stream`, {
+  const response = await authenticatedFetch(`${API}/search/stream`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(options),

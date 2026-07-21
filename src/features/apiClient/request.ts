@@ -1,7 +1,8 @@
 import { parseApiResponse } from './parseApiResponse';
+import { authenticatedFetch } from './apiSession';
 
 export async function request(url: string, options?: RequestInit): Promise<any> {
-  const res = await fetch(url, options);
+  const res = await authenticatedFetch(url, options);
   const raw = await res.text();
   let data: any = null;
   try {

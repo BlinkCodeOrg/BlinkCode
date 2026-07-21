@@ -3,6 +3,8 @@ import type { MutableRefObject } from 'react';
 import type { EditorState } from '../../types';
 import { saveRecoveryBuffer } from '../../utils/api';
 import { findNodeById } from '../workspaceTree/findNodeById';
+import { getApiSessionAuthorization } from '../apiClient/apiSession';
+import { reportRecoverableError } from '../../shared/diagnostics/reportRecoverableError';
 
 export function useRecoveryBuffers(stateRef: MutableRefObject<EditorState>, state: EditorState) {
   const savedContentRef = useRef<Map<string, string>>(new Map());
@@ -17,8 +19,11 @@ export function useRecoveryBuffers(stateRef: MutableRefObject<EditorState>, stat
         if (savedContentRef.current.get(file.serverPath) === file.content) continue;
 
         savedContentRef.current.set(file.serverPath, file.content);
-        saveRecoveryBuffer(file.serverPath, file.content).catch(() => {
+        saveRecoveryBuffer(file.serverPath, file.content).catch(error => {
           savedContentRef.current.delete(file.serverPath!);
+          reportRecoverableError('workspace.persist-recovery', error, {
+            filePath: file.serverPath,
+          });
         });
       }
     };
@@ -30,6 +35,7 @@ export function useRecoveryBuffers(stateRef: MutableRefObject<EditorState>, stat
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       const current = stateRef.current;
+      const authorization = getApiSessionAuthorization();
       let hasDirtyFiles = false;
       for (const tab of current.openTabs) {
         const file = findNodeById(current.files, tab.fileId);
@@ -37,7 +43,10 @@ export function useRecoveryBuffers(stateRef: MutableRefObject<EditorState>, stat
         hasDirtyFiles = true;
         fetch('/api/recovery', {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            ...(authorization ? { Authorization: authorization } : {}),
+          },
           body: JSON.stringify({ filePath: file.serverPath, content: file.content }),
           keepalive: true,
         });

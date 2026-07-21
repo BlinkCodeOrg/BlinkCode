@@ -175,12 +175,8 @@ test('file cursor persistence endpoints and Monaco integration are wired', () =>
   const restoreViewSource = readSource(
     'src/features/editorMonaco/restoreEditorViewState.ts',
   );
-  const saveClientSource = readSource(
-    'src/features/apiClient/saveFileCursorPosition.ts',
-  );
-  const fetchClientSource = readSource(
-    'src/features/apiClient/fetchFileCursorPosition.ts',
-  );
+  const saveClientSource = readSource('src/features/apiClient/fileApi.ts');
+  const fetchClientSource = saveClientSource;
 
   assert.match(serverSource, /app\.get\('\/api\/file-cursor'/);
   assert.match(serverSource, /app\.put\('\/api\/file-cursor'/);
@@ -312,11 +308,17 @@ test('recovery buffers are persisted, restored and cleared after save', () => {
 
 test('server and Electron enforce baseline security restrictions', () => {
   const headerSource = readSource('server/securityHeaders.js');
+  const serverSource = readSource('server/index.js');
   const electronSource = readSource('electron/main.mjs');
 
   assert.match(headerSource, /Content-Security-Policy/);
   assert.match(headerSource, /object-src 'none'/);
   assert.match(headerSource, /X-Content-Type-Options/);
+  assert.match(serverSource, /app\.post\('\/api\/session'/);
+  assert.match(serverSource, /localServerAuth\.requireApiSession/);
+  assert.match(serverSource, /localServerAuth\.authorizeWebSocket/);
+  assert.match(serverSource, /host = '127\.0\.0\.1'/);
+  assert.match(serverSource, /server\.listen\(port, host/);
   assert.match(electronSource, /setPermissionRequestHandler/);
   assert.match(electronSource, /will-navigate/);
   assert.match(electronSource, /contextIsolation: true/);

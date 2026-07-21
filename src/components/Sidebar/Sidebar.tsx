@@ -1,13 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { useEditor } from '../../store/EditorContext';
-import type { FileNode } from '../../types';
 import { useT } from '../../hooks/useT';
 import { useHorizontalResize } from '../../hooks/useHorizontalResize';
 import { closeWorkspace } from '../../utils/api';
-import { sortNodes } from '../../features/workspaceTree/sortNodes';
 import { openFolderFromPicker } from '../../features/sidebar/openFolderFromPicker';
 import { useSidebarContextActions } from '../../features/sidebar/useSidebarContextActions';
-import { uploadDroppedFiles } from '../../features/sidebar/uploadDroppedFiles';
 import { useSidebarDragAndDrop } from '../../features/sidebar/useSidebarDragAndDrop';
 import { useRecentProjects } from '../../features/sidebar/useRecentProjects';
 import { SidebarContextMenu } from './SidebarContextMenu';
@@ -15,20 +12,16 @@ import { SidebarEmptyState } from './SidebarEmptyState';
 import { SidebarFilter } from './SidebarFilter';
 import { SidebarHeader } from './SidebarHeader';
 import { SidebarInlineInput } from './SidebarInlineInput';
-import { SidebarTreeNode } from './SidebarTreeNode';
 import { filterSidebarNode } from './filterSidebarNode';
 import type { InlineInput } from './sidebarTypes';
 import { SidebarPanel } from '../ui/SidebarPanel';
-import { getDroppedFolderPath } from '../../features/sidebar/getDroppedFolderPath';
-import { fetchTree } from '../../utils/api';
-import { findNodeByPath } from '../../features/workspaceTree/findNodeByPath';
 import { useExplorerGitDecorations } from '../../features/sidebar/useExplorerGitDecorations';
 import { getDirtyFiles } from '../../features/dirtyFiles/getDirtyFiles';
 import { addWorkspaceRootFromPicker } from '../../features/sidebar/addWorkspaceRootFromPicker';
-import { getExplorerGitDecoration } from '../../features/sidebar/getExplorerGitDecoration';
 import { UpdateBanner } from './UpdateBanner';
+import { useSidebarExternalDrop } from '../../features/sidebar/useSidebarExternalDrop';
+import { SidebarTree } from './SidebarTree';
 import './Sidebar.css';
-
 export default function Sidebar() {
   const {
     state,
@@ -146,122 +139,7 @@ export default function Sidebar() {
     setRenamingId(null);
     setRenameVal('');
   };
-  const renderTree = (nodes: FileNode[], depth: number): React.ReactNode => {
-    const sorted = sortNodes(
-      nodes.filter((node) => filterSidebarNode(node, filter)),
-    );
-    return sorted.map((node) => {
-      const hasVisibleChildren =
-        node.type === 'folder' &&
-        !!node.isExpanded &&
-        (node.children || []).some((c) => filterSidebarNode(c, filter));
-
-      return (
-        <SidebarTreeNode
-          key={node.id}
-          activeFileId={activeFileId}
-          depth={depth}
-          drag={sidebarDrag.drag}
-          draggingId={sidebarDrag.draggingId}
-          hasVisibleChildren={hasVisibleChildren}
-          gitDecoration={
-            node.serverPath
-              ? getExplorerGitDecoration(node.serverPath, gitDecorations)
-              : undefined
-          }
-          inline={inline}
-          inlineRef={inlineRef}
-          itemEls={itemEls}
-          node={node}
-          onContextMenu={sidebarCtx.onCtx}
-          onDragEnd={sidebarDrag.onDragEnd}
-          onDragLeave={sidebarDrag.onDragLeave}
-          onDragOver={sidebarDrag.onDragOver}
-          onDragStart={sidebarDrag.onDragStart}
-          onDrop={sidebarDrag.onDrop}
-          onInlineCancel={() => setInline(null)}
-          onInlineChange={setInline}
-          onOpenFile={openFile}
-          onRenameCancel={() => {
-            setRenamingId(null);
-            setRenameVal('');
-          }}
-          onRenameChange={setRenameVal}
-          onSubmitInline={submitInline}
-          onSubmitRename={submitRename}
-          onToggleFolder={toggleFolder}
-          renameRef={renameRef}
-          renameVal={renameVal}
-          renamingId={renamingId}
-          renderChildren={renderTree}
-          showFileIcons={state.settings.showFileIcons}
-          tt={tt}
-        />
-      );
-    });
-  };
-
-  const [dropActive, setDropActive] = useState(false);
-  const handleDragOver = useCallback((e: React.DragEvent) => {
-    if (e.dataTransfer.types.includes('Files')) {
-      e.preventDefault();
-      e.stopPropagation();
-      setDropActive(true);
-    }
-  }, []);
-
-  const handleDragLeave = useCallback((e: React.DragEvent) => {
-    e.preventDefault();
-    setDropActive(false);
-  }, []);
-
-  const handleDrop = useCallback(
-    async (e: React.DragEvent) => {
-      e.preventDefault();
-      e.stopPropagation();
-      setDropActive(false);
-      const folderPath = getDroppedFolderPath(e.dataTransfer);
-      if (folderPath) {
-        await openFolderFromServer(folderPath);
-        addToast(
-          tt('explorer.openedFolder', {
-            name: folderPath.split(/[\\/]/).pop() || folderPath,
-          }),
-          'success',
-        );
-        return;
-      }
-      const files = Array.from(e.dataTransfer.files);
-      if (files.length === 0) return;
-      const { failed, uploaded } = await uploadDroppedFiles(files);
-      const tree = await fetchTree();
-      dispatch({ type: 'SET_FILES', payload: tree.files });
-      for (const serverPath of uploaded) {
-        const file = findNodeByPath(tree.files, serverPath);
-        if (file) await openFile(file);
-      }
-      if (failed.length > 0) {
-        addToast(
-          uploaded.length > 0
-            ? tt('explorer.dropPartial', {
-                failed: failed.length,
-                uploaded: uploaded.length,
-              })
-            : tt('explorer.dropFailed', { count: failed.length }),
-          'error',
-        );
-        return;
-      }
-      addToast(
-        uploaded.length === 1
-          ? tt('explorer.droppedFile', { name: uploaded[0] })
-          : tt('explorer.droppedFiles', { count: uploaded.length }),
-        'success',
-      );
-    },
-    [addToast, dispatch, openFile, openFolderFromServer, tt],
-  );
-
+  const externalDrop = useSidebarExternalDrop({ addToast, dispatch, openFile, openFolderFromServer, tt });
   if (
     !state.sidebarVisible ||
     state.showSearchPanel ||
@@ -273,12 +151,12 @@ export default function Sidebar() {
 
   return (
     <SidebarPanel
-      className={`sidebar${dropActive ? ' drop-active' : ''}`}
+      className={`sidebar${externalDrop.dropActive ? ' drop-active' : ''}`}
       width={panelWidth}
       onContextMenu={(e) => sidebarCtx.onCtx(e, null, null)}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
+      onDragOver={externalDrop.onDragOver}
+      onDragLeave={externalDrop.onDragLeave}
+      onDrop={externalDrop.onDrop}
     >
       <SidebarHeader
         closeFolderTitle={tt('explorer.closeFolder')}
@@ -322,7 +200,29 @@ export default function Sidebar() {
           />
         ) : (
           <>
-            {renderTree(visibleFiles, 0)}
+            <SidebarTree
+              nodes={visibleFiles}
+              activeFileId={activeFileId}
+              filter={filter}
+              gitDecorations={gitDecorations as any}
+              inline={inline}
+              inlineRef={inlineRef}
+              itemEls={itemEls}
+              openFile={openFile}
+              renameRef={renameRef}
+              renameVal={renameVal}
+              renamingId={renamingId}
+              setInline={setInline}
+              setRenameVal={setRenameVal}
+              setRenamingId={setRenamingId}
+              showFileIcons={state.settings.showFileIcons}
+              sidebarCtx={sidebarCtx}
+              sidebarDrag={sidebarDrag}
+              submitInline={submitInline}
+              submitRename={submitRename}
+              toggleFolder={toggleFolder}
+              tt={tt}
+            />
             {inline && inline.parentId === null && (
               <SidebarInlineInput
                 inputRef={inlineRef}

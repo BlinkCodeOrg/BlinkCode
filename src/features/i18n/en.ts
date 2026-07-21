@@ -1061,4 +1061,5 @@ export const en: Record<string, string> = {
   'extensions.issues': 'Issues',
   'extensions.license': 'License',
   'extensions.publisher': 'Publisher',
+  'diagnostics.recoverable': '{area}: {message}',
 };
