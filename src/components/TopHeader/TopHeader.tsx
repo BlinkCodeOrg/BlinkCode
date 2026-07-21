@@ -14,6 +14,7 @@ import { useEffect, useState } from 'react';
 import BlinkLogoIcon from '../common/BlinkLogoIcon';
 import CommandCenter from '../CommandCenter/CommandCenter';
 import { HeaderClock } from './HeaderClock';
+import { UpdateBanner } from './UpdateBanner';
 import './TopHeader.css';
 
 export default function TopHeader() {
@@ -78,6 +79,7 @@ export default function TopHeader() {
       <div className="top-center"><CommandCenter /></div>
 
       <div className="top-right">
+        <UpdateBanner />
         <HeaderClock />
         <button className="header-btn folder-btn" onClick={handleOpenFolder} title={tt('openFolder')}>
           <FolderOpen size={14} />

@@ -4,6 +4,18 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.4.4] - 2026-07-21
+
+### Changed
+
+- Moved the update-available notification into a compact rounded pill in the top application bar, with its controls in a matching popover.
+- Refined shared dropdown menus so they stay anchored to their controls, fit the viewport and open above when there is not enough space below.
+
+### Fixed
+
+- Made project switching atomic and resilient to broken or inaccessible directory entries, preventing recently opened projects from leaving the Explorer empty.
+- Cleared stale tabs and split-editor state when switching projects and added diagnostics for recent-project loading failures.
+
 ## [1.4.3] - 2026-07-21
 
 ### Security

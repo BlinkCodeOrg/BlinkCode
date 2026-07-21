@@ -61,6 +61,7 @@ export interface SavedEditorState {
 
 export type EditorAction =
   | { type: 'SET_FILES'; payload: FileNode[] }
+  | { type: 'OPEN_WORKSPACE'; payload: { files: FileNode[]; workspaceDir: string } }
   | { type: 'OPEN_FILE'; payload: { file: FileNode } }
   | { type: 'CLOSE_TAB'; payload: { tabId: string } }
   | { type: 'SET_ACTIVE_TAB'; payload: { tabId: string } }

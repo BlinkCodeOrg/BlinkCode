@@ -121,17 +121,25 @@ function safePath(p) {
   }
 }
 
-function readTree(dir, depth = 0, treeRoot = workspace) {
+function readTree(dir, depth = 0, treeRoot = workspace, throwOnRootError = false) {
   if (depth > 10) return [];
   const items = [];
   let entries;
-  try { entries = fs.readdirSync(dir, { withFileTypes: true }); } catch { return []; }
+  try {
+    entries = fs.readdirSync(dir, { withFileTypes: true });
+  } catch (error) {
+    if (throwOnRootError && depth === 0) throw error;
+    return [];
+  }
   entries.sort((a, b) => {
     if (a.isDirectory() && !b.isDirectory()) return -1;
     if (!a.isDirectory() && b.isDirectory()) return 1;
     return a.name.localeCompare(b.name);
   });
   for (const entry of entries) {
+    // Workspace links can point outside the selected project or become broken.
+    // They are intentionally omitted from the explorer tree.
+    if (entry.isSymbolicLink()) continue;
     if (
       entry.name.startsWith('.') &&
       entry.name !== '.gitignore' &&
@@ -141,7 +149,13 @@ function readTree(dir, depth = 0, treeRoot = workspace) {
     ) continue;
     if (entry.name === 'node_modules' || entry.name === 'dist' || entry.name === '.cache') continue;
     const fullPath = path.join(dir, entry.name);
-    const entryStat = fs.statSync(fullPath);
+    let entryStat;
+    try {
+      entryStat = fs.statSync(fullPath);
+    } catch {
+      // One inaccessible entry must not prevent the rest of the project from opening.
+      continue;
+    }
     const rel = path.relative(treeRoot, fullPath).replace(/\\/g, '/');
     if (entry.isDirectory()) {
       items.push({ name: entry.name, type: 'folder', path: rel, children: readTree(fullPath, depth + 1, treeRoot) });
@@ -300,15 +314,22 @@ app.post('/api/upload-folder', (req, res) => {
 app.post('/api/open-folder', (req, res) => {
   const { dirPath } = req.body;
   if (!dirPath || !fs.existsSync(dirPath)) return res.status(400).json({ error: 'Directory not found' });
+  const nextWorkspace = path.resolve(dirPath);
+  let tree;
   try {
-    const stat = fs.statSync(dirPath);
+    const stat = fs.statSync(nextWorkspace);
     if (!stat.isDirectory()) return res.status(400).json({ error: 'Not a directory' });
-  } catch { return res.status(400).json({ error: 'Cannot access directory' }); }
-  workspace = path.resolve(dirPath);
+    tree = readTree(nextWorkspace, 0, nextWorkspace, true);
+  } catch {
+    return res.status(400).json({ error: 'Cannot access directory' });
+  }
+
+  // Commit the workspace switch only after its tree was read successfully.
+  workspace = nextWorkspace;
   saveWorkspacePath(workspace);
   addRecentProject(workspace, path.basename(workspace));
   startFsWatcher();
-  res.json({ tree: readTree(workspace), workspace: path.basename(workspace) });
+  res.json({ tree, workspace: path.basename(workspace) });
 });
 
 app.get('/api/recent-projects', (req, res) => {
