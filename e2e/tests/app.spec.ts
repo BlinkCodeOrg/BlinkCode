@@ -83,33 +83,43 @@ test('loads local images inside Markdown preview', async ({ page }) => {
 test('keeps an empty folder open and offers project creation actions', async ({ page, request }) => {
   const emptyWorkspace = resolve('e2e/fixtures/empty-workspace');
   const defaultWorkspace = resolve('e2e/fixtures/workspace');
+  const context = page.context();
 
-  await request.post('/api/open-folder', {
-    data: { dirPath: emptyWorkspace },
-    headers: apiHeaders,
-  });
-  await request.put('/api/state', {
-    data: { folderClosed: false, workspaceDir: emptyWorkspace },
-    headers: apiHeaders,
-  });
-  await page.reload();
-
-  await expect(page.getByText('This folder is empty.')).toBeVisible();
-  await expect(page.getByRole('button', { name: 'New File' })).toBeVisible();
-  await expect(page.locator('.sidebar-recent-projects')).toHaveCount(0);
-  await page.getByRole('button', { name: 'New File' }).click();
-  await expect(page.getByPlaceholder('filename.js')).toBeVisible();
-
-  await page.waitForTimeout(300);
   await page.close();
-  await request.post('/api/open-folder', {
-    data: { dirPath: defaultWorkspace },
-    headers: apiHeaders,
-  });
-  await request.put('/api/state', {
-    data: { folderClosed: false, workspaceDir: defaultWorkspace },
-    headers: apiHeaders,
-  });
+  let emptyPage: import('@playwright/test').Page | undefined;
+
+  try {
+    await request.post('/api/open-folder', {
+      data: { dirPath: emptyWorkspace },
+      headers: apiHeaders,
+    });
+    await request.put('/api/state', {
+      data: { folderClosed: false, workspaceDir: emptyWorkspace },
+      headers: apiHeaders,
+    });
+
+    emptyPage = await context.newPage();
+    await emptyPage.goto('/');
+
+    await expect(emptyPage.getByText('This folder is empty.')).toBeVisible();
+    const createFileButton = emptyPage.locator('.sidebar-empty-open-btn', {
+      hasText: 'New File',
+    });
+    await expect(createFileButton).toBeVisible();
+    await expect(emptyPage.locator('.sidebar-recent-projects')).toHaveCount(0);
+    await createFileButton.click();
+    await expect(emptyPage.getByPlaceholder('filename.js')).toBeVisible();
+  } finally {
+    await emptyPage?.close();
+    await request.post('/api/open-folder', {
+      data: { dirPath: defaultWorkspace },
+      headers: apiHeaders,
+    });
+    await request.put('/api/state', {
+      data: { folderClosed: false, workspaceDir: defaultWorkspace },
+      headers: apiHeaders,
+    });
+  }
 });
 
 test('keeps activity bar tools in the expected order', async ({ page }) => {
