@@ -422,4 +422,8 @@
 }
 
 @media (max-width: 1120px) { .top-update-banner { flex-basis: 176px; } }
-@media (max-width: 820px) { .top-update-banner { display: none; } }
+@media (max-width: 820px) {
+  .top-update-banner { flex: 0 0 30px; }
+  .top-update-pill { width: 30px; padding: 0; }
+  .top-update-pill span { display: none; }
+}

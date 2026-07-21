@@ -186,6 +186,7 @@ export const ru: Record<string, string> = {
   'explorer.refresh': 'Обновить',
   'explorer.newFile': 'Новый файл',
   'explorer.newFolder': 'Новая папка',
+  'explorer.emptyFolder': 'Папка пуста. Создайте файл или папку, чтобы начать проект.',
   'sidebar.recentProjects': 'Последние проекты',
 
   'ctx.open': 'Открыть',

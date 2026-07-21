@@ -54,6 +54,64 @@ test('opens a workspace file from Explorer', async ({ page }) => {
   await expect(page.locator('.monaco-editor')).toBeVisible();
 });
 
+test('opens workspace images through the authenticated preview', async ({ page }) => {
+  await page
+    .locator('[data-testid="explorer-tree-row"][data-node-name="pixel.png"]')
+    .click();
+
+  const image = page.locator('.preview-image');
+  await expect(image).toBeVisible();
+  await expect(image).toHaveAttribute('src', /^blob:/);
+  await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBe(1);
+  await expect(page.locator('.preview-error')).toHaveCount(0);
+});
+
+test('loads local images inside Markdown preview', async ({ page }) => {
+  await page
+    .locator('[data-testid="explorer-tree-row"][data-node-name="spellcheck.md"]')
+    .click();
+  const tab = page.locator('.tab', { hasText: 'spellcheck.md' });
+  await tab.click({ button: 'right' });
+  await page.getByRole('button', { name: 'Preview' }).click();
+
+  const image = page.locator('.markdown-preview-body img');
+  await expect(image).toBeVisible();
+  await expect(image).toHaveAttribute('src', /^blob:/);
+  await expect.poll(() => image.evaluate((node: HTMLImageElement) => node.naturalWidth)).toBe(1);
+});
+
+test('keeps an empty folder open and offers project creation actions', async ({ page, request }) => {
+  const emptyWorkspace = resolve('e2e/fixtures/empty-workspace');
+  const defaultWorkspace = resolve('e2e/fixtures/workspace');
+
+  await request.post('/api/open-folder', {
+    data: { dirPath: emptyWorkspace },
+    headers: apiHeaders,
+  });
+  await request.put('/api/state', {
+    data: { folderClosed: false, workspaceDir: emptyWorkspace },
+    headers: apiHeaders,
+  });
+  await page.reload();
+
+  await expect(page.getByText('This folder is empty.')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'New File' })).toBeVisible();
+  await expect(page.locator('.sidebar-recent-projects')).toHaveCount(0);
+  await page.getByRole('button', { name: 'New File' }).click();
+  await expect(page.getByPlaceholder('filename.js')).toBeVisible();
+
+  await page.waitForTimeout(300);
+  await page.close();
+  await request.post('/api/open-folder', {
+    data: { dirPath: defaultWorkspace },
+    headers: apiHeaders,
+  });
+  await request.put('/api/state', {
+    data: { folderClosed: false, workspaceDir: defaultWorkspace },
+    headers: apiHeaders,
+  });
+});
+
 test('keeps activity bar tools in the expected order', async ({ page }) => {
   const tools = await page
     .locator('.activity-bar-top .activity-btn')

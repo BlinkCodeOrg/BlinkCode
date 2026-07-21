@@ -271,6 +271,17 @@
   border-color: var(--accent-border);
 }
 
+.sidebar-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+}
+
+.sidebar-empty-workspace .sidebar-empty-open-btn {
+  padding: 0 10px;
+}
+
 .tree-row-wrapper {
   position: relative;
 }

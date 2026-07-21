@@ -8,17 +8,24 @@ mkdirSync(storageDirectory, { recursive: true });
 
 const workspace = resolve('e2e/fixtures/workspace');
 const secondaryWorkspace = resolve('e2e/fixtures/secondary-workspace');
+const emptyWorkspace = resolve('e2e/fixtures/empty-workspace');
 rmSync(workspace, { recursive: true, force: true });
 mkdirSync(resolve(workspace, 'src'), { recursive: true });
 mkdirSync(resolve(workspace, 'packages/client'), { recursive: true });
 rmSync(secondaryWorkspace, { recursive: true, force: true });
 mkdirSync(secondaryWorkspace, { recursive: true });
+rmSync(emptyWorkspace, { recursive: true, force: true });
+mkdirSync(emptyWorkspace, { recursive: true });
 writeFileSync(resolve(secondaryWorkspace, 'secondary.ts'), 'export const secondaryRoot = true;\n');
 mkdirSync(resolve(workspace, '.blinkcode'), { recursive: true });
 writeFileSync(resolve(workspace, 'src/index.js'), "export function greet(name) {\n  return `Hello, ${name}!`;\n}\n");
 writeFileSync(resolve(workspace, 'src/editorconfig.js'), 'const value = true;   ');
-writeFileSync(resolve(workspace, 'spellcheck.md'), '# Documentation\n\nThis projct has a seperate guide.\n');
+writeFileSync(resolve(workspace, 'spellcheck.md'), '# Documentation\n\nThis projct has a seperate guide.\n\n![Pixel](pixel.png)\n');
 writeFileSync(resolve(workspace, 'trash-me.txt'), 'Move this file to Trash.\n');
+writeFileSync(
+  resolve(workspace, 'pixel.png'),
+  Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M/wHwAF/gL+WnasWQAAAABJRU5ErkJggg==', 'base64'),
+);
 writeFileSync(resolve(workspace, '.editorconfig'), [
   'root = true',
   '',

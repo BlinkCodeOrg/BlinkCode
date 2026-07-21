@@ -1128,6 +1128,15 @@
   color: var(--text-muted);
 }
 
+.preview-loading-icon {
+  color: var(--accent);
+  animation: previewLoadingSpin 900ms linear infinite;
+}
+
+@keyframes previewLoadingSpin {
+  to { transform: rotate(360deg); }
+}
+
 .preview-badge {
   display: inline-flex;
   align-items: center;

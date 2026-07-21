@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { renderMarkdown } from '../../features/markdownPreview/renderMarkdown';
+import { hydrateLocalPreviewImages } from '../../features/markdownPreview/hydrateLocalPreviewImages';
 
 type MarkdownPreviewTabProps = {
   sourcePath?: string;
@@ -10,6 +11,11 @@ type MarkdownPreviewTabProps = {
 export function MarkdownPreviewTab({ sourcePath, content, tt }: MarkdownPreviewTabProps) {
   const bodyRef = useRef<HTMLDivElement>(null);
   const applyingScroll = useRef(false);
+
+  useEffect(() => {
+    if (!bodyRef.current) return;
+    return hydrateLocalPreviewImages(bodyRef.current);
+  }, [content, sourcePath]);
 
   useEffect(() => {
     const handler = (event: Event) => {

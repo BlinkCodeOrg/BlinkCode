@@ -93,6 +93,13 @@ test('session persistence does not duplicate large editor settings', () => {
   assert.equal(JSON.stringify(saved).includes('data:image/png'), false);
 });
 
+test('an open empty workspace is not persisted as a closed folder', () => {
+  const saved = getSaveableState(state({ files: [], workspaceDir: 'C:/empty-project' }));
+
+  assert.equal(saved.folderClosed, false);
+  assert.equal(saved.workspaceDir, 'C:/empty-project');
+});
+
 test('OPEN_FILE creates one tab and reuses it on repeated open', () => {
   const file = files[0].children![0];
   const opened = reducer(state(), { type: 'OPEN_FILE', payload: { file } });
