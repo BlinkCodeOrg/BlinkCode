@@ -4,6 +4,20 @@ All notable BlinkCode changes are documented in this file.
 
 ## [Unreleased]
 
+## [1.4.3] - 2026-07-21
+
+### Security
+
+- Bound the local IDE backend to loopback and added origin-bound session authentication for HTTP and WebSocket clients.
+- Restricted terminal working directories to active workspace roots.
+
+### Changed
+
+- Reorganized the renderer API client into domain modules and removed legacy architecture-check exemptions through component and type decomposition.
+- Added structured, deduplicated IDE notifications for recoverable workspace, settings, state and recovery-loading failures.
+- Made local WebSocket clients renew stale API sessions after an unexpected backend disconnect.
+- Synchronized product, documentation, LSP and download artifact versions.
+
 ## [1.4.0] - 2026-07-17
 
 ### Added

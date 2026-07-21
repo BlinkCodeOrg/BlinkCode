@@ -62,12 +62,20 @@ import { resolveEditorConfig } from './editorConfig.js';
 import { createWorkspaceRoots } from './workspaceRoots.js';
 import { createExtensionService } from './extensions/createExtensionService.js';
 import { registerExtensionRoutes } from './extensions/registerExtensionRoutes.js';
+import { createLocalServerAuth } from './localServerAuth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 app.use(securityHeaders);
 app.use(express.json({ limit: '50mb' }));
+
+let activeServerPort = String(process.env.PORT || 3001);
+const localServerAuth = createLocalServerAuth({
+  getAllowedPorts: () => [activeServerPort, process.env.VITE_PORT || 5173, 5174],
+});
+app.post('/api/session', localServerAuth.issueSession);
+app.use('/api', localServerAuth.requireApiSession);
 
 const isPackaged = __dirname.includes('app.asar');
 const userDataDir = path.join(process.env.APPDATA || path.join(os.homedir(), 'AppData', 'Roaming'), 'BlinkCode');
@@ -210,7 +218,7 @@ app.get('/api/web-workflow', (_req, res) => {
 });
 
 registerDebuggerRoutes(app, () => workspace);
-registerRestClientRoutes(app);
+registerRestClientRoutes(app, localServerAuth.getAuthorizationHeaderForUrl);
 registerAiRoutes(app, () => workspace);
 registerExtensionRoutes(app, extensionService);
 
@@ -1046,15 +1054,21 @@ const fsWss = new WebSocketServer({ noServer: true });
 const lspWss = new WebSocketServer({ noServer: true });
 
 server.on('upgrade', (request, socket, head) => {
-  if (request.url === '/ws/terminal') {
+  if (!localServerAuth.authorizeWebSocket(request)) {
+    socket.write('HTTP/1.1 401 Unauthorized\r\nConnection: close\r\n\r\n');
+    socket.destroy();
+    return;
+  }
+  const socketPath = new URL(request.url || '/', 'http://127.0.0.1').pathname;
+  if (socketPath === '/ws/terminal') {
     wss.handleUpgrade(request, socket, head, (ws) => {
       wss.emit('connection', ws, request);
     });
-  } else if (request.url === '/ws/fs') {
+  } else if (socketPath === '/ws/fs') {
     fsWss.handleUpgrade(request, socket, head, (ws) => {
       fsWss.emit('connection', ws, request);
     });
-  } else if (request.url && request.url.startsWith('/ws/lsp/')) {
+  } else if (socketPath.startsWith('/ws/lsp/')) {
     const parsed = parseLspUrl(request.url);
     if (!parsed) { socket.destroy(); return; }
     lspWss.handleUpgrade(request, socket, head, (ws) => {
@@ -1189,6 +1203,11 @@ function getShellCwd(shellId) {
 function resolveShellCwd(requestedCwd) {
   if (!requestedCwd || typeof requestedCwd !== 'string') return workspace;
   const normalized = path.resolve(requestedCwd);
+  const insideWorkspace = workspaceRoots.getRoots().some(root => {
+    const relative = path.relative(root.path, normalized);
+    return relative === '' || (!relative.startsWith('..') && !path.isAbsolute(relative));
+  });
+  if (!insideWorkspace) return workspace;
   try {
     const stat = fs.statSync(normalized);
     if (stat.isDirectory()) return normalized;
@@ -1267,7 +1286,7 @@ app.get('/{*splat}', (req, res) => {
 
 let startedServer = null;
 
-export function startBlinkCodeServer(port = process.env.PORT || 3001) {
+export function startBlinkCodeServer(port = process.env.PORT || 3001, host = '127.0.0.1') {
   if (startedServer) return startedServer;
 
   startedServer = new Promise((resolve, reject) => {
@@ -1283,9 +1302,10 @@ export function startBlinkCodeServer(port = process.env.PORT || 3001) {
     };
 
     server.once('error', onError);
-    server.listen(port, () => {
+    activeServerPort = String(port);
+    server.listen(port, host, () => {
       server.off('error', onError);
-      console.log(`BlinkCode server running on http://localhost:${port}`);
+      console.log(`BlinkCode server running on http://${host}:${port}`);
       startFsWatcher();
       resolve(server);
     });

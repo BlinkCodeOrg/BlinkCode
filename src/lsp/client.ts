@@ -1,24 +1,19 @@
-export type JsonRpcId = number | string;
-
-export interface JsonRpcRequest {
-  jsonrpc: '2.0';
-  id: JsonRpcId;
-  method: string;
-  params?: unknown;
-}
-
-export interface JsonRpcNotification {
-  jsonrpc: '2.0';
-  method: string;
-  params?: unknown;
-}
-
-export interface JsonRpcResponse<T = unknown> {
-  jsonrpc: '2.0';
-  id: JsonRpcId;
-  result?: T;
-  error?: { code: number; message: string; data?: unknown };
-}
+import {
+  authenticatedWebSocketUrl,
+  clearApiSession,
+} from '../features/apiClient/apiSession';
+import type {
+  JsonRpcId,
+  JsonRpcNotification,
+  JsonRpcRequest,
+  JsonRpcResponse,
+} from './protocol';
+export type {
+  JsonRpcId,
+  JsonRpcNotification,
+  JsonRpcRequest,
+  JsonRpcResponse,
+} from './protocol';
 
 type Pending = {
   resolve: (value: any) => void;
@@ -48,34 +43,44 @@ export class LspClient {
     this.initializeParams = initializeParams;
   }
 
-  private emitStatus(status: 'connecting' | 'ready' | 'reconnecting' | 'offline') {
-    window.dispatchEvent(new CustomEvent('blinkcode:lspStatus', {
-      detail: { status, url: this.url },
-    }));
+  private emitStatus(
+    status: 'connecting' | 'ready' | 'reconnecting' | 'offline',
+  ) {
+    window.dispatchEvent(
+      new CustomEvent('blinkcode:lspStatus', {
+        detail: { status, url: this.url },
+      }),
+    );
   }
 
   async connect(): Promise<void> {
     this.closedByUser = false;
     this.emitStatus(this.reconnectAttempts > 0 ? 'reconnecting' : 'connecting');
     await new Promise<void>((resolve, reject) => {
-      const ws = new WebSocket(this.url);
-      this.ws = ws;
-      ws.onopen = () => resolve();
-      ws.onerror = (e) => reject(e);
-      ws.onmessage = (ev) => this.onMessage(ev.data);
-      ws.onclose = () => {
-        this.ready = false;
-        this.ws = null;
-        if (this.onCloseCb) this.onCloseCb();
-        for (const [, p] of this.pending) p.reject(new Error('LSP connection closed'));
-        this.pending.clear();
-        if (!this.closedByUser) {
-          this.emitStatus('reconnecting');
-          this.scheduleReconnect();
-        } else {
-          this.emitStatus('offline');
-        }
-      };
+      authenticatedWebSocketUrl(this.url)
+        .then((authenticatedUrl) => {
+          const ws = new WebSocket(authenticatedUrl);
+          this.ws = ws;
+          ws.onopen = () => resolve();
+          ws.onerror = (e) => reject(e);
+          ws.onmessage = (ev) => this.onMessage(ev.data);
+          ws.onclose = () => {
+            this.ready = false;
+            this.ws = null;
+            if (this.onCloseCb) this.onCloseCb();
+            for (const [, p] of this.pending)
+              p.reject(new Error('LSP connection closed'));
+            this.pending.clear();
+            if (!this.closedByUser) {
+              clearApiSession();
+              this.emitStatus('reconnecting');
+              this.scheduleReconnect();
+            } else {
+              this.emitStatus('offline');
+            }
+          };
+        })
+        .catch(reject);
     });
 
     const result = await this.request('initialize', this.initializeParams);
@@ -86,7 +91,9 @@ export class LspClient {
     this.readyQueue.length = 0;
     for (const fn of q) fn();
     for (const fn of this.readyHandlers) {
-      try { fn(); } catch {}
+      try {
+        fn();
+      } catch {}
     }
     this.emitStatus('ready');
     return result;
@@ -96,10 +103,17 @@ export class LspClient {
     if (this.reconnectTimer != null) return;
     if (this.reconnectAttempts >= this.maxReconnectAttempts) return;
     this.reconnectAttempts++;
-    const delay = Math.min(30000, 2000 * Math.pow(2, this.reconnectAttempts - 1));
+    const delay = Math.min(
+      30000,
+      2000 * Math.pow(2, this.reconnectAttempts - 1),
+    );
     this.reconnectTimer = window.setTimeout(async () => {
       this.reconnectTimer = null;
-      try { await this.connect(); } catch { this.scheduleReconnect(); }
+      try {
+        await this.connect();
+      } catch {
+        this.scheduleReconnect();
+      }
     }, delay);
   }
 
@@ -117,11 +131,17 @@ export class LspClient {
     return () => this.readyHandlers.delete(fn);
   }
 
-  isReady() { return this.ready; }
+  isReady() {
+    return this.ready;
+  }
 
   private onMessage(raw: any) {
     let msg: any;
-    try { msg = JSON.parse(typeof raw === 'string' ? raw : String(raw)); } catch { return; }
+    try {
+      msg = JSON.parse(typeof raw === 'string' ? raw : String(raw));
+    } catch {
+      return;
+    }
     if (Array.isArray(msg)) {
       for (const m of msg) this.dispatch(m);
     } else {
@@ -145,20 +165,32 @@ export class LspClient {
         return;
       }
       const handlers = this.notifHandlers.get(msg.method);
-      if (handlers) for (const h of handlers) {
-        try { h(msg.params); } catch {}
-      }
+      if (handlers)
+        for (const h of handlers) {
+          try {
+            h(msg.params);
+          } catch {}
+        }
     }
   }
 
   private send(msg: JsonRpcRequest | JsonRpcNotification | JsonRpcResponse) {
     if (!this.ws || this.ws.readyState !== 1) return;
-    try { this.ws.send(JSON.stringify(msg)); } catch {}
+    try {
+      this.ws.send(JSON.stringify(msg));
+    } catch {}
   }
 
-  request<T = any>(method: string, params?: any, timeoutMs = 10000): Promise<T> {
+  request<T = any>(
+    method: string,
+    params?: any,
+    timeoutMs = 10000,
+  ): Promise<T> {
     return new Promise((resolve, reject) => {
-      if (!this.ws) { reject(new Error('LSP not connected')); return; }
+      if (!this.ws) {
+        reject(new Error('LSP not connected'));
+        return;
+      }
       const id = this.nextId++;
       this.pending.set(id, { resolve, reject });
       this.send({ jsonrpc: '2.0', id, method, params });
@@ -190,10 +222,19 @@ export class LspClient {
 
   async shutdown() {
     this.closedByUser = true;
-    if (this.reconnectTimer != null) { window.clearTimeout(this.reconnectTimer); this.reconnectTimer = null; }
-    try { await this.request('shutdown', null, 2000); } catch {}
-    try { this.notify('exit'); } catch {}
-    try { this.ws?.close(); } catch {}
+    if (this.reconnectTimer != null) {
+      window.clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    try {
+      await this.request('shutdown', null, 2000);
+    } catch {}
+    try {
+      this.notify('exit');
+    } catch {}
+    try {
+      this.ws?.close();
+    } catch {}
     this.ws = null;
     this.ready = false;
     this.emitStatus('offline');
@@ -205,7 +246,9 @@ export class LspClient {
       window.clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
     }
-    try { this.ws?.close(); } catch {}
+    try {
+      this.ws?.close();
+    } catch {}
     this.ws = null;
     this.ready = false;
     this.reconnectAttempts = 0;

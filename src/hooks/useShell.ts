@@ -1,5 +1,9 @@
 import { useCallback, useMemo, useRef } from 'react';
 import { getWsUrl } from '../utils/api';
+import {
+  authenticatedWebSocketUrl,
+  clearApiSession,
+} from '../features/apiClient/apiSession';
 
 interface WsMapEntry {
   ws: WebSocket;
@@ -18,52 +22,60 @@ export function useShell(actions: ShellActions) {
   const actionsRef = useRef(actions);
   actionsRef.current = actions;
 
-  const connectShell = useCallback((instanceId: string, cwd?: string, command?: string) => {
-    const old = wsMap.current.get(instanceId);
-    if (old) {
-      old.ws.close();
-      wsMap.current.delete(instanceId);
-    }
-
-    try {
-      const ws = new WebSocket(getWsUrl());
-      wsMap.current.set(instanceId, { ws });
-
-      let connected = false;
-      ws.onopen = () => {
-        ws.send(JSON.stringify({ type: 'start', cwd, command }));
-      };
-
-      ws.onmessage = (e) => {
-        try {
-          const msg = JSON.parse(e.data);
-          if (msg.type === 'ready') {
-            actionsRef.current.updateTerminalCwd(instanceId, msg.cwd || '');
-            if (!connected) {
-              connected = true;
-              actionsRef.current.onConnected?.(instanceId);
-            }
-          } else if (msg.type === 'output') {
-            actionsRef.current.onData(instanceId, msg.data || '');
-          } else if (msg.type === 'exit') {
-            actionsRef.current.onExit(instanceId, Number(msg.code || 0));
-          } else if (msg.type === 'error') {
-            actionsRef.current.onError(instanceId, msg.data || 'Shell connection failed');
-          }
-        } catch {}
-      };
-
-      ws.onerror = () => {
-        actionsRef.current.onError(instanceId, 'Shell connection failed');
-      };
-
-      ws.onclose = () => {
+  const connectShell = useCallback(
+    async (instanceId: string, cwd?: string, command?: string) => {
+      const old = wsMap.current.get(instanceId);
+      if (old) {
+        old.ws.close();
         wsMap.current.delete(instanceId);
-      };
-    } catch {
-      actionsRef.current.onError(instanceId, 'WebSocket not available');
-    }
-  }, []);
+      }
+
+      try {
+        const ws = new WebSocket(await authenticatedWebSocketUrl(getWsUrl()));
+        wsMap.current.set(instanceId, { ws });
+
+        let connected = false;
+        ws.onopen = () => {
+          ws.send(JSON.stringify({ type: 'start', cwd, command }));
+        };
+
+        ws.onmessage = (e) => {
+          try {
+            const msg = JSON.parse(e.data);
+            if (msg.type === 'ready') {
+              actionsRef.current.updateTerminalCwd(instanceId, msg.cwd || '');
+              if (!connected) {
+                connected = true;
+                actionsRef.current.onConnected?.(instanceId);
+              }
+            } else if (msg.type === 'output') {
+              actionsRef.current.onData(instanceId, msg.data || '');
+            } else if (msg.type === 'exit') {
+              actionsRef.current.onExit(instanceId, Number(msg.code || 0));
+            } else if (msg.type === 'error') {
+              actionsRef.current.onError(
+                instanceId,
+                msg.data || 'Shell connection failed',
+              );
+            }
+          } catch {}
+        };
+
+        ws.onerror = () => {
+          actionsRef.current.onError(instanceId, 'Shell connection failed');
+        };
+
+        ws.onclose = () => {
+          wsMap.current.delete(instanceId);
+          if (!connected) clearApiSession();
+        };
+      } catch {
+        clearApiSession();
+        actionsRef.current.onError(instanceId, 'WebSocket not available');
+      }
+    },
+    [],
+  );
 
   const sendData = useCallback((instanceId: string, data: string) => {
     const entry = wsMap.current.get(instanceId);
@@ -74,12 +86,15 @@ export function useShell(actions: ShellActions) {
     return false;
   }, []);
 
-  const resizeShell = useCallback((instanceId: string, cols: number, rows: number) => {
-    const entry = wsMap.current.get(instanceId);
-    if (entry?.ws && entry.ws.readyState === WebSocket.OPEN) {
-      entry.ws.send(JSON.stringify({ type: 'resize', cols, rows }));
-    }
-  }, []);
+  const resizeShell = useCallback(
+    (instanceId: string, cols: number, rows: number) => {
+      const entry = wsMap.current.get(instanceId);
+      if (entry?.ws && entry.ws.readyState === WebSocket.OPEN) {
+        entry.ws.send(JSON.stringify({ type: 'resize', cols, rows }));
+      }
+    },
+    [],
+  );
 
   const requestCwd = useCallback((instanceId: string) => {
     const entry = wsMap.current.get(instanceId);
@@ -100,7 +115,7 @@ export function useShell(actions: ShellActions) {
   }, []);
 
   const closeAll = useCallback(() => {
-    wsMap.current.forEach(e => e.ws.close());
+    wsMap.current.forEach((e) => e.ws.close());
     wsMap.current.clear();
   }, []);
 
@@ -109,13 +124,24 @@ export function useShell(actions: ShellActions) {
     return entry?.ws.readyState === WebSocket.OPEN;
   }, []);
 
-  return useMemo(() => ({
-    closeAll,
-    closeShell,
-    connectShell,
-    isConnected,
-    requestCwd,
-    resizeShell,
-    sendData,
-  }), [closeAll, closeShell, connectShell, isConnected, requestCwd, resizeShell, sendData]);
+  return useMemo(
+    () => ({
+      closeAll,
+      closeShell,
+      connectShell,
+      isConnected,
+      requestCwd,
+      resizeShell,
+      sendData,
+    }),
+    [
+      closeAll,
+      closeShell,
+      connectShell,
+      isConnected,
+      requestCwd,
+      resizeShell,
+      sendData,
+    ],
+  );
 }

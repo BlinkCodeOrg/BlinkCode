@@ -1,5 +1,6 @@
+import { request } from '../apiClient/request';
+
 export async function fetchQuickOpenFiles(): Promise<string[]> {
-  const res = await fetch('/api/files');
-  const data = await res.json();
+  const data = await request('/api/files');
   return data.files || [];
 }

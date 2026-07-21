@@ -1,8 +1,21 @@
 import { expect, test } from '@playwright/test';
 import { resolve } from 'node:path';
 
+let apiHeaders: Record<string, string>;
+
 test.beforeEach(async ({ page, request }) => {
-  await request.put('/api/state', { data: { terminalOpen: false } });
+  const session = await request.post('/api/session', {
+    headers: { Origin: 'http://127.0.0.1:5178' },
+  });
+  const { token } = await session.json();
+  apiHeaders = {
+    Authorization: `Bearer ${token}`,
+    Origin: 'http://127.0.0.1:5178',
+  };
+  await request.put('/api/state', {
+    data: { terminalOpen: false },
+    headers: apiHeaders,
+  });
   await page.addInitScript(() => {
     localStorage.setItem('blinkcode-onboarding-dismissed', 'true');
     localStorage.setItem(
@@ -265,7 +278,18 @@ test('handles an unavailable debugger attach target without command conflicts', 
 test('unknown debugger API routes return JSON instead of the app HTML', async ({
   page,
 }) => {
-  const response = await page.request.post('/api/debug/not-a-route');
+  const unauthorized = await page.request.post('/api/debug/not-a-route');
+  expect(unauthorized.status()).toBe(401);
+  const session = await page.request.post('/api/session', {
+    headers: { Origin: 'http://127.0.0.1:5178' },
+  });
+  const { token } = await session.json();
+  const response = await page.request.post('/api/debug/not-a-route', {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Origin: 'http://127.0.0.1:5178',
+    },
+  });
   expect(response.status()).toBe(404);
   expect(response.headers()['content-type']).toContain('application/json');
   expect(await response.json()).toMatchObject({
@@ -589,6 +613,7 @@ test('applies EditorConfig options and save transformations per file', async ({
     .poll(async () => {
       const response = await page.request.get(
         '/api/file?path=src%2Feditorconfig.js',
+        { headers: apiHeaders },
       );
       return (await response.json()).content;
     })
@@ -615,9 +640,13 @@ test('moves an Explorer file to Trash only after confirmation', async ({
     .getByRole('button', { name: 'Move to Trash' })
     .click();
   await expect(row).toHaveCount(0);
-  expect((await page.request.get('/api/file?path=trash-me.txt')).status()).toBe(
-    404,
-  );
+  expect(
+    (
+      await page.request.get('/api/file?path=trash-me.txt', {
+        headers: apiHeaders,
+      })
+    ).status(),
+  ).toBe(404);
 });
 
 test('imports an operating-system file drop and opens it', async ({ page }) => {
@@ -643,7 +672,9 @@ test('imports an operating-system file drop and opens it', async ({ page }) => {
     ),
   ).toBeVisible();
   await expect(page.locator('.tab.tab-active')).toContainText('dropped-e2e.js');
-  const response = await page.request.get('/api/file?path=dropped-e2e.js');
+  const response = await page.request.get('/api/file?path=dropped-e2e.js', {
+    headers: apiHeaders,
+  });
   expect((await response.json()).content).toContain('dropped = true');
 });
 
@@ -652,6 +683,7 @@ test('shows and opens files from an additional workspace root', async ({
 }) => {
   const response = await page.request.post('/api/workspace/roots', {
     data: { dirPath: resolve('e2e/fixtures/secondary-workspace') },
+    headers: apiHeaders,
   });
   expect(response.ok()).toBe(true);
   const roots = (await response.json()).roots;
@@ -682,7 +714,9 @@ test('shows and opens files from an additional workspace root', async ({
       'secondary-workspace',
     );
   } finally {
-    await page.request.delete(`/api/workspace/roots/${secondaryRoot.id}`);
+    await page.request.delete(`/api/workspace/roots/${secondaryRoot.id}`, {
+      headers: apiHeaders,
+    });
   }
 });
 
@@ -723,21 +757,27 @@ test('offers all AI quick actions and requires a reviewed approval token', async
   };
   const preview = await page.request.post('/api/ai/tools/preview', {
     data: { tool },
+    headers: apiHeaders,
   });
   const { approvalToken } = await preview.json();
   const rejected = await page.request.post('/api/ai/tools/execute', {
     data: { tool, approvalToken: '' },
+    headers: apiHeaders,
   });
   expect(rejected.status()).toBe(409);
   const accepted = await page.request.post('/api/ai/tools/execute', {
     data: { tool, approvalToken },
+    headers: apiHeaders,
   });
   expect(accepted.ok()).toBe(true);
   const reused = await page.request.post('/api/ai/tools/execute', {
     data: { tool, approvalToken },
+    headers: apiHeaders,
   });
   expect(reused.status()).toBe(409);
-  await page.request.delete('/api/delete?path=approved.txt');
+  await page.request.delete('/api/delete?path=approved.txt', {
+    headers: apiHeaders,
+  });
 });
 
 test('keeps custom settings pickers inside the viewport', async ({ page }) => {
@@ -919,7 +959,9 @@ test('blocks normal dirty-tab close and makes Dont Save restore disk content', a
   await tab.click({ button: 'right' });
   await page.getByRole('button', { name: "Don't Save" }).click();
   await expect(tab).toHaveCount(0);
-  const response = await page.request.get('/api/file?path=src%2Findex.js');
+  const response = await page.request.get('/api/file?path=src%2Findex.js', {
+    headers: apiHeaders,
+  });
   expect((await response.json()).content).not.toContain('shouldBeDiscarded');
 });
 
@@ -962,6 +1004,7 @@ test('creates a project from a local template with a package manager choice', as
     (
       await page.request.get(
         '/api/file?path=My%20Template%20App%2Fpackage.json',
+        { headers: apiHeaders },
       )
     ).status(),
   ).toBe(404);
@@ -1004,7 +1047,9 @@ test('edits and saves a file through the editor', async ({ page }) => {
   await page.keyboard.press('Control+S');
   await expect
     .poll(async () => {
-      const response = await page.request.get('/api/file?path=src%2Findex.js');
+      const response = await page.request.get('/api/file?path=src%2Findex.js', {
+        headers: apiHeaders,
+      });
       return (await response.json()).content;
     })
     .toContain('savedByE2E');
@@ -1081,13 +1126,16 @@ test('restores an unsaved recovery buffer after reload', async ({ page }) => {
       page.evaluate(() => (window as any).__blinkcodeEditor.getValue()),
     )
     .toContain('recoveredByE2E');
-  await page.request.delete('/api/recovery?path=src%2Findex.js');
+  await page.request.delete('/api/recovery?path=src%2Findex.js', {
+    headers: apiHeaders,
+  });
   await page.request.put('/api/file', {
     data: {
       filePath: 'src/index.js',
       content:
         'export function greet(name) {\n  return `Hello, ${name}!`;\n}\n',
     },
+    headers: apiHeaders,
   });
 });
 
@@ -1114,7 +1162,7 @@ test('shows Git changes in Source Control when Git is available', async ({
   page,
 }) => {
   const status = await page.request
-    .get('/api/git/status')
+    .get('/api/git/status', { headers: apiHeaders })
     .then((response) => response.json());
   test.skip(!status.isRepo, 'Git is unavailable in this environment');
   await page.request.put('/api/file', {
@@ -1122,6 +1170,7 @@ test('shows Git changes in Source Control when Git is available', async ({
       filePath: 'src/index.js',
       content: 'export const gitChange = true;\n',
     },
+    headers: apiHeaders,
   });
   await page.getByRole('button', { name: 'Source Control' }).click();
   await expect(page.locator('.source-control-panel')).toContainText(

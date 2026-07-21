@@ -5,17 +5,19 @@ import { executeHttpRequest } from '../../server/restClient/executeHttpRequest.j
 import { parseHttpDocument } from '../../server/restClient/parseHttpDocument.js';
 
 test('parses HTTP documents with variables, headers, bodies and separators', () => {
-  const requests = parseHttpDocument([
-    '@host = https://example.com',
-    'GET {{host}}/health',
-    'Accept: application/json',
-    '',
-    '### create',
-    'POST {{host}}/items',
-    'Content-Type: application/json',
-    '',
-    '{"name":"Blink"}',
-  ].join('\n'));
+  const requests = parseHttpDocument(
+    [
+      '@host = https://example.com',
+      'GET {{host}}/health',
+      'Accept: application/json',
+      '',
+      '### create',
+      'POST {{host}}/items',
+      'Content-Type: application/json',
+      '',
+      '{"name":"Blink"}',
+    ].join('\n'),
+  );
 
   assert.equal(requests.length, 2);
   assert.equal(requests[0].url, 'https://example.com/health');
@@ -24,24 +26,30 @@ test('parses HTTP documents with variables, headers, bodies and separators', () 
 });
 
 test('executes HTTP requests and captures response metadata', async () => {
-  const server = createServer((_request, response) => {
+  let receivedAuthorization = '';
+  const server = createServer((request, response) => {
+    receivedAuthorization = String(request.headers.authorization || '');
     response.setHeader('Content-Type', 'application/json');
     response.end('{"ok":true}');
   });
-  await new Promise<void>(resolve => server.listen(0, '127.0.0.1', resolve));
+  await new Promise<void>((resolve) => server.listen(0, '127.0.0.1', resolve));
   const address = server.address();
   assert(address && typeof address === 'object');
 
   try {
-    const response = await executeHttpRequest({
-      method: 'GET',
-      url: `http://127.0.0.1:${address.port}/health`,
-      headers: {},
-      body: null,
-    });
+    const response = await executeHttpRequest(
+      {
+        method: 'GET',
+        url: `http://127.0.0.1:${address.port}/health`,
+        headers: {},
+        body: null,
+      },
+      () => 'Bearer local-session',
+    );
     assert.equal(response.status, 200);
     assert.equal(response.body, '{"ok":true}');
     assert.equal(response.headers['content-type'], 'application/json');
+    assert.equal(receivedAuthorization, 'Bearer local-session');
   } finally {
     server.close();
   }

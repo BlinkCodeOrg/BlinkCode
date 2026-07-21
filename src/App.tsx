@@ -2,6 +2,7 @@ import {
   lazy,
   Suspense,
   useEffect,
+  useRef,
   type CSSProperties,
   type ReactNode,
 } from 'react';
@@ -20,6 +21,7 @@ import { ConfirmDialogHost } from './components/ui/ConfirmDialogHost';
 import { ExtensionProvider } from './features/extensions/ExtensionContext';
 import { AppUpdatesProvider } from './components/providers/AppUpdatesProvider';
 import { ConditionalUpdateEffect } from './components/UpdateEffect';
+import type { RecoverableDiagnostic } from './shared/diagnostics/reportRecoverableError';
 import './App.css';
 
 const AIPanel = lazy(() => import('./components/AIPanel/AIPanel'));
@@ -61,6 +63,7 @@ function EditorLayout() {
     addToast,
   } = useEditor();
   const tt = useT();
+  const lastDiagnosticToast = useRef({ key: '', at: 0 });
   const isExtensionDetail = Boolean(getActiveFile()?.extensionDetail);
   const splitTab = state.openTabs.find(
     (tab) => tab.id === state.splitActiveTabId,
@@ -96,13 +99,34 @@ function EditorLayout() {
     };
     const showMessage = (event: Event) =>
       addToast(String((event as CustomEvent).detail || ''), 'info');
+    const showDiagnostic = (event: Event) => {
+      const detail = (event as CustomEvent<RecoverableDiagnostic>).detail;
+      if (!detail?.area || !detail.message) return;
+      const key = `${detail.area}:${detail.message}`;
+      const now = Date.now();
+      if (
+        lastDiagnosticToast.current.key === key &&
+        now - lastDiagnosticToast.current.at < 5000
+      )
+        return;
+      lastDiagnosticToast.current = { key, at: now };
+      addToast(
+        tt('diagnostics.recoverable', {
+          area: detail.area,
+          message: detail.message,
+        }),
+        'error',
+      );
+    };
     window.addEventListener('blinkcode:openSettings', openSettings);
     window.addEventListener('blinkcode:extensionMessage', showMessage);
+    window.addEventListener('blinkcode:diagnostic', showDiagnostic);
     return () => {
       window.removeEventListener('blinkcode:openSettings', openSettings);
       window.removeEventListener('blinkcode:extensionMessage', showMessage);
+      window.removeEventListener('blinkcode:diagnostic', showDiagnostic);
     };
-  }, [addToast, state.showSettings, toggleSettings]);
+  }, [addToast, state.showSettings, toggleSettings, tt]);
   const acceptTabDrop = (
     event: React.DragEvent<HTMLDivElement>,
     group: 'primary' | 'secondary',

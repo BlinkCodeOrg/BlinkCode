@@ -1,6 +1,7 @@
 import { FilePlus, FolderOpen, FolderPlus, FolderX, Save, X } from 'lucide-react';
 import type { Command } from './commandTypes';
 import type { CommandPaletteCommandContext } from './commandPaletteCommandContext';
+import { closeWorkspace } from '../apiClient/workspaceApi';
 
 export function createFileCommands({
   activeTab,
@@ -97,7 +98,7 @@ export function createFileCommands({
       when: () => state.files.length > 0,
       run: () => {
         dispatch({ type: 'CLOSE_FOLDER' });
-        fetch('/api/close-workspace', { method: 'POST' }).catch(() => {});
+        closeWorkspace().catch(error => console.warn('[workspace] Could not close backend workspace', error));
       },
     },
   ];

@@ -1,5 +1,5 @@
 import { loadAiConfig } from './aiConfig';
-import { requestAiCompletion } from '../apiClient/requestAiCompletion';
+import { requestAiCompletion } from '../apiClient/aiApi';
 import { isRuntimeEditorSettingEnabled } from '../editorSettings/isRuntimeEditorSettingEnabled';
 import { isAiProviderAvailable } from './isAiProviderAvailable';
 

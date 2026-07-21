@@ -1,4 +1,4 @@
-import { fetchAiProviderStatus } from '../apiClient/fetchAiProviderStatus';
+import { fetchAiProviderStatus } from '../apiClient/aiApi';
 import type { AiConfig } from './aiConfig';
 
 let cachedKey = '';

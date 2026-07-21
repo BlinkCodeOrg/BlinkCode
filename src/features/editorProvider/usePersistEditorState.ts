@@ -3,6 +3,8 @@ import type { MutableRefObject } from 'react';
 import type { EditorState } from '../../types';
 import { saveStateToServer } from '../../utils/api';
 import { getSaveableState } from '../editorState/getSaveableState';
+import { getApiSessionAuthorization } from '../apiClient/apiSession';
+import { reportRecoverableError } from '../../shared/diagnostics/reportRecoverableError';
 
 export function usePersistEditorState(stateRef: MutableRefObject<EditorState>) {
   const lastSavedRef = useRef('');
@@ -13,8 +15,9 @@ export function usePersistEditorState(stateRef: MutableRefObject<EditorState>) {
       const serialized = JSON.stringify(saveable);
       if (serialized === lastSavedRef.current) return;
       lastSavedRef.current = serialized;
-      saveStateToServer(saveable).catch(() => {
+      saveStateToServer(saveable).catch(error => {
         lastSavedRef.current = '';
+        reportRecoverableError('workspace.persist-state', error);
       });
     };
     const handleVisibilityChange = () => {
@@ -31,9 +34,13 @@ export function usePersistEditorState(stateRef: MutableRefObject<EditorState>) {
   useEffect(() => {
     const handleBeforeUnload = () => {
       const saveable = getSaveableState(stateRef.current);
+      const authorization = getApiSessionAuthorization();
       fetch('/api/state', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(authorization ? { Authorization: authorization } : {}),
+        },
         body: JSON.stringify(saveable),
         keepalive: true,
       });

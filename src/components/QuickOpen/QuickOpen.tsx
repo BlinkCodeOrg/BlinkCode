@@ -12,7 +12,7 @@ import { useT } from '../../hooks/useT';
 import './QuickOpen.css';
 
 export default function QuickOpen() {
-  const { openFile, state } = useEditor();
+  const { loadFromServer, openFile, state } = useEditor();
   const tt = useT();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -82,10 +82,10 @@ export default function QuickOpen() {
 
     void (async () => {
       try {
-        await fetch('/api/tree');
+        await loadFromServer();
       } catch {}
     })();
-  }, [openFile, state.files]);
+  }, [loadFromServer, openFile, state.files]);
 
   useEffect(() => {
     if (!open) return;
